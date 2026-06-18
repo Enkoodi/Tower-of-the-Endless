@@ -25,6 +25,12 @@ public class DoorController : MonoBehaviour
     {
         if (isOpened) return false;
 
+        if (doorData == null)
+        {
+            Debug.LogError($"[DoorController] {name} 的 DoorData 未设置！请在 Inspector 中拖入 DoorData 资产");
+            return false;
+        }
+
         // 检查玩家是否有对应钥匙
         if (playerInventory.HasKey(doorData.requiredKeyType))
         {

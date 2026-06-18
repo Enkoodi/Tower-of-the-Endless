@@ -7,6 +7,7 @@ public interface IKeyInventory
     bool HasKey(KeyType keyType);
     void UseKey(KeyType keyType);
 }
+
 public class PlayerMove : MonoBehaviour, IKeyInventory
 {
     [Header("移动参数")]
@@ -21,30 +22,30 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     [SerializeField] private int scarletKeys = 0;
     [SerializeField] private int aeonKeys = 0;
 
-    [Header("交互设置")]
+    [Header("碰撞检测")]
     [SerializeField] private LayerMask doorLayer;
-    [SerializeField] private float raycastDistance = 0.6f;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private float checkRadius = 0.4f;
 
     private bool isMoving = false;
     private Vector3 targetPosition;
     private float lastMoveTime = 0f;
 
-    // 按键栈：按顺序记录当前按住的方向，栈顶 = 最后按下的方向
+    // 按键栈：当前按住的方向，栈顶 = 最后按下的方向
     private List<Vector2> keyStack = new List<Vector2>();
 
     void Start()
     {
         targetPosition = transform.position;
-        
+
         if (doorLayer == 0)
-        {
-            Debug.LogWarning("[PlayerMove] DoorLayer 未设置，请在 Inspector 中指定 Door 层");
-        }
+            Debug.LogWarning("[PlayerMove] DoorLayer 未设置");
+        if (wallLayer == 0)
+            Debug.LogWarning("[PlayerMove] WallLayer 未设置");
     }
 
     void Update()
     {
-        // === 输入追踪（每帧执行，不漏掉按键事件）===
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);
         TrackKeyPress(KeyCode.A, KeyCode.LeftArrow, Vector2.left);
@@ -55,7 +56,6 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
         TrackKeyRelease(KeyCode.A, KeyCode.LeftArrow, Vector2.left);
         TrackKeyRelease(KeyCode.D, KeyCode.RightArrow, Vector2.right);
 
-        // === 移动执行（受冷却限制）===
         if (!isMoving && Time.time - lastMoveTime >= moveDelay && keyStack.Count > 0)
         {
             Vector2 direction = keyStack[keyStack.Count - 1];
@@ -68,7 +68,6 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     {
         if (Input.GetKeyDown(primary) || Input.GetKeyDown(alternative))
         {
-            // 如果该方向已在栈中，移到栈顶；否则压入栈顶
             keyStack.Remove(direction);
             keyStack.Add(direction);
         }
@@ -84,71 +83,47 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
 
     private void TryMove(Vector2 direction)
     {
-        Vector3 newPosition = transform.position + (Vector3)direction * moveDistance;
+        Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
-        // 先检测前方是否有门
-        DoorController doorInFront = CheckDoorInDirection(direction);
-        
-        if (doorInFront != null)
+        // 1. 检测目标位置是否有门
+        Collider2D doorHit = Physics2D.OverlapCircle(target, checkRadius, doorLayer);
+        if (doorHit != null)
         {
-            // 尝试开门
-            bool opened = doorInFront.TryOpen(this);
-            if (opened)
-            {
-                Debug.Log("[PlayerMove] 门已打开！");
-                return;
-            }
-            else
-            {
-                Debug.Log("[PlayerMove] 无法打开这扇门");
-                return;
-            }
-        }
-
-        // 如果没有门或门已打开，检测墙壁碰撞
-        Collider2D hit = Physics2D.OverlapCircle(newPosition, 0.4f, LayerMask.GetMask("Wall"));
-        if (hit == null)
-        {
-            targetPosition = newPosition;
-            isMoving = true;
-            StartCoroutine(SmoothMove());
-        }
-    }
-
-    /// <summary>
-    /// 使用射线检测检查玩家前方是否有门
-    /// </summary>
-    /// <param name="direction">检测方向</param>
-    /// <returns>检测到的门控制器，如果没有则返回null</returns>
-    private DoorController CheckDoorInDirection(Vector2 direction)
-    {
-        Vector2 origin = transform.position;
-        Vector2 rayDirection = direction.normalized;
-        
-        RaycastHit2D hit = Physics2D.Raycast(origin, rayDirection, raycastDistance, doorLayer);
-        
-        if (hit.collider != null)
-        {
-            DoorController door = hit.collider.GetComponent<DoorController>();
+            DoorController door = doorHit.GetComponent<DoorController>();
             if (door != null)
             {
-                return door;
+                bool opened = door.TryOpen(this);
+                Debug.Log(opened ? "[PlayerMove] 门已打开！" : "[PlayerMove] 无法打开这扇门");
+                return;
             }
+            // 命中了 doorLayer 但不是 DoorController，可能是墙或其他
+            Debug.Log($"[PlayerMove] 目标位置命中 doorLayer 物体：{doorHit.name}，无 DoorController 组件");
         }
-        
-        return null;
+
+        // 2. 检测目标位置是否有墙
+        Collider2D wallHit = Physics2D.OverlapCircle(target, checkRadius, wallLayer);
+        if (wallHit != null)
+        {
+            Debug.Log($"[PlayerMove] 前方是墙（{wallHit.name}），无法通行");
+            return;
+        }
+
+        // 3. 无障碍，执行移动
+        targetPosition = target;
+        isMoving = true;
+        StartCoroutine(SmoothMove());
     }
 
     private IEnumerator SmoothMove()
     {
-        Vector3 startPosition = transform.position;
+        Vector3 start = transform.position;
         float elapsed = 0f;
 
         while (elapsed < moveDuration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / moveDuration;
-            transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            transform.position = Vector3.Lerp(start, targetPosition, t);
             yield return null;
         }
 
@@ -160,18 +135,12 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     {
         switch (keyType)
         {
-            case KeyType.Yellow:
-                return yellowKeys > 0;
-            case KeyType.Blue:
-                return blueKeys > 0;
-            case KeyType.Red:
-                return redKeys > 0;
-            case KeyType.Scarlet:
-                return scarletKeys > 0;
-            case KeyType.Aeon:
-                return aeonKeys > 0;
-            default:
-                return false;
+            case KeyType.Yellow:  return yellowKeys > 0;
+            case KeyType.Blue:    return blueKeys > 0;
+            case KeyType.Red:     return redKeys > 0;
+            case KeyType.Scarlet: return scarletKeys > 0;
+            case KeyType.Aeon:    return aeonKeys > 0;
+            default:              return false;
         }
     }
 
@@ -179,21 +148,11 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     {
         switch (keyType)
         {
-            case KeyType.Yellow:
-                if (yellowKeys > 0) yellowKeys--;
-                break;
-            case KeyType.Blue:
-                if (blueKeys > 0) blueKeys--;
-                break;
-            case KeyType.Red:
-                if (redKeys > 0) redKeys--;
-                break;
-            case KeyType.Scarlet:
-                if (scarletKeys > 0) scarletKeys--;
-                break;
-            case KeyType.Aeon:
-                if (aeonKeys > 0) aeonKeys--;
-                break;
+            case KeyType.Yellow:  if (yellowKeys > 0) yellowKeys--; break;
+            case KeyType.Blue:    if (blueKeys > 0) blueKeys--; break;
+            case KeyType.Red:     if (redKeys > 0) redKeys--; break;
+            case KeyType.Scarlet: if (scarletKeys > 0) scarletKeys--; break;
+            case KeyType.Aeon:    if (aeonKeys > 0) aeonKeys--; break;
         }
     }
 
@@ -201,21 +160,11 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     {
         switch (keyType)
         {
-            case KeyType.Yellow:
-                yellowKeys += amount;
-                break;
-            case KeyType.Blue:
-                blueKeys += amount;
-                break;
-            case KeyType.Red:
-                redKeys += amount;
-                break;
-            case KeyType.Scarlet:
-                scarletKeys += amount;
-                break;
-            case KeyType.Aeon:
-                aeonKeys += amount;
-                break;
+            case KeyType.Yellow:  yellowKeys += amount; break;
+            case KeyType.Blue:    blueKeys += amount; break;
+            case KeyType.Red:     redKeys += amount; break;
+            case KeyType.Scarlet: scarletKeys += amount; break;
+            case KeyType.Aeon:    aeonKeys += amount; break;
         }
     }
 
@@ -223,18 +172,12 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     {
         switch (keyType)
         {
-            case KeyType.Yellow:
-                return yellowKeys;
-            case KeyType.Blue:
-                return blueKeys;
-            case KeyType.Red:
-                return redKeys;
-            case KeyType.Scarlet:
-                return scarletKeys;
-            case KeyType.Aeon:
-                return aeonKeys;
-            default:
-                return 0;
+            case KeyType.Yellow:  return yellowKeys;
+            case KeyType.Blue:    return blueKeys;
+            case KeyType.Red:     return redKeys;
+            case KeyType.Scarlet: return scarletKeys;
+            case KeyType.Aeon:    return aeonKeys;
+            default:              return 0;
         }
     }
 }
