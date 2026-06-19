@@ -19,7 +19,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float checkRadius = 0.4f;
 
     private bool isMoving = false;
+    private bool isInBattle = false;
     private Vector3 targetPosition;
+    private Vector2 battleDirection;
     private float lastMoveTime = 0f;
     private List<Vector2> keyStack = new List<Vector2>();
 
@@ -36,6 +38,8 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if (isInBattle) return;
+
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);
         TrackKeyPress(KeyCode.A, KeyCode.LeftArrow, Vector2.left);
@@ -81,7 +85,6 @@ public class PlayerMove : MonoBehaviour
 
         if (hit == null)
         {
-            // 无障碍，执行移动
             targetPosition = target;
             isMoving = true;
             StartCoroutine(SmoothMove());
@@ -96,33 +99,41 @@ public class PlayerMove : MonoBehaviour
                 door.TryOpen(playerData);
             else
                 Debug.LogError("[PlayerMove] playerData 为 null，无法开门");
-            return;   // 开门不移动
+            return;
         }
 
         // 再检查 EnemyController
         EnemyController enemy = hit.GetComponent<EnemyController>();
         if (enemy != null)
         {
-            if (playerData != null)
+            if (playerData != null && BattleManager.Instance != null)
             {
-                bool won = playerData.TryFight(enemy);
-                if (won)
-                {
-                    // 战胜 → 移动到敌人所在格
-                    targetPosition = target;
-                    isMoving = true;
-                    StartCoroutine(SmoothMove());
-                }
+                isInBattle = true;
+                battleDirection = direction;
+                keyStack.Clear();
+                BattleManager.Instance.StartBattle(playerData, enemy, OnBattleEnd);
             }
             else
             {
-                Debug.LogError("[PlayerMove] playerData 为 null，无法战斗");
+                Debug.LogError("[PlayerMove] playerData 或 BattleManager 为 null，无法战斗");
             }
             return;
         }
 
         // 没找到任何组件 → 当墙处理
         Debug.Log($"[PlayerMove] 前方是墙（{hit.name}），无法通行");
+    }
+
+    private void OnBattleEnd(bool won)
+    {
+        isInBattle = false;
+
+        if (won)
+        {
+            targetPosition = transform.position + (Vector3)battleDirection * moveDistance;
+            isMoving = true;
+            StartCoroutine(SmoothMove());
+        }
     }
 
     private IEnumerator SmoothMove()

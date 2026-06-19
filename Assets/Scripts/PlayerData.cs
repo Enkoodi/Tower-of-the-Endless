@@ -67,8 +67,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
         if (enemy.FirstStrike)
         {
             Debug.Log($"[战斗] {enemy.EnemyName} 先手攻击！");
-            if (TakeDamage(enemyAtk, playerDef))
-                return FightResult(true, enemy);
+            TakeDamage(enemyAtk);
         }
 
         // 玩家攻击阶段
@@ -96,36 +95,21 @@ public class PlayerData : MonoBehaviour, IKeyInventory
             }
 
             // 敌人反击（最后一回合如果敌人已死则不反击）
-            if (TakeDamage(enemyAtk, playerDef))
-                return FightResult(true, enemy); // 虽然赢了但也受伤了
+            TakeDamage(enemyAtk);
         }
 
         return FightResult(true, enemy);
     }
 
     /// <summary>
-    /// 受到伤害。返回 true 表示玩家死亡。
+    /// 玩家受到伤害。返回实际受到的伤害值。
     /// </summary>
-    private bool TakeDamage(int enemyAtk, int playerDef)
+    public int TakeDamage(int rawAtk)
     {
-        int damage = enemyAtk - playerDef;
-        if (damage <= 0)
-        {
-            Debug.Log("[战斗] 玩家防御力 >= 敌人攻击力，不受伤");
-            return false;
-        }
-
+        int damage = Mathf.Max(0, rawAtk - defense);
         hp -= damage;
-        Debug.Log($"[战斗] 受到 {damage} 伤害（剩余 HP:{hp}）");
-
-        if (hp <= 0)
-        {
-            hp = 0;
-            Debug.Log("[战斗] 玩家死亡！游戏结束");
-            return true;
-        }
-
-        return false;
+        if (hp < 0) hp = 0;
+        return damage;
     }
 
     /// <summary>

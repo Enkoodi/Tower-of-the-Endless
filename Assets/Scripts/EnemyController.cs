@@ -61,6 +61,17 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
+    /// 敌人受到伤害。返回实际受到的伤害值。
+    /// </summary>
+    public int TakeDamage(int rawAtk)
+    {
+        int damage = Mathf.Max(0, rawAtk - defense);
+        hp -= damage;
+        if (hp < 0) hp = 0;
+        return damage;
+    }
+
+    /// <summary>
     /// 击败敌人（由 PlayerData 战斗结算时调用）。禁用碰撞体并隐藏。
     /// </summary>
     public void Defeat()
