@@ -2,46 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IKeyInventory
+public class PlayerMove : MonoBehaviour
 {
-    bool HasKey(KeyType keyType);
-    void UseKey(KeyType keyType);
-}
+    [Header("数据引用")]
+    [SerializeField] private PlayerData playerData;
 
-public class PlayerMove : MonoBehaviour, IKeyInventory
-{
     [Header("移动参数")]
     [SerializeField] private float moveDistance = 1f;
     [SerializeField] private float moveDelay = 0.2f;
     [SerializeField] private float moveDuration = 0.15f;
 
-    [Header("钥匙数量")]
-    [SerializeField] private int yellowKeys = 0;
-    [SerializeField] private int blueKeys = 0;
-    [SerializeField] private int redKeys = 0;
-    [SerializeField] private int scarletKeys = 0;
-    [SerializeField] private int aeonKeys = 0;
-
     [Header("碰撞检测")]
     [SerializeField] private LayerMask doorLayer;
     [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float checkRadius = 0.4f;
 
     private bool isMoving = false;
     private Vector3 targetPosition;
     private float lastMoveTime = 0f;
-
-    // 按键栈：当前按住的方向，栈顶 = 最后按下的方向
     private List<Vector2> keyStack = new List<Vector2>();
 
     void Start()
     {
         targetPosition = transform.position;
 
-        if (doorLayer == 0)
-            Debug.LogWarning("[PlayerMove] DoorLayer 未设置");
-        if (wallLayer == 0)
-            Debug.LogWarning("[PlayerMove] WallLayer 未设置");
+        if (playerData == null)
+            playerData = GetComponent<PlayerData>();
+
+        if (playerData == null)
+            Debug.LogError("[PlayerMove] 未找到 PlayerData！请在玩家上挂载 PlayerData 组件");
     }
 
     void Update()
@@ -85,33 +75,54 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
     {
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
-        // 1. 检测目标位置是否有门
-        Collider2D doorHit = Physics2D.OverlapCircle(target, checkRadius, doorLayer);
-        if (doorHit != null)
-        {
-            DoorController door = doorHit.GetComponent<DoorController>();
-            if (door != null)
-            {
-                bool opened = door.TryOpen(this);
-                Debug.Log(opened ? "[PlayerMove] 门已打开！" : "[PlayerMove] 无法打开这扇门");
-                return;
-            }
-            // 命中了 doorLayer 但不是 DoorController，可能是墙或其他
-            Debug.Log($"[PlayerMove] 目标位置命中 doorLayer 物体：{doorHit.name}，无 DoorController 组件");
-        }
+        // 统一检测：门 + 墙 + 敌人，按组件类型分流
+        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer;
+        Collider2D hit = Physics2D.OverlapCircle(target, checkRadius, obstacleMask);
 
-        // 2. 检测目标位置是否有墙
-        Collider2D wallHit = Physics2D.OverlapCircle(target, checkRadius, wallLayer);
-        if (wallHit != null)
+        if (hit == null)
         {
-            Debug.Log($"[PlayerMove] 前方是墙（{wallHit.name}），无法通行");
+            // 无障碍，执行移动
+            targetPosition = target;
+            isMoving = true;
+            StartCoroutine(SmoothMove());
             return;
         }
 
-        // 3. 无障碍，执行移动
-        targetPosition = target;
-        isMoving = true;
-        StartCoroutine(SmoothMove());
+        // 先检查 DoorController
+        DoorController door = hit.GetComponent<DoorController>();
+        if (door != null)
+        {
+            if (playerData != null)
+                door.TryOpen(playerData);
+            else
+                Debug.LogError("[PlayerMove] playerData 为 null，无法开门");
+            return;   // 开门不移动
+        }
+
+        // 再检查 EnemyController
+        EnemyController enemy = hit.GetComponent<EnemyController>();
+        if (enemy != null)
+        {
+            if (playerData != null)
+            {
+                bool won = playerData.TryFight(enemy);
+                if (won)
+                {
+                    // 战胜 → 移动到敌人所在格
+                    targetPosition = target;
+                    isMoving = true;
+                    StartCoroutine(SmoothMove());
+                }
+            }
+            else
+            {
+                Debug.LogError("[PlayerMove] playerData 为 null，无法战斗");
+            }
+            return;
+        }
+
+        // 没找到任何组件 → 当墙处理
+        Debug.Log($"[PlayerMove] 前方是墙（{hit.name}），无法通行");
     }
 
     private IEnumerator SmoothMove()
@@ -129,55 +140,5 @@ public class PlayerMove : MonoBehaviour, IKeyInventory
 
         transform.position = targetPosition;
         isMoving = false;
-    }
-
-    public bool HasKey(KeyType keyType)
-    {
-        switch (keyType)
-        {
-            case KeyType.Yellow:  return yellowKeys > 0;
-            case KeyType.Blue:    return blueKeys > 0;
-            case KeyType.Red:     return redKeys > 0;
-            case KeyType.Scarlet: return scarletKeys > 0;
-            case KeyType.Aeon:    return aeonKeys > 0;
-            default:              return false;
-        }
-    }
-
-    public void UseKey(KeyType keyType)
-    {
-        switch (keyType)
-        {
-            case KeyType.Yellow:  if (yellowKeys > 0) yellowKeys--; break;
-            case KeyType.Blue:    if (blueKeys > 0) blueKeys--; break;
-            case KeyType.Red:     if (redKeys > 0) redKeys--; break;
-            case KeyType.Scarlet: if (scarletKeys > 0) scarletKeys--; break;
-            case KeyType.Aeon:    if (aeonKeys > 0) aeonKeys--; break;
-        }
-    }
-
-    public void AddKey(KeyType keyType, int amount = 1)
-    {
-        switch (keyType)
-        {
-            case KeyType.Yellow:  yellowKeys += amount; break;
-            case KeyType.Blue:    blueKeys += amount; break;
-            case KeyType.Red:     redKeys += amount; break;
-            case KeyType.Scarlet: scarletKeys += amount; break;
-            case KeyType.Aeon:    aeonKeys += amount; break;
-        }
-    }
-
-    public int GetKeyCount(KeyType keyType)
-    {
-        switch (keyType)
-        {
-            case KeyType.Yellow:  return yellowKeys;
-            case KeyType.Blue:    return blueKeys;
-            case KeyType.Red:     return redKeys;
-            case KeyType.Scarlet: return scarletKeys;
-            case KeyType.Aeon:    return aeonKeys;
-            default:              return 0;
-        }
     }
 }

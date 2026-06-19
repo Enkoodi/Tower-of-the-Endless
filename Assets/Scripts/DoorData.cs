@@ -23,3 +23,12 @@ public enum KeyType
     Scarlet,
     Aeon,
 }
+
+/// <summary>
+/// 钥匙背包接口 — 由 PlayerData 实现，DoorController 通过此接口查询/消耗钥匙。
+/// </summary>
+public interface IKeyInventory
+{
+    bool HasKey(KeyType keyType);
+    void UseKey(KeyType keyType);
+}

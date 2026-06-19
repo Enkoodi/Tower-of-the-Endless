@@ -9,10 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bf7c282ff2d51f48acd6d71ed60fc8b, type: 3}
-  m_Name: YellowDoor
+  m_Script: {fileID: 11500000, guid: 3260edfd44015b64e8956d57e73c836a, type: 3}
+  m_Name: GreenSlime
   m_EditorClassIdentifier: 
-  doorName: "\u9EC4\u4E4B\u95E8"
-  doorSprite: {fileID: 21300000, guid: 781096c46010dcd4686996464af2066e, type: 3}
-  requiredKeyType: 0
-  consumeKey: 1
+  enemyName: "\u7EFF\u53F2\u83B1\u59C6"
+  enemySprite: {fileID: 0}
+  attack: 10
+  defense: 5
+  hp: 50
+  goldReward: 5
+  firstStrike: 0
+  rangedAttack: 0
