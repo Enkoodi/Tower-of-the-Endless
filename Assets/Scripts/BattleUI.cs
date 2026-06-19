@@ -51,14 +51,14 @@ public class BattleUI : MonoBehaviour
         isAnimating = false;
 
         if (enemyNameText != null)
-            enemyNameText.text = enemy != null ? enemy.EnemyName : "未知敌人";
+            enemyNameText.text = enemy != null ? enemy.EnemyName : "？？？";
 
         UpdatePlayerPanel(playerData);
         UpdateEnemyPanel(enemy);
 
         // 初始日志
-        AddLog($"遭遇 {enemy?.EnemyName}！");
-        AddLog("战斗开始...");
+        if(playerData.Speed >= enemy.Speed)
+            AddLog($"<color=#7799CC>我方</color>速度更快，获得先手");
     }
 
     /// <summary>
@@ -80,14 +80,14 @@ public class BattleUI : MonoBehaviour
         if (playerStatsText == null || playerData == null) return;
 
         playerStatsText.text =
-            $"生命值：{playerData.HP}/{playerData.MaxHP}\n" +
+            $"生命值：{playerData.HP}\n" +
             $"攻击力：{playerData.Attack}\n" +
             $"防御力：{playerData.Defense}\n" +
-            $"攻击段数：1\n" +       // 魔塔通常每回合攻击 1 次
-            $"生命偷取：0\n" +
-            $"反伤系数：0\n" +
-            $"魔力充能：0\n" +
-            $"速度：普通";
+            $"攻击段数：{playerData.AttackCount}\n" +
+            $"生命偷取：{playerData.LifeSteal}\n" +
+            $"反伤系数：{playerData.ReflectDamage}\n" +
+            $"魔力充能：{playerData.ManaCharge}\n" +
+            $"速度：{playerData.Speed}";
     }
 
     /// <summary>
@@ -101,11 +101,11 @@ public class BattleUI : MonoBehaviour
             $"生命值：{enemy.HP}\n" +
             $"攻击力：{enemy.Attack}\n" +
             $"防御力：{enemy.Defense}\n" +
-            $"攻击段数：1\n" +
-            $"生命偷取：0\n" +
-            $"反伤系数：0\n" +
-            $"魔力充能：0\n" +
-            $"速度：普通";
+            $"攻击段数：{enemy.AttackCount}\n" +
+            $"生命偷取：{enemy.LifeSteal}\n" +
+            $"反伤系数：{enemy.ReflectDamage}\n" +
+            $"魔力充能：{enemy.ManaCharge}\n" +
+            $"速度：{enemy.Speed}";
     }
 
     /// <summary>

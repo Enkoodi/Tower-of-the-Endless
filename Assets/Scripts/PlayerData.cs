@@ -12,16 +12,21 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     // ============================================================
 
     [Header("战斗属性")]
+    [SerializeField] private int hp = 500;
     [SerializeField] private int attack = 10;
-    [SerializeField] private int defense = 5;
-    [SerializeField] private int hp = 100;
-    [SerializeField] private int maxHp = 100;
+    [SerializeField] private int defense = 20;
+    [SerializeField] private int attackCount = 1;
+    [SerializeField] private int lifeSteal = 0;
+    [SerializeField] private int reflectDamage = 0;
+    [SerializeField] private int manaCharge = 0;
+    [SerializeField] private int manaMax = 100;
+    [SerializeField] private int speed = 5;
 
     [Header("金币")]
     [SerializeField] private int gold = 0;
 
     [Header("钥匙数量")]
-    [SerializeField] private int yellowKeys = 1;
+    [SerializeField] private int yellowKeys = 0;
     [SerializeField] private int blueKeys = 0;
     [SerializeField] private int redKeys = 0;
     [SerializeField] private int scarletKeys = 0;
@@ -30,12 +35,17 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     // ============================================================
     //  公开只读属性
     // ============================================================
-    public int Attack => attack;
-    public int Defense => defense;
-    public int HP => hp;
-    public int MaxHP => maxHp;
-    public int Gold => gold;
-    public bool IsDead => hp <= 0;
+    public int Attack        => attack;
+    public int Defense       => defense;
+    public int HP            => hp;
+    public int AttackCount   => attackCount;
+    public int LifeSteal     => lifeSteal;
+    public int ReflectDamage => reflectDamage;
+    public int ManaCharge    { get => manaCharge; set => manaCharge = value; }
+    public int ManaMax       => manaMax;
+    public int Speed         => speed;
+    public int Gold          => gold;
+    public bool IsDead       => hp <= 0;
 
     // ============================================================
     //  战斗系统
@@ -53,40 +63,52 @@ public class PlayerData : MonoBehaviour, IKeyInventory
             return true;
         }
 
-        int playerAtk = attack;
-        int playerDef = defense;
         int enemyAtk  = enemy.Attack;
-        int enemyDef  = enemy.Defense;
         int enemyHp   = enemy.HP;
-
+        
         Debug.Log($"[战斗] 遭遇 {enemy.EnemyName}！");
-        Debug.Log($"[战斗] 我方 攻:{playerAtk} 防:{playerDef} 血:{hp}");
-        Debug.Log($"[战斗] 敌方 攻:{enemyAtk} 防:{enemyDef} 血:{enemyHp}");
+        Debug.Log($"[战斗] 我方 攻:{attack} 防:{defense} 血:{hp}");
+        Debug.Log($"[战斗] 敌方 攻:{enemyAtk} 防:{enemy.Defense} 血:{enemyHp}");
 
-        // 先手攻击
-        if (enemy.FirstStrike)
+        // 先手判定：敌人速度更高则先手
+        if (enemy.Speed > speed)
         {
-            Debug.Log($"[战斗] {enemy.EnemyName} 先手攻击！");
-            TakeDamage(enemyAtk);
+            Debug.Log($"[战斗] {enemy.EnemyName} 速度更快，先手攻击！");
+            TakeDamage(enemy.Attack);
         }
 
-        // 玩家攻击阶段
-        int damageToEnemy = playerAtk - enemyDef;
+        // 玩家攻击：物理伤害 = (攻-防) * 段数，魔力加成 = min(魔力充能, 魔力上限)
+        int physicalDamage = (attack - enemy.Defense) * attackCount;
+        int manaBonus = manaCharge < manaMax ? manaCharge : manaMax;
+        int damageToEnemy = physicalDamage + manaBonus;
         if (damageToEnemy <= 0)
         {
-            Debug.Log($"[战斗] 无法破防！攻击力({playerAtk}) <= 敌人防御力({enemyDef})");
+            Debug.Log($"[战斗] 无法破防！物理伤害({physicalDamage}) + 魔力加成({manaBonus}) <= 0");
             return false;
         }
+
+        // 敌人伤害：同公式
+        int enemyPhysicalDamage = (enemyAtk - defense) * enemy.AttackCount;
+        int enemyManaBonus = enemy.ManaCharge < enemy.ManaMax ? enemy.ManaCharge : enemy.ManaMax;
+        int enemyDamageToPlayer = enemyPhysicalDamage + enemyManaBonus;
 
         // 计算需要几回合击杀敌人
         int turnsToKill = Mathf.CeilToInt((float)enemyHp / damageToEnemy);
 
-        // 每回合玩家先攻（除非敌人先手已处理），敌人反击
+        // 每回合玩家先攻，敌人反击
         for (int turn = 0; turn < turnsToKill; turn++)
         {
             // 玩家攻击
             enemyHp -= damageToEnemy;
             Debug.Log($"[战斗] 第 {turn + 1} 回合：对 {enemy.EnemyName} 造成 {damageToEnemy} 伤害（剩余 {Mathf.Max(0, enemyHp)}）");
+
+            // 吸血：物理伤害 * 吸血系数 / 100
+            int rawPhysical = Mathf.Max(0, physicalDamage);
+            int steal = rawPhysical * lifeSteal / 100;
+            if (steal > 0) Heal(steal);
+            // 反伤：物理伤害 * 敌人反伤系数 / 100
+            int reflect = rawPhysical * enemy.ReflectDamage / 100;
+            if (reflect > 0) SubtractHP(reflect);
 
             if (enemyHp <= 0)
             {
@@ -94,8 +116,15 @@ public class PlayerData : MonoBehaviour, IKeyInventory
                 return FightResult(true, enemy);
             }
 
-            // 敌人反击（最后一回合如果敌人已死则不反击）
-            TakeDamage(enemyAtk);
+            // 敌人反击
+            SubtractHP(enemyDamageToPlayer);
+
+            // 敌人吸血：敌人物理伤害 * 敌人吸血系数 / 100
+            int enemySteal = enemyPhysicalDamage * enemy.LifeSteal / 100;
+            if (enemySteal > 0) enemy.Heal(enemySteal);
+            // 玩家反伤：敌人物理伤害 * 玩家反伤系数 / 100
+            int playerReflect = enemyPhysicalDamage * reflectDamage / 100;
+            if (playerReflect > 0) enemy.TakeRawDamage(playerReflect);
         }
 
         return FightResult(true, enemy);
@@ -188,8 +217,17 @@ public class PlayerData : MonoBehaviour, IKeyInventory
 
     public void Heal(int amount)
     {
-        hp = Mathf.Min(hp + amount, maxHp);
-        Debug.Log($"[PlayerData] 恢复 {amount} HP（当前 {hp}/{maxHp}）");
+        hp += amount;
+        Debug.Log($"[PlayerData] 恢复 {amount} HP（当前 {hp}）");
+    }
+
+    /// <summary>
+    /// 直接扣血，不计算防御（用于反伤等机制）。
+    /// </summary>
+    public void SubtractHP(int amount)
+    {
+        hp -= amount;
+        if (hp < 0) hp = 0;
     }
 
     public void AddAttack(int amount)

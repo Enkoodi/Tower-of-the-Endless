@@ -11,18 +11,14 @@ public class EnemyData : ScriptableObject
     public Sprite enemySprite;
 
     [Header("战斗属性")]
-    [Tooltip("攻击力")]
-    public int attack = 10;
-    [Tooltip("防御力")]
-    public int defense = 5;
-    [Tooltip("生命值")]
     public int hp = 50;
-    [Tooltip("击败后获得的金币")]
+    public int attack = 10;
+    public int defense = 5;
+    public int attackCount = 1;
+    public int lifeSteal = 0;
+    public int reflectDamage = 0;
+    public int manaCharge = 0;
+    public int manaMax = 100;
+    public int speed = 5;
     public int goldReward = 5;
-
-    [Header("特殊属性")]
-    [Tooltip("是否先手攻击")]
-    public bool firstStrike = false;
-    [Tooltip("是否远程攻击")]
-    public bool rangedAttack = false;
 }
