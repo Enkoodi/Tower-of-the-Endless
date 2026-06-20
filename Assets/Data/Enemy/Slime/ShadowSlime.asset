@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
+  m_Name: ShadowSlime
+  m_EditorClassIdentifier: 
+  enemyName: "\u6697\u5F71\u53F2\u83B1\u59C6"
+  enemySprite: {fileID: 21300000, guid: 278b0cc2462058b48bc5f1ef73b65fcf, type: 3}
+  hp: 150
+  attack: 70
+  defense: 20
+  attackCount: 1
+  lifeSteal: 0
+  reflectDamage: 10
+  manaCharge: 10
+  manaMax: 100
+  speed: 80
+  goldReward: 40

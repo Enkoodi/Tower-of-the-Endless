@@ -164,6 +164,9 @@ MonoBehaviour:
   - id: 1
     prefab: {fileID: 6609138336521278666, guid: 6669881b3a87d1e449d2a773f7ef9dbd, type: 3}
     displayName: "\u7EFF\u53F2\u83B1\u59C6"
+  - id: 2
+    prefab: {fileID: 506225030624865690, guid: 761d18f5b5c8b1544ac0b052d7dfb094, type: 3}
+    displayName: "\u7EA2\u53F2\u83B1\u59C6"
   itemPrefabs: []
   player: {fileID: 1606523439}
   autoFitCamera: 1
@@ -1004,7 +1007,7 @@ MonoBehaviour:
   attackCount: 1
   lifeSteal: 0
   reflectDamage: 0
-  manaCharge: 10
+  manaCharge: 0
   manaMax: 100
   speed: 5
   gold: 0

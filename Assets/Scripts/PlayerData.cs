@@ -20,7 +20,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     [SerializeField] private int reflectDamage = 0;
     [SerializeField] private int manaCharge = 0;
     [SerializeField] private int manaMax = 100;
-    [SerializeField] private int speed = 5;
+    [SerializeField] private int speed = 100;
 
     [Header("金币")]
     [SerializeField] private int gold = 0;
@@ -30,7 +30,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     [SerializeField] private int blueKeys = 0;
     [SerializeField] private int redKeys = 0;
     [SerializeField] private int scarletKeys = 0;
-    [SerializeField] private int aeonKeys = 0;
+    [SerializeField] private int aeonKeys = 0; 
 
     // ============================================================
     //  公开只读属性
