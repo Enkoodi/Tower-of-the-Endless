@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 870108904562937808}
   - component: {fileID: 4821260502276366771}
   - component: {fileID: 7111369101488223564}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicianRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,4 +143,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e84782d43256ab4ea04ad192c1c16ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 0}
+  stats: {fileID: 11400000, guid: 4bec7e302f649f041a0e045a06fd2ab2, type: 2}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7993208573186736895}
   - component: {fileID: 5925550197385245959}
   - component: {fileID: 8623729420752986311}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SuperiorPriest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,4 +143,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e84782d43256ab4ea04ad192c1c16ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 0}
+  stats: {fileID: 11400000, guid: c952eb19a1bec574b98f79f475df67e2, type: 2}

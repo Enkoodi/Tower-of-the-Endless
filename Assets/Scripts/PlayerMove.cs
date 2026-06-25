@@ -16,6 +16,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private LayerMask doorLayer;
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask itemLayer;
     [SerializeField] private float checkRadius = 0.4f;
 
     private bool isMoving = false;
@@ -79,8 +80,8 @@ public class PlayerMove : MonoBehaviour
     {
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
-        // 统一检测：门 + 墙 + 敌人，按组件类型分流
-        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer;
+        // 统一检测：门 + 墙 + 敌人 + 道具，按组件类型分流
+        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer;
         Collider2D hit = Physics2D.OverlapCircle(target, checkRadius, obstacleMask);
 
         if (hit == null)
@@ -91,12 +92,48 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
+        // 检查 KeyPickup — 钥匙不阻挡，拾取后直接走到该格
+        KeyPickup key = hit.GetComponent<KeyPickup>();
+        if (key != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                key.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 StatBoostPickup — 属性增益，拾取后直接走到该格
+        StatBoostPickup statBoost = hit.GetComponent<StatBoostPickup>();
+        if (statBoost != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                statBoost.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 BlessingPickup — 祝福选择，拾取后直接走到该格
+        BlessingPickup blessing = hit.GetComponent<BlessingPickup>();
+        if (blessing != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                blessing.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
         // 先检查 DoorController
         DoorController door = hit.GetComponent<DoorController>();
         if (door != null)
         {
             if (playerData != null)
-                door.TryOpen(playerData);
+                door.TryOpen(playerData, playerData);
             else
                 Debug.LogError("[PlayerMove] playerData 为 null，无法开门");
             return;

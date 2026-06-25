@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8719365406793771927}
   - component: {fileID: 6898296316565704978}
   - component: {fileID: 8250301807622906115}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GreatMagicMaster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,4 +143,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e84782d43256ab4ea04ad192c1c16ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 0}
+  stats: {fileID: 11400000, guid: b047ec05d2dd4bc4eaedc82511c609c4, type: 2}

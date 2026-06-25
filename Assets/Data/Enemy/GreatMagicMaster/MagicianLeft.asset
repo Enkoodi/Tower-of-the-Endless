@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: MagicianLeft
   m_EditorClassIdentifier: 
   enemyName: "\u9B54\u672F\u5E08\u5DE6"
-  enemySprite: {fileID: 21300000, guid: 4482339344a17584ea056438702d1753, type: 3}
+  enemySprite: {fileID: 21300000, guid: 7caabf41454bdbb47ae8d55a9d06a725, type: 3}
   hp: 210
   attack: 30
-  defense: 94
+  defense: 86
   attackCount: 1
   lifeSteal: 0
   reflectDamage: 0
   manaCharge: 1000
   manaMax: 150
   speed: 144
-  goldReward: 125
+  goldReward: 130

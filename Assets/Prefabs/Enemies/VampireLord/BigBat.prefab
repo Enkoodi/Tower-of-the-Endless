@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2244636505138394478}
   - component: {fileID: 2693301953203815694}
   - component: {fileID: 8859034166303528982}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BigBat
   m_TagString: Untagged
   m_Icon: {fileID: 0}

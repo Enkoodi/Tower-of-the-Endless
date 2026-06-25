@@ -3,9 +3,10 @@ using UnityEngine;
 /// <summary>
 /// 玩家数据 — 挂载在玩家 GameObject 上。
 /// 持有钥匙、战斗属性、金币，并提供战斗逻辑。
-/// 实现 IKeyInventory 供 DoorController 查询钥匙。
+/// 实现 IKeyInventory 供门系统查询钥匙。
+/// 实现 IPlayerHealth 供 Psyche 生命之门扣除 HP。
 /// </summary>
-public class PlayerData : MonoBehaviour, IKeyInventory
+public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 {
     // ============================================================
     //  Inspector 字段
@@ -14,11 +15,11 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     [Header("战斗属性")]
     [SerializeField] private int hp = 500;
     [SerializeField] private int attack = 10;
-    [SerializeField] private int defense = 20;
+    [SerializeField] private int defense = 5;
     [SerializeField] private int attackCount = 1;
     [SerializeField] private int lifeSteal = 0;
     [SerializeField] private int reflectDamage = 0;
-    [SerializeField] private int manaCharge = 0;
+    [SerializeField] private int manaCharge = 10;
     [SerializeField] private int manaMax = 100;
     [SerializeField] private int speed = 100;
 
@@ -29,7 +30,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     [SerializeField] private int yellowKeys = 0;
     [SerializeField] private int blueKeys = 0;
     [SerializeField] private int redKeys = 0;
-    [SerializeField] private int scarletKeys = 0;
+    [SerializeField] private int psycheKeys = 0;
     [SerializeField] private int aeonKeys = 0; 
 
     // ============================================================
@@ -166,7 +167,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
             case KeyType.Yellow:  return yellowKeys > 0;
             case KeyType.Blue:    return blueKeys > 0;
             case KeyType.Red:     return redKeys > 0;
-            case KeyType.Scarlet: return scarletKeys > 0;
+            case KeyType.Psyche: return psycheKeys > 0;
             case KeyType.Aeon:    return aeonKeys > 0;
             default:              return false;
         }
@@ -179,7 +180,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
             case KeyType.Yellow:  if (yellowKeys > 0) yellowKeys--; break;
             case KeyType.Blue:    if (blueKeys > 0) blueKeys--; break;
             case KeyType.Red:     if (redKeys > 0) redKeys--; break;
-            case KeyType.Scarlet: if (scarletKeys > 0) scarletKeys--; break;
+            case KeyType.Psyche: if (psycheKeys > 0) psycheKeys--; break;
             case KeyType.Aeon:    if (aeonKeys > 0) aeonKeys--; break;
         }
         Debug.Log($"[PlayerData] 使用 {keyType} 钥匙（剩余 {GetKeyCount(keyType)}）");
@@ -192,7 +193,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
             case KeyType.Yellow:  yellowKeys += amount; break;
             case KeyType.Blue:    blueKeys += amount; break;
             case KeyType.Red:     redKeys += amount; break;
-            case KeyType.Scarlet: scarletKeys += amount; break;
+            case KeyType.Psyche: psycheKeys += amount; break;
             case KeyType.Aeon:    aeonKeys += amount; break;
         }
         Debug.Log($"[PlayerData] 获得 {amount} 把 {keyType} 钥匙（总计 {GetKeyCount(keyType)}）");
@@ -205,7 +206,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory
             case KeyType.Yellow:  return yellowKeys;
             case KeyType.Blue:    return blueKeys;
             case KeyType.Red:     return redKeys;
-            case KeyType.Scarlet: return scarletKeys;
+            case KeyType.Psyche: return psycheKeys;
             case KeyType.Aeon:    return aeonKeys;
             default:              return 0;
         }
@@ -246,5 +247,38 @@ public class PlayerData : MonoBehaviour, IKeyInventory
     {
         gold += amount;
         Debug.Log($"[PlayerData] 金币 +{amount}（当前 {gold}）");
+    }
+
+    public void AddManaMax(int amount)
+    {
+        manaMax += amount;
+        Debug.Log($"[PlayerData] 魔力上限 +{amount}（当前 {manaMax}）");
+    }
+
+    public void AddManaCharge(int amount)
+    {
+        manaCharge += amount;
+        Debug.Log($"[PlayerData] 魔力充能 +{amount}（当前 {manaCharge}）");
+    }
+
+    public void AddSpeed(int amount)
+    {
+        speed += amount;
+        Debug.Log($"[PlayerData] 速度 +{amount}（当前 {speed}）");
+    }
+
+    /// <summary>
+    /// 统一属性增益接口，供 StatBoostPickup 调用。
+    /// </summary>
+    public void ApplyStatBoost(StatBoostType type, int value)
+    {
+        switch (type)
+        {
+            case StatBoostType.Attack:     AddAttack(value);      break;
+            case StatBoostType.Defense:    AddDefense(value);     break;
+            case StatBoostType.ManaMax:    AddManaMax(value);     break;
+            case StatBoostType.ManaCharge: AddManaCharge(value);  break;
+            case StatBoostType.Speed:      AddSpeed(value);       break;
+        }
     }
 }

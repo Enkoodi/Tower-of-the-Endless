@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 628805217729711535}
   - component: {fileID: 1375199842500960785}
   - component: {fileID: 4375110233206308319}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: VampireLord
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
+  m_Name: TheHalfAwake
+  m_EditorClassIdentifier: 
+  enemyName: "\u521D\u89C9\u8005"
+  enemySprite: {fileID: 21300000, guid: 5f48c30c607d5dc4ea9749f5380b3a8e, type: 3}
+  hp: 600
+  attack: 200
+  defense: 135
+  attackCount: 3
+  lifeSteal: 0
+  reflectDamage: 20
+  manaCharge: 1000
+  manaMax: 200
+  speed: 130
+  goldReward: 250

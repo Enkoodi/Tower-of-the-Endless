@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: SlimeLord
   m_EditorClassIdentifier: 
   enemyName: "\u53F2\u83B1\u59C6\u738B"
-  enemySprite: {fileID: 21300000, guid: ddfc059de431b74488cd261d7acee6a2, type: 3}
-  hp: 500
-  attack: 220
+  enemySprite: {fileID: 21300000, guid: 961dc6738ca838b409b335c0341e1c33, type: 3}
+  hp: 350
+  attack: 120
   defense: 80
-  attackCount: 1
+  attackCount: 4
   lifeSteal: 0
   reflectDamage: 10
-  manaCharge: 20
-  manaMax: 100
-  speed: 120
+  manaCharge: 150
+  manaMax: 50
+  speed: 80
   goldReward: 100

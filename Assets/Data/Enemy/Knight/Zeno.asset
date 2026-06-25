@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
+  m_Name: Zeno
+  m_EditorClassIdentifier: 
+  enemyName: "\u9B54\u738BZeno"
+  enemySprite: {fileID: 21300000, guid: 21b42ef41f2af014ca6fd3cd230a2728, type: 3}
+  hp: 2000
+  attack: 800
+  defense: 350
+  attackCount: 3
+  lifeSteal: 30
+  reflectDamage: 30
+  manaCharge: 3000
+  manaMax: 300
+  speed: 200
+  goldReward: 1000

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7907125509557329088}
   - component: {fileID: 7391656959268318188}
   - component: {fileID: 5599400621822995032}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: VampireBat
   m_TagString: Untagged
   m_Icon: {fileID: 0}

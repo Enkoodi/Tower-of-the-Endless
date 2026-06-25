@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: ShadowSlime
   m_EditorClassIdentifier: 
   enemyName: "\u6697\u5F71\u53F2\u83B1\u59C6"
-  enemySprite: {fileID: 21300000, guid: 278b0cc2462058b48bc5f1ef73b65fcf, type: 3}
-  hp: 150
-  attack: 70
+  enemySprite: {fileID: 21300000, guid: 09e627482aae0894582eeb7dc950f7b6, type: 3}
+  hp: 80
+  attack: 50
   defense: 20
-  attackCount: 1
+  attackCount: 5
   lifeSteal: 0
-  reflectDamage: 10
-  manaCharge: 10
-  manaMax: 100
-  speed: 80
+  reflectDamage: 0
+  manaCharge: 50
+  manaMax: 50
+  speed: 55
   goldReward: 40

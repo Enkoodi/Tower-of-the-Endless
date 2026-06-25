@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
+  m_Name: Soldier
+  m_EditorClassIdentifier: 
+  enemyName: "\u6218\u58EB"
+  enemySprite: {fileID: 21300000, guid: 0bd09e2fc5cfe9f4090edf578b798da7, type: 3}
+  hp: 245
+  attack: 120
+  defense: 50
+  attackCount: 1
+  lifeSteal: 0
+  reflectDamage: 20
+  manaCharge: 0
+  manaMax: 0
+  speed: 110
+  goldReward: 60
