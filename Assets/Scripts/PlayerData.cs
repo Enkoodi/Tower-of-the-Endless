@@ -281,4 +281,75 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
             case StatBoostType.Speed:      AddSpeed(value);       break;
         }
     }
+
+    /// <summary>
+    /// 应用祝福加成，由 BlessingManager 在选择后调用。
+    /// </summary>
+    public void ApplyBlessing(BlessingData blessing)
+    {
+        if (blessing == null) return;
+
+        switch (blessing.type)
+        {
+            case BlessingType.StatBonus:
+                ApplyStatBonus(blessing);
+                break;
+
+            case BlessingType.PercentBonus:
+                ApplyPercentBonus(blessing);
+                break;
+
+            case BlessingType.Conditional:
+                // TODO: 条件触发型，后续实现
+                Debug.Log($"[PlayerData] 获得条件祝福「{blessing.blessingName}」({blessing.effectDescription})，机制待实现");
+                break;
+        }
+    }
+
+    private void ApplyStatBonus(BlessingData b)
+    {
+        attack        += b.attackBonus;
+        defense       += b.defenseBonus;
+        manaMax       += b.manaMaxBonus;
+        manaCharge    += b.manaChargeBonus;
+        speed         += b.speedBonus;
+        hp            += b.hpBonus;
+        attackCount   += b.attackCountBonus;
+        lifeSteal     += b.lifeStealBonus;
+        reflectDamage += b.reflectDamageBonus;
+
+        Debug.Log($"[PlayerData] 获得祝福「{b.blessingName}」攻+{b.attackBonus} 防+{b.defenseBonus} 速+{b.speedBonus} HP+{b.hpBonus} 段数+{b.attackCountBonus} 吸血+{b.lifeStealBonus} 反伤+{b.reflectDamageBonus}");
+    }
+
+    private void ApplyPercentBonus(BlessingData b)
+    {
+        int amount = b.percentTarget switch
+        {
+            PercentTarget.Attack        => attack        * b.percentValue / 100,
+            PercentTarget.Defense       => defense       * b.percentValue / 100,
+            PercentTarget.HP            => hp            * b.percentValue / 100,
+            PercentTarget.ManaMax       => manaMax       * b.percentValue / 100,
+            PercentTarget.ManaCharge    => manaCharge    * b.percentValue / 100,
+            PercentTarget.Speed         => speed         * b.percentValue / 100,
+            PercentTarget.AttackCount   => attackCount   * b.percentValue / 100,
+            PercentTarget.LifeSteal     => lifeSteal     * b.percentValue / 100,
+            PercentTarget.ReflectDamage => reflectDamage * b.percentValue / 100,
+            _ => 0,
+        };
+
+        switch (b.percentTarget)
+        {
+            case PercentTarget.Attack:        attack        += amount; break;
+            case PercentTarget.Defense:       defense       += amount; break;
+            case PercentTarget.HP:            hp            += amount; break;
+            case PercentTarget.ManaMax:       manaMax       += amount; break;
+            case PercentTarget.ManaCharge:    manaCharge    += amount; break;
+            case PercentTarget.Speed:         speed         += amount; break;
+            case PercentTarget.AttackCount:   attackCount   += amount; break;
+            case PercentTarget.LifeSteal:     lifeSteal     += amount; break;
+            case PercentTarget.ReflectDamage: reflectDamage += amount; break;
+        }
+
+        Debug.Log($"[PlayerData] 获得祝福「{b.blessingName}」{b.percentTarget} +{b.percentValue}% (+{amount})");
+    }
 }

@@ -21,6 +21,7 @@ public class PlayerMove : MonoBehaviour
 
     private bool isMoving = false;
     private bool isInBattle = false;
+    private bool isChoosingBlessing = false;
     private Vector3 targetPosition;
     private Vector2 battleDirection;
     private float lastMoveTime = 0f;
@@ -35,11 +36,14 @@ public class PlayerMove : MonoBehaviour
 
         if (playerData == null)
             Debug.LogError("[PlayerMove] 未找到 PlayerData！请在玩家上挂载 PlayerData 组件");
+
+        BlessingManager.OnPanelOpen += () => isChoosingBlessing = true;
+        BlessingManager.OnPanelClose += () => isChoosingBlessing = false;
     }
 
     void Update()
     {
-        if (isInBattle) return;
+        if (isInBattle || isChoosingBlessing) return;
 
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);

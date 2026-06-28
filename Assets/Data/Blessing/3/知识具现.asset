@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 486e6dcdc4741954a8c6d990544fb2da, type: 3}
+  m_Name: "\u77E5\u8BC6\u5177\u73B0"
+  m_EditorClassIdentifier: 
+  blessingName: "\u77E5\u8BC6\u5177\u73B0"
+  description: "\u9B54\u529B\u5145\u80FD+25\n\u9B54\u529B\u8F93\u51FA+25"
+  rarity: 2
+  backgroundSprite: {fileID: 21300000, guid: 468f9296c6645b84788c81ab9f3ee439, type: 3}
+  type: 0
+  attackBonus: 0
+  defenseBonus: 0
+  manaMaxBonus: 25
+  manaChargeBonus: 25
+  speedBonus: 0
+  hpBonus: 0
+  attackCountBonus: 0
+  lifeStealBonus: 0
+  reflectDamageBonus: 0
+  percentValue: 0
+  percentTarget: 0
+  effectDescription: 0

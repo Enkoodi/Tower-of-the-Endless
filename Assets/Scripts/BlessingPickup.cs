@@ -2,16 +2,18 @@ using UnityEngine;
 
 /// <summary>
 /// 祝福拾取物 — 挂载在祝福道具 Prefab 上。
-/// 玩家拾取后弹出选择面板，从 2-3 个随机 BlessingData 中选择一个。
-/// （Blessing 选择系统尚未实现，当前占位）
+/// 玩家拾取后弹出祝福选择面板，选择后销毁此对象。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
 public class BlessingPickup : MonoBehaviour
 {
     [Header("数据引用")]
     [SerializeField] private Sprite blessingSprite;
+    [SerializeField] private BlessingPool overridePool;
 
     private SpriteRenderer sr;
+
+    public BlessingPool OverridePool => overridePool;
 
     void Awake()
     {
@@ -26,7 +28,8 @@ public class BlessingPickup : MonoBehaviour
     }
 
     /// <summary>
-    /// 被 PlayerMove 调用。TODO: 弹出 Blessing 选择面板。
+    /// 被 PlayerMove 调用，弹出祝福选择面板。
+    /// 实际销毁由 BlessingManager 在选择后执行。
     /// </summary>
     public bool TryPickup(PlayerData playerData)
     {
@@ -36,8 +39,14 @@ public class BlessingPickup : MonoBehaviour
             return false;
         }
 
-        Debug.Log("[BlessingPickup] 拾取祝福道具（选择面板尚未实现）");
-        Destroy(gameObject);
+        if (BlessingManager.Instance == null)
+        {
+            Debug.LogError("[BlessingPickup] BlessingManager 不存在！");
+            return false;
+        }
+
+        Debug.Log("[BlessingPickup] 拾取祝福道具，弹出选择面板");
+        BlessingManager.Instance.Show(playerData, this);
         return true;
     }
 
