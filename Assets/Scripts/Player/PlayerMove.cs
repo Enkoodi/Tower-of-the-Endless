@@ -37,7 +37,11 @@ public class PlayerMove : MonoBehaviour
         if (playerData == null)
             Debug.LogError("[PlayerMove] 未找到 PlayerData！请在玩家上挂载 PlayerData 组件");
 
-        BlessingManager.OnPanelOpen += () => isChoosingBlessing = true;
+        BlessingManager.OnPanelOpen += () =>
+        {
+            isChoosingBlessing = true;
+            keyStack.Clear();
+        };
         BlessingManager.OnPanelClose += () => isChoosingBlessing = false;
     }
 

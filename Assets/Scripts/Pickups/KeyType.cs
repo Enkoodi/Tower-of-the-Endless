@@ -25,5 +25,5 @@ public interface IKeyInventory
 public interface IPlayerHealth
 {
     int HP { get; }
-    void SubtractHP(int amount);
+    int SubtractHP(int amount);
 }

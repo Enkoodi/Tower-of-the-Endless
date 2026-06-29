@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486e6dcdc4741954a8c6d990544fb2da, type: 3}
   m_Name: "\u6CD5\u5E08\u672C\u80FD"
   m_EditorClassIdentifier: 
+  id: 23
   blessingName: "\u6CD5\u5E08\u672C\u80FD"
   description: "\u9B54\u529B\u5145\u80FD+15\n\u9B54\u529B\u8F93\u51FA+15"
   rarity: 1
-  backgroundSprite: {fileID: 21300000, guid: 468f9296c6645b84788c81ab9f3ee439, type: 3}
+  backgroundSprite: {fileID: 21300000, guid: 2e1449969c8faaf4fb462535683fe8cd, type: 3}
   type: 0
   attackBonus: 0
   defenseBonus: 0
@@ -26,6 +27,17 @@ MonoBehaviour:
   attackCountBonus: 0
   lifeStealBonus: 0
   reflectDamageBonus: 0
-  percentValue: 0
-  percentTarget: 0
+  damageReductionBonus: 0
+  attackMultiplierBonus: 0
+  defenseMultiplierBonus: 0
+  hpMultiplierBonus: 0
+  goldMultiplierBonus: 0
+  yellowKeyBonus: 0
+  blueKeyBonus: 0
+  redKeyBonus: 0
+  psycheKeyBonus: 0
+  aeonKeyBonus: 0
+  hpPercentBonus: 0
+  attackPercentBonus: 0
+  defensePercentBonus: 0
   effectDescription: 0

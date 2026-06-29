@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486e6dcdc4741954a8c6d990544fb2da, type: 3}
   m_Name: "\u4EE5\u8840\u8FD8\u8840"
   m_EditorClassIdentifier: 
+  id: 49
   blessingName: "\u4EE5\u8840\u8FD8\u8840  "
   description: "\u751F\u547D\u503C-90%\n\u751F\u547D\u5077\u53D6+30"
   rarity: 3
-  backgroundSprite: {fileID: 21300000, guid: 65641c0e270ec4847b1f547012dcdeb3, type: 3}
-  type: 2
+  backgroundSprite: {fileID: 21300000, guid: f864d50da6c4e754e95b2d5614f9af82, type: 3}
+  type: 0
   attackBonus: 0
   defenseBonus: 0
   manaMaxBonus: 0
@@ -24,8 +25,19 @@ MonoBehaviour:
   speedBonus: 0
   hpBonus: 0
   attackCountBonus: 0
-  lifeStealBonus: 0
+  lifeStealBonus: 30
   reflectDamageBonus: 0
-  percentValue: 0
-  percentTarget: 0
+  damageReductionBonus: 0
+  attackMultiplierBonus: 0
+  defenseMultiplierBonus: 0
+  hpMultiplierBonus: 0
+  goldMultiplierBonus: 0
+  yellowKeyBonus: 0
+  blueKeyBonus: 0
+  redKeyBonus: 0
+  psycheKeyBonus: 0
+  aeonKeyBonus: 0
+  hpPercentBonus: -90
+  attackPercentBonus: 0
+  defensePercentBonus: 0
   effectDescription: "\u751F\u547D\u503C-90% \u751F\u547D\u5077\u53D6+30"

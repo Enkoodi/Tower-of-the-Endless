@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486e6dcdc4741954a8c6d990544fb2da, type: 3}
   m_Name: "\u798F\u97F3\u4E66"
   m_EditorClassIdentifier: 
+  id: 63
   blessingName: "\u798F\u97F3\u4E66"
-  description: "\u4E4B\u540E\u83B7\u5F97\u7684\u57FA\u7840\u5C5E\u6027\u7684\u52A0\u6210\u6548\u679C\xD72"
+  description: "\u4E4B\u540E\u83B7\u5F97\u7684\u751F\u547D\u503C\u3001\u653B\u51FB\u529B\u3001\u9632\u5FA1\u529B\u52A0\u6210\u6548\u679C\xD72"
   rarity: 3
-  backgroundSprite: {fileID: 21300000, guid: 5c8383352f04cb447a6e62c93a39d35b, type: 3}
-  type: 2
+  backgroundSprite: {fileID: 21300000, guid: f864d50da6c4e754e95b2d5614f9af82, type: 3}
+  type: 0
   attackBonus: 0
   defenseBonus: 0
   manaMaxBonus: 0
@@ -26,6 +27,17 @@ MonoBehaviour:
   attackCountBonus: 0
   lifeStealBonus: 0
   reflectDamageBonus: 0
-  percentValue: 0
-  percentTarget: 0
-  effectDescription: "\u83B7\u5F97\u7684\u57FA\u7840\u5C5E\u6027\u52A0\u6210\u7FFB\u500D"
+  damageReductionBonus: 0
+  attackMultiplierBonus: 100
+  defenseMultiplierBonus: 100
+  hpMultiplierBonus: 100
+  goldMultiplierBonus: 0
+  yellowKeyBonus: 0
+  blueKeyBonus: 0
+  redKeyBonus: 0
+  psycheKeyBonus: 0
+  aeonKeyBonus: 0
+  hpPercentBonus: 0
+  attackPercentBonus: 0
+  defensePercentBonus: 0
+  effectDescription: "\u4E4B\u540E\u83B7\u5F97\u7684\u751F\u547D\u503C\u3001\u653B\u51FB\u529B\u3001\u9632\u5FA1\u529B\u52A0\u6210\u6548\u679C\xD72"

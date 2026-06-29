@@ -19,9 +19,16 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     [SerializeField] private int attackCount = 1;
     [SerializeField] private int lifeSteal = 0;
     [SerializeField] private int reflectDamage = 0;
+    [SerializeField] private int damageReduction = 0;
     [SerializeField] private int manaCharge = 10;
     [SerializeField] private int manaMax = 100;
     [SerializeField] private int speed = 100;
+
+    [Header("属性系数（百分比，100=100%）")]
+    [SerializeField] private int goldMultiplier = 100;
+    [SerializeField] private int hpMultiplier = 100;
+    [SerializeField] private int attackMultiplier = 100;
+    [SerializeField] private int defenseMultiplier = 100;
 
     [Header("金币")]
     [SerializeField] private int gold = 0;
@@ -42,11 +49,18 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     public int AttackCount   => attackCount;
     public int LifeSteal     => lifeSteal;
     public int ReflectDamage => reflectDamage;
+    public int DamageReduction => damageReduction;
     public int ManaCharge    { get => manaCharge; set => manaCharge = value; }
     public int ManaMax       => manaMax;
     public int Speed         => speed;
     public int Gold          => gold;
     public bool IsDead       => hp <= 0;
+
+    // 系数
+    public int GoldMultiplier    => goldMultiplier;
+    public int HPMultiplier      => hpMultiplier;
+    public int AttackMultiplier  => attackMultiplier;
+    public int DefenseMultiplier => defenseMultiplier;
 
     // ============================================================
     //  战斗系统
@@ -137,9 +151,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     public int TakeDamage(int rawAtk)
     {
         int damage = Mathf.Max(0, rawAtk - defense);
-        hp -= damage;
+        int reduced = damage * (100 - damageReduction) / 100;
+        hp -= reduced;
         if (hp < 0) hp = 0;
-        return damage;
+        return reduced;
     }
 
     /// <summary>
@@ -218,35 +233,41 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     public void Heal(int amount)
     {
-        hp += amount;
-        Debug.Log($"[PlayerData] 恢复 {amount} HP（当前 {hp}）");
+        int actualHeal = amount * hpMultiplier / 100;
+        hp += actualHeal;
+        Debug.Log($"[PlayerData] 恢复 {amount}×{hpMultiplier}%={actualHeal} HP（当前 {hp}）");
     }
 
     /// <summary>
-    /// 直接扣血，不计算防御（用于反伤等机制）。
+    /// 直接扣血，不计算防御（用于反伤等机制）。返回实际扣除的HP。
     /// </summary>
-    public void SubtractHP(int amount)
+    public int SubtractHP(int amount)
     {
-        hp -= amount;
+        int reduced = amount * (100 - damageReduction) / 100;
+        hp -= reduced;
         if (hp < 0) hp = 0;
+        return reduced;
     }
 
     public void AddAttack(int amount)
     {
-        attack += amount;
-        Debug.Log($"[PlayerData] 攻击力 +{amount}（当前 {attack}）");
+        int actualGain = amount * attackMultiplier / 100;
+        attack += actualGain;
+        Debug.Log($"[PlayerData] 攻击力 +{amount}×{attackMultiplier}%={actualGain}（当前 {attack}）");
     }
 
     public void AddDefense(int amount)
     {
-        defense += amount;
-        Debug.Log($"[PlayerData] 防御力 +{amount}（当前 {defense}）");
+        int actualGain = amount * defenseMultiplier / 100;
+        defense += actualGain;
+        Debug.Log($"[PlayerData] 防御力 +{amount}×{defenseMultiplier}%={actualGain}（当前 {defense}）");
     }
 
     public void AddGold(int amount)
     {
-        gold += amount;
-        Debug.Log($"[PlayerData] 金币 +{amount}（当前 {gold}）");
+        int actualGold = amount * goldMultiplier / 100;
+        gold += actualGold;
+        Debug.Log($"[PlayerData] 金币 +{amount}×{goldMultiplier}%={actualGold}（当前 {gold}）");
     }
 
     public void AddManaMax(int amount)
@@ -267,6 +288,36 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         Debug.Log($"[PlayerData] 速度 +{amount}（当前 {speed}）");
     }
 
+    public void AddDamageReduction(int amount)
+    {
+        damageReduction += amount;
+        Debug.Log($"[PlayerData] 减伤系数 +{amount}%（当前 {damageReduction}%）");
+    }
+
+    public void AddAttackMultiplier(int amount)
+    {
+        attackMultiplier += amount;
+        Debug.Log($"[PlayerData] 攻击系数 +{amount}%（当前 {attackMultiplier}%）");
+    }
+
+    public void AddDefenseMultiplier(int amount)
+    {
+        defenseMultiplier += amount;
+        Debug.Log($"[PlayerData] 防御系数 +{amount}%（当前 {defenseMultiplier}%）");
+    }
+
+    public void AddHPMultiplier(int amount)
+    {
+        hpMultiplier += amount;
+        Debug.Log($"[PlayerData] 生命系数 +{amount}%（当前 {hpMultiplier}%）");
+    }
+
+    public void AddGoldMultiplier(int amount)
+    {
+        goldMultiplier += amount;
+        Debug.Log($"[PlayerData] 金币系数 +{amount}%（当前 {goldMultiplier}%）");
+    }
+
     /// <summary>
     /// 统一属性增益接口，供 StatBoostPickup 调用。
     /// </summary>
@@ -279,6 +330,11 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
             case StatBoostType.ManaMax:    AddManaMax(value);     break;
             case StatBoostType.ManaCharge: AddManaCharge(value);  break;
             case StatBoostType.Speed:      AddSpeed(value);       break;
+            case StatBoostType.DamageReduction: AddDamageReduction(value); break;
+            case StatBoostType.AttackMultiplier:   AddAttackMultiplier(value);   break;
+            case StatBoostType.DefenseMultiplier:  AddDefenseMultiplier(value);  break;
+            case StatBoostType.HPMultiplier:       AddHPMultiplier(value);       break;
+            case StatBoostType.GoldMultiplier:     AddGoldMultiplier(value);     break;
         }
     }
 
@@ -291,65 +347,73 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
         switch (blessing.type)
         {
-            case BlessingType.StatBonus:
+            case BlessingType.DirectBonus:
                 ApplyStatBonus(blessing);
-                break;
-
-            case BlessingType.PercentBonus:
                 ApplyPercentBonus(blessing);
                 break;
 
             case BlessingType.Conditional:
-                // TODO: 条件触发型，后续实现
-                Debug.Log($"[PlayerData] 获得条件祝福「{blessing.blessingName}」({blessing.effectDescription})，机制待实现");
+                ApplyConditional(blessing);
                 break;
+        }
+    }
+
+    private void ApplyConditional(BlessingData b)
+    {
+        BlessingEffect effect = b.id switch
+        {
+            BlessingID.BythosBlessing => new BythosBlessingEffect(),
+            // TODO: 其他特殊祝福在此注册
+            _ => null,
+        };
+
+        if (effect != null)
+        {
+            string effectId = b.id.ToString();
+            BlessingManager.Instance?.AddEffect(effectId, effect);
+            Debug.Log($"[PlayerData] 获得特殊祝福「{b.blessingName}」({effect.GetEffectDescription()})");
+        }
+        else
+        {
+            Debug.LogWarning($"[PlayerData] 未注册的特殊祝福 ID：{b.id}");
         }
     }
 
     private void ApplyStatBonus(BlessingData b)
     {
-        attack        += b.attackBonus;
-        defense       += b.defenseBonus;
+        attack        += b.attackBonus * attackMultiplier / 100;
+        defense       += b.defenseBonus * defenseMultiplier / 100;
         manaMax       += b.manaMaxBonus;
         manaCharge    += b.manaChargeBonus;
         speed         += b.speedBonus;
-        hp            += b.hpBonus;
+        hp            += b.hpBonus * hpMultiplier / 100;
         attackCount   += b.attackCountBonus;
         lifeSteal     += b.lifeStealBonus;
         reflectDamage += b.reflectDamageBonus;
+        damageReduction   += b.damageReductionBonus;
+        attackMultiplier  += b.attackMultiplierBonus;
+        defenseMultiplier += b.defenseMultiplierBonus;
+        hpMultiplier      += b.hpMultiplierBonus;
+        goldMultiplier    += b.goldMultiplierBonus;
+        yellowKeys  += b.yellowKeyBonus;
+        blueKeys    += b.blueKeyBonus;
+        redKeys     += b.redKeyBonus;
+        psycheKeys  += b.psycheKeyBonus;
+        aeonKeys    += b.aeonKeyBonus;
 
-        Debug.Log($"[PlayerData] 获得祝福「{b.blessingName}」攻+{b.attackBonus} 防+{b.defenseBonus} 速+{b.speedBonus} HP+{b.hpBonus} 段数+{b.attackCountBonus} 吸血+{b.lifeStealBonus} 反伤+{b.reflectDamageBonus}");
+        Debug.Log($"[PlayerData] 获得祝福「{b.blessingName}」攻+{b.attackBonus} 防+{b.defenseBonus} 速+{b.speedBonus} HP+{b.hpBonus} 段数+{b.attackCountBonus} 吸血+{b.lifeStealBonus} 反伤+{b.reflectDamageBonus} 减伤+{b.damageReductionBonus}%");
     }
 
     private void ApplyPercentBonus(BlessingData b)
     {
-        int amount = b.percentTarget switch
-        {
-            PercentTarget.Attack        => attack        * b.percentValue / 100,
-            PercentTarget.Defense       => defense       * b.percentValue / 100,
-            PercentTarget.HP            => hp            * b.percentValue / 100,
-            PercentTarget.ManaMax       => manaMax       * b.percentValue / 100,
-            PercentTarget.ManaCharge    => manaCharge    * b.percentValue / 100,
-            PercentTarget.Speed         => speed         * b.percentValue / 100,
-            PercentTarget.AttackCount   => attackCount   * b.percentValue / 100,
-            PercentTarget.LifeSteal     => lifeSteal     * b.percentValue / 100,
-            PercentTarget.ReflectDamage => reflectDamage * b.percentValue / 100,
-            _ => 0,
-        };
+        int hpGain      = hp * b.hpPercentBonus / 100;
+        int atkGain     = attack * b.attackPercentBonus / 100;
+        int defGain     = defense * b.defensePercentBonus / 100;
 
-        switch (b.percentTarget)
-        {
-            case PercentTarget.Attack:        attack        += amount; break;
-            case PercentTarget.Defense:       defense       += amount; break;
-            case PercentTarget.HP:            hp            += amount; break;
-            case PercentTarget.ManaMax:       manaMax       += amount; break;
-            case PercentTarget.ManaCharge:    manaCharge    += amount; break;
-            case PercentTarget.Speed:         speed         += amount; break;
-            case PercentTarget.AttackCount:   attackCount   += amount; break;
-            case PercentTarget.LifeSteal:     lifeSteal     += amount; break;
-            case PercentTarget.ReflectDamage: reflectDamage += amount; break;
-        }
+        hp      += hpGain;
+        attack  += atkGain;
+        defense += defGain;
 
-        Debug.Log($"[PlayerData] 获得祝福「{b.blessingName}」{b.percentTarget} +{b.percentValue}% (+{amount})");
+        Debug.Log($"[PlayerData] 获得百分比加成「{b.blessingName}」HP+{b.hpPercentBonus}%({hpGain}) 攻+{b.attackPercentBonus}%({atkGain}) 防+{b.defensePercentBonus}%({defGain})");
     }
 }

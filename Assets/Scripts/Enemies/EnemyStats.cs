@@ -18,6 +18,7 @@ public class EnemyStats : ScriptableObject
     public int attackCount = 1;
     public int lifeSteal = 0;
     public int reflectDamage = 0;
+    public int damageReduction = 0;
     public int manaCharge = 0;
     public int manaMax = 100;
     public int speed = 5;

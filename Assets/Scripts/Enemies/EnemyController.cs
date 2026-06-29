@@ -21,6 +21,7 @@ public class EnemyController : MonoBehaviour
     private int attackCount = 1;
     private int lifeSteal = 0;
     private int reflectDamage = 0;
+    private int damageReduction = 0;
     private int manaCharge = 0;
     private int manaMax = 100;
     private int speed = 5;
@@ -38,6 +39,7 @@ public class EnemyController : MonoBehaviour
     public int AttackCount     => attackCount;
     public int LifeSteal       => lifeSteal;
     public int ReflectDamage   => reflectDamage;
+    public int DamageReduction => damageReduction;
     public int ManaCharge      { get => manaCharge; set => manaCharge = value; }
     public int ManaMax         => manaMax;
     public int Speed           => speed;
@@ -61,6 +63,7 @@ public class EnemyController : MonoBehaviour
             attackCount   = stats.attackCount;
             lifeSteal     = stats.lifeSteal;
             reflectDamage = stats.reflectDamage;
+            damageReduction = stats.damageReduction;
             manaCharge    = stats.manaCharge;
             manaMax       = stats.manaMax;
             speed         = stats.speed;
@@ -79,15 +82,28 @@ public class EnemyController : MonoBehaviour
     public int TakeDamage(int rawAtk)
     {
         int damage = Mathf.Max(0, rawAtk - defense);
-        hp -= damage;
+        int reduced = damage * (100 - damageReduction) / 100;
+        hp -= reduced;
         if (hp < 0) hp = 0;
-        return damage;
+        return reduced;
     }
 
-    public void TakeRawDamage(int amount)
+    public int TakeRawDamage(int amount)
+    {
+        int reduced = amount * (100 - damageReduction) / 100;
+        hp -= reduced;
+        if (hp < 0) hp = 0;
+        return reduced;
+    }
+
+    /// <summary>
+    /// 真实扣血 — 无视防御和减伤系数。
+    /// </summary>
+    public int SubtractHP(int amount)
     {
         hp -= amount;
         if (hp < 0) hp = 0;
+        return amount;
     }
 
     public void Heal(int amount) { hp += amount; }

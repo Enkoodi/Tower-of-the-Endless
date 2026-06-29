@@ -15,6 +15,7 @@ public class BattleUI : MonoBehaviour
 
     [Header("顶部敌人名称")]
     [SerializeField] private TextMeshProUGUI enemyNameText;
+    [SerializeField] private TextMeshProUGUI turnText;
 
     [Header("左侧玩家")]
     [SerializeField] private Image playerImage;
@@ -53,6 +54,8 @@ public class BattleUI : MonoBehaviour
         if (enemyNameText != null)
             enemyNameText.text = enemy != null ? enemy.EnemyName : "？？？";
 
+        SetEnemySprite(enemy != null ? enemy.EnemySprite : null);
+
         UpdatePlayerPanel(playerData);
         UpdateEnemyPanel(enemy);
 
@@ -86,7 +89,9 @@ public class BattleUI : MonoBehaviour
             $"攻击段数：{playerData.AttackCount}\n" +
             $"生命偷取：{playerData.LifeSteal}\n" +
             $"反伤系数：{playerData.ReflectDamage}\n" +
+            $"减伤系数：{playerData.DamageReduction}%\n" +
             $"魔力充能：{playerData.ManaCharge}\n" +
+            $"魔力输出：{Mathf.Min(playerData.ManaCharge, playerData.ManaMax)}\n" +
             $"速度：{playerData.Speed}";
     }
 
@@ -104,8 +109,19 @@ public class BattleUI : MonoBehaviour
             $"攻击段数：{enemy.AttackCount}\n" +
             $"生命偷取：{enemy.LifeSteal}\n" +
             $"反伤系数：{enemy.ReflectDamage}\n" +
+            $"减伤系数：{enemy.DamageReduction}%\n" +
             $"魔力充能：{enemy.ManaCharge}\n" +
+            $"魔力输出：{Mathf.Min(enemy.ManaCharge, enemy.ManaMax)}\n" +
             $"速度：{enemy.Speed}";
+    }
+
+    /// <summary>
+    /// 更新回合数显示
+    /// </summary>
+    public void UpdateTurn(int turn)
+    {
+        if (turnText != null)
+            turnText.text = $"回合：{turn}";
     }
 
     /// <summary>

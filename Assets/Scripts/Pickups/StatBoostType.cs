@@ -8,4 +8,9 @@ public enum StatBoostType
     ManaMax,
     ManaCharge,
     Speed,
+    DamageReduction,
+    AttackMultiplier,
+    DefenseMultiplier,
+    HPMultiplier,
+    GoldMultiplier,
 }

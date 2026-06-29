@@ -16,6 +16,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private float logDelay = 1.6f;
 
     private bool isFighting = false;
+    private int turnCount = 1;
+    private int lastDamageToEnemy;   // 本回合敌人受到的实际伤害（减伤后）
+    private int lastDamageToPlayer;  // 本回合玩家受到的实际伤害（减伤后）
     private System.Action<bool> onBattleEnd;
 
     void Awake()
@@ -55,9 +58,13 @@ public class BattleManager : MonoBehaviour
         }
 
         isFighting = true;
+        turnCount = 1;
+        lastDamageToEnemy = 0;
+        lastDamageToPlayer = 0;
         onBattleEnd = callback;
 
         battleUI.OpenBattle(playerData, enemy);
+        battleUI.UpdateTurn(turnCount);
         StartCoroutine(BattleCoroutine(playerData, enemy));
     }
 
@@ -97,11 +104,12 @@ public class BattleManager : MonoBehaviour
             battleUI.AddLog($"受到<color=#779977>{enemy.EnemyName}</color>偷袭！");
             yield return new WaitForSeconds(logDelay);
 
-            playerData.SubtractHP(sneakDamage);
-            if (sneakDamage <= 0)
+            int actualSneak = playerData.SubtractHP(sneakDamage);
+            lastDamageToPlayer = actualSneak;
+            if (actualSneak <= 0)
                 battleUI.AddLog($"偷袭似乎不起作用");
             else
-                battleUI.AddLog($"<color=#7799CC>玩家</color>受到 <color=#FF4444>{sneakDamage}</color> 点伤害");
+                battleUI.AddLog($"<color=#7799CC>玩家</color>受到 <color=#FF4444>{actualSneak}</color> 点伤害");
 
             battleUI.UpdatePlayerPanel(playerData);
             yield return new WaitForSeconds(logDelay);
@@ -126,17 +134,31 @@ public class BattleManager : MonoBehaviour
 
         while (!enemy.IsDefeated && !playerData.IsDead)
         {
+            // —— 特殊祝福生命周期：回合开始 ——
+            BlessingManager.Instance?.OnTurnStart(playerData, enemy, battleUI);
+
+            // 检查深渊等 Effect 是否提前杀死敌人
+            if (enemy.HP <= 0)
+            {
+                battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 被击败！");
+                yield return new WaitForSeconds(logDelay);
+                EndBattle(true, playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
+                yield break;
+            }
+
             // 玩家攻击
-            enemy.TakeRawDamage(damageToEnemy);
-            battleUI.AddLog($"<color=#7799CC>玩家</color>攻击，造成 {playerDmgStr} 点伤害");
+            int actualToEnemy = enemy.TakeRawDamage(damageToEnemy);
+            lastDamageToEnemy = actualToEnemy;
+            battleUI.AddLog($"<color=#7799CC>玩家</color>攻击，造成 <color=#FF4444>{actualToEnemy} </color>点伤害");
             battleUI.UpdateEnemyPanel(enemy);
+            BlessingManager.Instance?.OnPlayerDealDamage(playerData, enemy, battleUI, actualToEnemy);
+            BlessingManager.Instance?.OnEnemyTakeDamage(playerData, enemy, battleUI, actualToEnemy);
 
             // 消耗魔力 + 吸血 + 反伤
             playerData.ManaCharge -= ManaCost;
-            int rawPhysical = playerPhysical;
-            int steal = rawPhysical * playerData.LifeSteal / 100;
+            int steal = actualToEnemy * playerData.LifeSteal / 100;
             if (steal > 0) playerData.Heal(steal);
-            int reflect = rawPhysical * enemy.ReflectDamage / 100;
+            int reflect = playerPhysical * enemy.ReflectDamage / 100;
             if (reflect > 0) playerData.SubtractHP(reflect);
             ComputeRoundDamage();
 
@@ -152,12 +174,15 @@ public class BattleManager : MonoBehaviour
             }
 
             // 敌人反击
-            playerData.SubtractHP(enemyDamageToPlayer);
-            battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 反击，造成 {enemyDmgStr} 点伤害");
+            int actualToPlayer = playerData.SubtractHP(enemyDamageToPlayer);
+            lastDamageToPlayer = actualToPlayer;
+            battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 反击，造成 <color=#FF4444>{actualToPlayer}</color> 点伤害");
+            BlessingManager.Instance?.OnEnemyDealDamage(playerData, enemy, battleUI, actualToPlayer);
+            BlessingManager.Instance?.OnPlayerTakeDamage(playerData, enemy, battleUI, actualToPlayer);
 
             // 消耗魔力 + 敌人吸血 + 玩家反伤
             enemy.ManaCharge -= EnemyManaCost;
-            int enemySteal = enemyPhysical * enemy.LifeSteal / 100;
+            int enemySteal = actualToPlayer * enemy.LifeSteal / 100;
             if (enemySteal > 0) enemy.Heal(enemySteal);
             int playerReflect = enemyPhysical * playerData.ReflectDamage / 100;
             if (playerReflect > 0) enemy.TakeRawDamage(playerReflect);
@@ -172,6 +197,10 @@ public class BattleManager : MonoBehaviour
                 EndBattle(false, playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
                 yield break;
             }
+
+            turnCount++;
+            battleUI.UpdateTurn(turnCount);
+            BlessingManager.Instance?.OnTurnEnd(playerData, enemy, battleUI);
         }
 
         EndBattle(!playerData.IsDead, playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
@@ -180,6 +209,8 @@ public class BattleManager : MonoBehaviour
     private void EndBattle(bool won, PlayerData playerData, EnemyController enemy, int playerManaSnapshot, int enemyManaSnapshot)
     {
         isFighting = false;
+        lastDamageToEnemy = 0;
+        lastDamageToPlayer = 0;
 
         // 恢复魔力到战斗前
         playerData.ManaCharge = playerManaSnapshot;
