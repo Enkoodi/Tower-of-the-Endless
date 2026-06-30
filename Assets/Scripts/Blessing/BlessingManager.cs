@@ -64,6 +64,16 @@ public class BlessingManager : MonoBehaviour
         BlessingEffect effect = debugAddEffectId switch
         {
             BlessingID.BythosBlessing => new BythosBlessingEffect(),
+            BlessingID.AgapeBlessing => new AgapeBlessingEffect(),
+            BlessingID.AletheiaBlessing => new AletheiaBlessingEffect(),
+            BlessingID.Allotrioi => new AllotrioiEffect(),
+            BlessingID.CharisBlessing => new CharisBlessingEffect(),
+            BlessingID.DemiurgeBlessing => new DemiurgeBlessingEffect(),
+            BlessingID.GnosisBlessing => new GnosisBlessingEffect(),
+            BlessingID.KabbalahTree => new KabbalahTreeEffect(),
+            BlessingID.Longinus => new LonginusEffect(),
+            BlessingID.SigeBlessing => new SigeBlessingEffect(),
+            BlessingID.SophiaBlessing => new SophiaBlessingEffect(),
             // TODO: 其他特殊祝福在此注册
             _ => null,
         };
@@ -103,12 +113,14 @@ public class BlessingManager : MonoBehaviour
 
     /// <summary>
     /// 添加或叠加特殊祝福。对应 Conditional 型祝福在 ApplyBlessing 时调用。
+    /// player 用于在升级时触发 OnLevelUp（可传 null，仅首次获得时调用 OnAcquired）。
     /// </summary>
-    public void AddEffect(string effectId, BlessingEffect effect)
+    public void AddEffect(string effectId, BlessingEffect effect, PlayerData player = null)
     {
         if (activeEffects.TryGetValue(effectId, out var existing))
         {
             existing.AddLevel();
+            existing.OnLevelUp(player);
         }
         else
         {
@@ -121,6 +133,20 @@ public class BlessingManager : MonoBehaviour
     // ============================================================
     //  生命周期 — 由 BattleManager 等外部调用，遍历所有 Effect
     // ============================================================
+
+    /// <summary>战斗开始时，遍历所有特殊祝福。</summary>
+    public void OnBattleStart(PlayerData player, EnemyController enemy, BattleUI ui)
+    {
+        foreach (var kv in activeEffects)
+            kv.Value.OnBattleStart(player, enemy, ui);
+    }
+
+    /// <summary>战斗结束时，遍历所有特殊祝福。</summary>
+    public void OnBattleEnd(PlayerData player, EnemyController enemy, BattleUI ui, bool won)
+    {
+        foreach (var kv in activeEffects)
+            kv.Value.OnBattleEnd(player, enemy, ui, won);
+    }
 
     /// <summary>每回合开始时，遍历所有特殊祝福。</summary>
     public void OnTurnStart(PlayerData player, EnemyController enemy, BattleUI ui)
@@ -162,6 +188,22 @@ public class BlessingManager : MonoBehaviour
     {
         foreach (var kv in activeEffects)
             kv.Value.OnEnemyTakeDamage(player, enemy, ui, damage);
+    }
+
+    /// <summary>任一 Effect 返回 false 则本回合不消耗魔力。</summary>
+    public bool ShouldConsumeMana(PlayerData player)
+    {
+        foreach (var kv in activeEffects)
+            if (!kv.Value.ShouldConsumeMana(player))
+                return false;
+        return true;
+    }
+
+    /// <summary>进入新楼层时，遍历所有特殊祝福。</summary>
+    public void OnEnterFloor(PlayerData player, int floorNumber, BattleUI ui)
+    {
+        foreach (var kv in activeEffects)
+            kv.Value.OnEnterFloor(player, floorNumber, ui);
     }
 
     void Awake()

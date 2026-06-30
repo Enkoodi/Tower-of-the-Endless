@@ -238,6 +238,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         Debug.Log($"[PlayerData] 恢复 {amount}×{hpMultiplier}%={actualHeal} HP（当前 {hp}）");
     }
 
+    /// <summary>直接设置生命值（用于濒死回复等机制）。</summary>
+    public void SetHP(int value)
+    {
+        hp = Mathf.Max(0, value);
+    }
+
     /// <summary>
     /// 直接扣血，不计算防御（用于反伤等机制）。返回实际扣除的HP。
     /// </summary>
@@ -249,11 +255,26 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         return reduced;
     }
 
+    /// <summary>直接扣血，无视减伤和生命系数。</summary>
+    public int SubtractRawHP(int amount)
+    {
+        int actual = Mathf.Min(amount, hp);
+        hp -= amount;
+        if (hp < 0) hp = 0;
+        return actual;
+    }
+
     public void AddAttack(int amount)
     {
         int actualGain = amount * attackMultiplier / 100;
         attack += actualGain;
         Debug.Log($"[PlayerData] 攻击力 +{amount}×{attackMultiplier}%={actualGain}（当前 {attack}）");
+    }
+
+    public void AddAttackCount(int amount)
+    {
+        attackCount += amount;
+        Debug.Log($"[PlayerData] 攻击段数 +{amount}（当前 {attackCount}）");
     }
 
     public void AddDefense(int amount)
@@ -363,6 +384,16 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         BlessingEffect effect = b.id switch
         {
             BlessingID.BythosBlessing => new BythosBlessingEffect(),
+            BlessingID.AgapeBlessing => new AgapeBlessingEffect(),
+            BlessingID.AletheiaBlessing => new AletheiaBlessingEffect(),
+            BlessingID.Allotrioi => new AllotrioiEffect(),
+            BlessingID.CharisBlessing => new CharisBlessingEffect(),
+            BlessingID.DemiurgeBlessing => new DemiurgeBlessingEffect(),
+            BlessingID.GnosisBlessing => new GnosisBlessingEffect(),
+            BlessingID.KabbalahTree => new KabbalahTreeEffect(),
+            BlessingID.Longinus => new LonginusEffect(),
+            BlessingID.SigeBlessing => new SigeBlessingEffect(),
+            BlessingID.SophiaBlessing => new SophiaBlessingEffect(),
             // TODO: 其他特殊祝福在此注册
             _ => null,
         };
@@ -370,7 +401,8 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         if (effect != null)
         {
             string effectId = b.id.ToString();
-            BlessingManager.Instance?.AddEffect(effectId, effect);
+            BlessingManager.Instance?.AddEffect(effectId, effect, this);
+            effect.OnAcquired(this); // 永久属性加成（仅首次获得时调用）
             Debug.Log($"[PlayerData] 获得特殊祝福「{b.blessingName}」({effect.GetEffectDescription()})");
         }
         else

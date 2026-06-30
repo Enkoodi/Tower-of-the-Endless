@@ -65,6 +65,7 @@ public class BattleManager : MonoBehaviour
 
         battleUI.OpenBattle(playerData, enemy);
         battleUI.UpdateTurn(turnCount);
+        BlessingManager.Instance?.OnBattleStart(playerData, enemy, battleUI);
         StartCoroutine(BattleCoroutine(playerData, enemy));
     }
 
@@ -155,7 +156,14 @@ public class BattleManager : MonoBehaviour
             BlessingManager.Instance?.OnEnemyTakeDamage(playerData, enemy, battleUI, actualToEnemy);
 
             // 消耗魔力 + 吸血 + 反伤
-            playerData.ManaCharge -= ManaCost;
+            if (BlessingManager.Instance?.ShouldConsumeMana(playerData) ?? true)
+            {
+                playerData.ManaCharge -= ManaCost;
+            }
+            else
+            {
+                battleUI.AddLog($"<color=#88CCFF>灵知的祝福</color>：本回合不消耗魔力充能");
+            }
             int steal = actualToEnemy * playerData.LifeSteal / 100;
             if (steal > 0) playerData.Heal(steal);
             int reflect = playerPhysical * enemy.ReflectDamage / 100;
@@ -211,6 +219,9 @@ public class BattleManager : MonoBehaviour
         isFighting = false;
         lastDamageToEnemy = 0;
         lastDamageToPlayer = 0;
+
+        // 特殊祝福生命周期：战斗结束（恢复加攻等）
+        BlessingManager.Instance?.OnBattleEnd(playerData, enemy, battleUI, won);
 
         // 恢复魔力到战斗前
         playerData.ManaCharge = playerManaSnapshot;

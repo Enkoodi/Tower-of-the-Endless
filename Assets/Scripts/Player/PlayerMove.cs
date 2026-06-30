@@ -17,6 +17,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private LayerMask itemLayer;
+    [SerializeField] private LayerMask stairLayer;
     [SerializeField] private float checkRadius = 0.4f;
 
     private bool isMoving = false;
@@ -88,8 +89,8 @@ public class PlayerMove : MonoBehaviour
     {
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
-        // 统一检测：门 + 墙 + 敌人 + 道具，按组件类型分流
-        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer;
+        // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯，按组件类型分流
+        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer;
         Collider2D hit = Physics2D.OverlapCircle(target, checkRadius, obstacleMask);
 
         if (hit == null)
@@ -165,6 +166,16 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
+        // 检查 StairController — 楼梯切换楼层
+        StairController stair = hit.GetComponent<StairController>();
+        if (stair != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            StartCoroutine(SmoothMoveToStair(stair));
+            return;
+        }
+
         // 没找到任何组件 → 当墙处理
         Debug.Log($"[PlayerMove] 前方是墙（{hit.name}），无法通行");
     }
@@ -196,5 +207,29 @@ public class PlayerMove : MonoBehaviour
 
         transform.position = targetPosition;
         isMoving = false;
+    }
+
+    /// <summary>
+    /// 走到楼梯格上，移动完成后触发楼层切换
+    /// </summary>
+    private IEnumerator SmoothMoveToStair(StairController stair)
+    {
+        Vector3 start = transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / moveDuration;
+            transform.position = Vector3.Lerp(start, targetPosition, t);
+            yield return null;
+        }
+
+        transform.position = targetPosition;
+        isMoving = false;
+
+        // 移动完成后切换楼层
+        MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
+        stair.Use(mapGen);
     }
 }

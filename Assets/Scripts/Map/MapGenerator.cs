@@ -187,6 +187,9 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
+        // 自动定位下楼梯作为出生点（第一层没有下楼梯，使用 JSON 中的 player_spawn）
+        AutoSetSpawnFromDownStairs(data);
+
         // 设置玩家出生点
         SetPlayerPosition(data.player_spawn, offsetX, offsetY);
 
@@ -198,6 +201,13 @@ public class MapGenerator : MonoBehaviour
 
         Debug.Log($"[MapGenerator] 地图加载完成：{data.name}（{data.width}×{data.height}，楼层 {data.floor}）");
         onFloorLoaded?.Invoke(data);
+
+        // 特殊祝福生命周期：进入楼层
+        BlessingManager.Instance?.OnEnterFloor(
+            FindAnyObjectByType<PlayerData>(),
+            data.floor,
+            FindAnyObjectByType<BattleUI>()
+        );
     }
 
     // ========================================================================
@@ -222,6 +232,34 @@ public class MapGenerator : MonoBehaviour
         float y = -spawn.y + offsetY;
         player.position = new Vector3(x, y, 0f);
         Debug.Log($"[MapGenerator] 玩家出生点：({spawn.x}, {spawn.y}) → ({x:F1}, {y:F1})");
+    }
+
+    /// <summary>
+    /// 扫描 objects 层，找到下楼梯（ID=9）的位置并设为出生点。
+    /// 第一层没有下楼梯时，保留 JSON 中的 player_spawn。
+    /// </summary>
+    private void AutoSetSpawnFromDownStairs(MapData data)
+    {
+        if (data.objects == null) return;
+
+        for (int y = 0; y < data.objects.Count; y++)
+        {
+            var row = data.objects[y];
+            if (row == null) continue;
+
+            for (int x = 0; x < row.Count; x++)
+            {
+                if (row[x] == 9) // 9 = 下楼梯
+                {
+                    data.player_spawn = new PlayerSpawnPos { x = x, y = y };
+                    Debug.Log($"[MapGenerator] 自动定位下楼梯出生点：({x}, {y})");
+                    return;
+                }
+            }
+        }
+
+        // 未找到下楼梯（如第一层），使用 JSON 中原有的 player_spawn
+        Debug.Log($"[MapGenerator] 未找到下楼梯，使用 JSON 出生点：({data.player_spawn?.x}, {data.player_spawn?.y})");
     }
 
     private void SetupCamera(int mapRows, int mapCols)
