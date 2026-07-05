@@ -148,6 +148,17 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
+        // 检查 BattleTrigger — 战斗门触发器，不阻挡，走过即激活
+        BattleTrigger battleTrigger = hit.GetComponent<BattleTrigger>();
+        if (battleTrigger != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            battleTrigger.Trigger();
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
         // 再检查 EnemyController
         EnemyController enemy = hit.GetComponent<EnemyController>();
         if (enemy != null)

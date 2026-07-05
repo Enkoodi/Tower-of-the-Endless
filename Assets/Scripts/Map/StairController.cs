@@ -21,6 +21,8 @@ public class StairController : MonoBehaviour
 
     /// <summary>
     /// 玩家踩上楼梯时调用，切换楼层。
+    /// 上楼梯 → 从下层进入目标层 → 出生在目标层的下楼梯(9)
+    /// 下楼梯 → 从上层进入目标层 → 出生在目标层的上楼梯(8)
     /// </summary>
     public void Use(MapGenerator mapGen)
     {
@@ -39,8 +41,13 @@ public class StairController : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[Stair] 使用{(stairType == StairType.Up ? "上" : "下")}楼梯：第 {currentFloor} 层 → 第 {targetFloor} 层");
-        mapGen.LoadFloor(targetFloor);
+        // 上楼梯 = 从下层进入目标层；下楼梯 = 从上层进入目标层
+        EntryDirection entryDir = stairType == StairType.Up
+            ? EntryDirection.FromBelow
+            : EntryDirection.FromAbove;
+
+        Debug.Log($"[Stair] 使用{(stairType == StairType.Up ? "上" : "下")}楼梯：第 {currentFloor} 层 → 第 {targetFloor} 层（{entryDir}）");
+        mapGen.LoadFloor(targetFloor, entryDir);
     }
 }
 

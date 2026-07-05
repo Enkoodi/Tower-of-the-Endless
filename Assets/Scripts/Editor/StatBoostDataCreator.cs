@@ -15,6 +15,7 @@ public static class StatBoostDataCreator
 
         Create("AttackBoost",     StatBoostType.Attack,     5, "攻击力 +5");
         Create("DefenseBoost",    StatBoostType.Defense,    3, "防御力 +3");
+        Create("HPBoost",         StatBoostType.HP,        50, "生命值 +50");
         Create("ManaMaxBoost",    StatBoostType.ManaMax,   10, "魔力上限 +10");
         Create("ManaChargeBoost", StatBoostType.ManaCharge, 5, "魔力充能 +5");
         Create("SpeedBoost",      StatBoostType.Speed,      5, "速度 +5");
@@ -27,7 +28,7 @@ public static class StatBoostDataCreator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("[StatBoostDataCreator] 10 种属性增益资产已创建，路径：Data/StatBoosts/");
+        Debug.Log("[StatBoostDataCreator] 11 种属性增益资产已创建，路径：Data/StatBoosts/");
     }
 
     private static void Create(string name, StatBoostType type, int value, string displayName)

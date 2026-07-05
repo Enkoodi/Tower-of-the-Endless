@@ -13,6 +13,12 @@ public class KeyPickup : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public Vector2Int gridPosition;
+
+    /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public int floorNumber;
+
     public KeyType KeyType => data != null ? data.keyType : KeyType.Yellow;
 
     void Awake()
@@ -45,6 +51,9 @@ public class KeyPickup : MonoBehaviour
             pd.AddKey(type, 1);
         else
             Debug.LogError("[KeyPickup] 无法将 IKeyInventory 转换为 PlayerData");
+
+        // 记录到楼层记忆中
+        FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
 
         Destroy(gameObject);
         return true;

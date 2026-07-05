@@ -144,3 +144,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 742f94502ef6eff43b8a1dee3a316fee, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0

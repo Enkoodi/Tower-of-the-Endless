@@ -327,6 +327,13 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         Debug.Log($"[PlayerData] 防御系数 +{amount}%（当前 {defenseMultiplier}%）");
     }
 
+    public void AddHP(int amount)
+    {
+        int actualGain = amount * hpMultiplier / 100;
+        hp += actualGain;
+        Debug.Log($"[PlayerData] 生命值 +{amount}×{hpMultiplier}%={actualGain}（当前 {hp}）");
+    }
+
     public void AddHPMultiplier(int amount)
     {
         hpMultiplier += amount;
@@ -346,6 +353,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     {
         switch (type)
         {
+            case StatBoostType.HP:             AddHP(value);          break;
             case StatBoostType.Attack:     AddAttack(value);      break;
             case StatBoostType.Defense:    AddDefense(value);     break;
             case StatBoostType.ManaMax:    AddManaMax(value);     break;

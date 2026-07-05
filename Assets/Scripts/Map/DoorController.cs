@@ -19,6 +19,12 @@ public class DoorController : MonoBehaviour
 
     public bool IsOpened => isOpened;
 
+    /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public Vector2Int gridPosition;
+
+    /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public int floorNumber;
+
     void Awake()
     {
         col = GetComponent<BoxCollider2D>();
@@ -89,6 +95,10 @@ public class DoorController : MonoBehaviour
     private void Open()
     {
         isOpened = true;
+
+        // 记录到楼层记忆中
+        FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkDoorOpened(gridPosition);
+
         col.enabled = false;
         if (sr != null) sr.enabled = false;
     }

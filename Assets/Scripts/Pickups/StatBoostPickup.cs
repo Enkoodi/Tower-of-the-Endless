@@ -13,6 +13,12 @@ public class StatBoostPickup : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public Vector2Int gridPosition;
+
+    /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public int floorNumber;
+
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -41,6 +47,10 @@ public class StatBoostPickup : MonoBehaviour
 
         Debug.Log($"[StatBoostPickup] 拾取 {data.displayName}！");
         playerData.ApplyStatBoost(data.boostType, data.value);
+
+        // 记录到楼层记忆中
+        FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
+
         Destroy(gameObject);
         return true;
     }

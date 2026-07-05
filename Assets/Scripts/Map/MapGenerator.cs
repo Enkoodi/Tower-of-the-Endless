@@ -51,6 +51,9 @@ public class MapGenerator : MonoBehaviour
     private Dictionary<int, PrefabEntry> enemyMap;
     private Dictionary<int, PrefabEntry> itemMap;
 
+    /// <summary>本次加载的进入方向（决定出生在哪个楼梯）</summary>
+    private EntryDirection entryDirection;
+
     // ========================================================================
     //  Unity 生命周期
     // ========================================================================
@@ -72,8 +75,42 @@ public class MapGenerator : MonoBehaviour
     //  公开接口
     // ========================================================================
 
-    /// <summary>从 TextAsset（JSON）加载地图</summary>
+    /// <summary>从 TextAsset（JSON）加载地图（默认出生点，用于首次加载）</summary>
     public void LoadFloor(TextAsset jsonFile)
+    {
+        LoadFloorInternal(jsonFile, EntryDirection.Default);
+    }
+
+    /// <summary>
+    /// 按楼层编号加载（从 Resources/ 查找 floor_{编号:D2}.json），默认出生点。
+    /// </summary>
+    public void LoadFloor(int floorNumber)
+    {
+        LoadFloor(floorNumber, EntryDirection.Default);
+    }
+
+    /// <summary>
+    /// 按楼层编号加载，并指定进入方向。
+    /// FromBelow = 从下层上楼梯进入 → 出生在下楼梯(9)
+    /// FromAbove = 从上层下楼梯进入 → 出生在上楼梯(8)
+    /// </summary>
+    public void LoadFloor(int floorNumber, EntryDirection entryDir)
+    {
+        string path = $"floor_{floorNumber:D2}";
+        TextAsset jsonFile = Resources.Load<TextAsset>(path);
+
+        if (jsonFile != null)
+        {
+            LoadFloorInternal(jsonFile, entryDir);
+        }
+        else
+        {
+            Debug.LogError($"[MapGenerator] 找不到地图文件：{path}.json（请确认文件放在 Assets/Resources/ 下）");
+        }
+    }
+
+    /// <summary>内部统一加载入口</summary>
+    private void LoadFloorInternal(TextAsset jsonFile, EntryDirection entryDir)
     {
         if (jsonFile == null)
         {
@@ -89,28 +126,10 @@ public class MapGenerator : MonoBehaviour
 
         MapData data = ParseJson(jsonFile);
         if (data == null) return;
-
         if (!ValidateMapData(data)) return;
 
+        entryDirection = entryDir;
         ApplyMapData(data);
-    }
-
-    /// <summary>
-    /// 按楼层编号加载（从 Resources/ 查找 floor_{编号:D2}.json）
-    /// </summary>
-    public void LoadFloor(int floorNumber)
-    {
-        string path = $"floor_{floorNumber:D2}";
-        TextAsset jsonFile = Resources.Load<TextAsset>(path);
-
-        if (jsonFile != null)
-        {
-            LoadFloor(jsonFile);
-        }
-        else
-        {
-            Debug.LogError($"[MapGenerator] 找不到地图文件：{path}.json（请确认文件放在 Assets/Resources/ 下）");
-        }
     }
 
     // ========================================================================
@@ -174,21 +193,23 @@ public class MapGenerator : MonoBehaviour
         float offsetY =  (data.height - 1) / 2f;
 
         // 逐格生成四层内容
+        int floor = data.floor;
         for (int y = 0; y < data.height; y++)
         {
             for (int x = 0; x < data.width; x++)
             {
                 Vector3 cellPos = new Vector3(x + offsetX, -y + offsetY, 0f);
+                Vector2Int gridPos = new Vector2Int(x, y);
 
                 SpawnTerrain(GetCell(data.terrain, x, y), cellPos);
-                SpawnObject( GetCell(data.objects,  x, y), cellPos);
-                SpawnEnemy(  GetCell(data.enemies,  x, y), cellPos);
-                SpawnItem(   GetCell(data.items,    x, y), cellPos);
+                SpawnObject( GetCell(data.objects,  x, y), cellPos, gridPos, floor);
+                SpawnEnemy(  GetCell(data.enemies,  x, y), cellPos, gridPos, floor);
+                SpawnItem(   GetCell(data.items,    x, y), cellPos, gridPos, floor);
             }
         }
 
-        // 自动定位下楼梯作为出生点（第一层没有下楼梯，使用 JSON 中的 player_spawn）
-        AutoSetSpawnFromDownStairs(data);
+        // 根据进入方向自动定位对应的楼梯作为出生点
+        AutoSetSpawnFromStairs(data);
 
         // 设置玩家出生点
         SetPlayerPosition(data.player_spawn, offsetX, offsetY);
@@ -235,12 +256,27 @@ public class MapGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// 扫描 objects 层，找到下楼梯（ID=9）的位置并设为出生点。
-    /// 第一层没有下楼梯时，保留 JSON 中的 player_spawn。
+    /// 根据进入方向自动定位楼梯作为出生点：
+    /// FromBelow（踩上楼梯上来）→ 找下楼梯(9)
+    /// FromAbove（踩下楼梯下来）→ 找上楼梯(8)
+    /// Default（首次加载）→ 使用 JSON 中的 player_spawn
     /// </summary>
-    private void AutoSetSpawnFromDownStairs(MapData data)
+    private void AutoSetSpawnFromStairs(MapData data)
     {
         if (data.objects == null) return;
+
+        int targetId = entryDirection switch
+        {
+            EntryDirection.FromBelow => 9, // 从下层上来 → 出生在下楼梯
+            EntryDirection.FromAbove => 8, // 从上层下来 → 出生在上楼梯
+            _ => -1                       // 默认使用 JSON 出生点
+        };
+
+        if (targetId < 0)
+        {
+            Debug.Log($"[MapGenerator] 默认出生点：({data.player_spawn?.x}, {data.player_spawn?.y})");
+            return;
+        }
 
         for (int y = 0; y < data.objects.Count; y++)
         {
@@ -249,17 +285,18 @@ public class MapGenerator : MonoBehaviour
 
             for (int x = 0; x < row.Count; x++)
             {
-                if (row[x] == 9) // 9 = 下楼梯
+                if (row[x] == targetId)
                 {
                     data.player_spawn = new PlayerSpawnPos { x = x, y = y };
-                    Debug.Log($"[MapGenerator] 自动定位下楼梯出生点：({x}, {y})");
+                    string stairName = targetId == 9 ? "下楼梯" : "上楼梯";
+                    Debug.Log($"[MapGenerator] 从{(entryDirection == EntryDirection.FromBelow ? "下层" : "上层")}进入 → 出生在{stairName}：({x}, {y})");
                     return;
                 }
             }
         }
 
-        // 未找到下楼梯（如第一层），使用 JSON 中原有的 player_spawn
-        Debug.Log($"[MapGenerator] 未找到下楼梯，使用 JSON 出生点：({data.player_spawn?.x}, {data.player_spawn?.y})");
+        // 目标楼梯不存在时回退到 JSON 出生点
+        Debug.LogWarning($"[MapGenerator] 未找到目标楼梯(ID={targetId})，回退到 JSON 出生点：({data.player_spawn?.x}, {data.player_spawn?.y})");
     }
 
     private void SetupCamera(int mapRows, int mapCols)
@@ -301,22 +338,110 @@ public class MapGenerator : MonoBehaviour
         SpawnFromMap(terrainMap, id, pos);
     }
 
-    private void SpawnObject(int id, Vector3 pos)
+    private void SpawnObject(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
     {
         if (id == 0) return;
-        SpawnFromMap(objectMap, id, pos);
+
+        // 查找 PrefabEntry 以便检查是否为门
+        if (objectMap == null || !objectMap.TryGetValue(id, out PrefabEntry entry))
+        {
+            Debug.LogWarning($"[MapGenerator] 未注册的对象 ID={id}");
+            return;
+        }
+
+        // 如果是门且已在楼层记忆中被开启，跳过生成
+        if (entry.prefab != null && entry.prefab.GetComponent<DoorController>() != null)
+        {
+            FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+            if (state != null && state.IsDoorOpened(gridPos))
+                return;
+        }
+
+        // 如果是战斗门且已被开启，跳过生成
+        if (entry.prefab != null && entry.prefab.GetComponent<BattleDoorController>() != null)
+        {
+            FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+            if (state != null && state.IsBattleDoorOpened(gridPos))
+                return;
+        }
+
+        GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
+        obj.name = entry.displayName;
+
+        // 如果是门，设置网格坐标和楼层编号
+        DoorController door = obj.GetComponent<DoorController>();
+        if (door != null)
+        {
+            door.gridPosition = gridPos;
+            door.floorNumber = floor;
+        }
+
+        // 如果是战斗门，设置网格坐标和楼层编号
+        BattleDoorController battleDoor = obj.GetComponent<BattleDoorController>();
+        if (battleDoor != null)
+        {
+            battleDoor.gridPosition = gridPos;
+            battleDoor.floorNumber = floor;
+        }
+
+        // 如果是战斗触发器，设置楼层编号
+        BattleTrigger battleTrigger = obj.GetComponent<BattleTrigger>();
+        if (battleTrigger != null)
+        {
+            battleTrigger.floorNumber = floor;
+        }
     }
 
-    private void SpawnEnemy(int id, Vector3 pos)
+    private void SpawnEnemy(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
     {
         if (id == 0) return;
-        SpawnFromMap(enemyMap, id, pos);
+
+        FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+        if (state != null && state.IsEnemyDefeated(gridPos))
+            return;
+
+        if (enemyMap == null || !enemyMap.TryGetValue(id, out PrefabEntry entry))
+        {
+            Debug.LogWarning($"[MapGenerator] 未注册的敌人 ID={id}");
+            return;
+        }
+
+        GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
+        obj.name = entry.displayName;
+
+        EnemyController ec = obj.GetComponent<EnemyController>();
+        if (ec != null)
+        {
+            ec.gridPosition = gridPos;
+            ec.floorNumber = floor;
+        }
     }
 
-    private void SpawnItem(int id, Vector3 pos)
+    private void SpawnItem(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
     {
         if (id == 0) return;
-        SpawnFromMap(itemMap, id, pos);
+
+        FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+        if (state != null && state.IsItemPickedUp(gridPos))
+            return;
+
+        if (itemMap == null || !itemMap.TryGetValue(id, out PrefabEntry entry))
+        {
+            Debug.LogWarning($"[MapGenerator] 未注册的道具 ID={id}");
+            return;
+        }
+
+        GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
+        obj.name = entry.displayName;
+
+        KeyPickup kp = obj.GetComponent<KeyPickup>();
+        if (kp != null) { kp.gridPosition = gridPos; kp.floorNumber = floor; }
+
+        StatBoostPickup sb = obj.GetComponent<StatBoostPickup>();
+        if (sb != null) { sb.gridPosition = gridPos; sb.floorNumber = floor; }
+
+        BlessingPickup bp = obj.GetComponent<BlessingPickup>();
+        if (bp != null) { bp.gridPosition = gridPos; bp.floorNumber = floor; }
     }
 
     /// <summary>从查找表中取出对应的 PrefabEntry 并实例化</summary>
@@ -399,6 +524,57 @@ public class MapGenerator : MonoBehaviour
         return dict;
     }
 
+    // ========================================================================
+    //  战斗门动态生成（由 BattleTrigger 调用）
+    // ========================================================================
+
+    /// <summary>
+    /// 在指定网格坐标动态生成一扇战斗门。
+    /// 由 BattleTrigger 在玩家触发时调用。
+    /// 会自动检查 FloorMemory 跳过已开启的门。
+    /// </summary>
+    public void SpawnBattleDoor(GameObject prefab, Vector2Int gridPos, int floor)
+    {
+        if (prefab == null)
+        {
+            Debug.LogError("[MapGenerator] SpawnBattleDoor: prefab 为空");
+            return;
+        }
+
+        // 检查是否已开启
+        FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+        if (state != null && state.IsBattleDoorOpened(gridPos))
+        {
+            Debug.Log($"[MapGenerator] 战斗门 ({gridPos.x},{gridPos.y}) 已开启，跳过生成");
+            return;
+        }
+
+        if (CurrentMap == null)
+        {
+            Debug.LogError("[MapGenerator] SpawnBattleDoor: 当前无地图数据");
+            return;
+        }
+
+        float offsetX = -(CurrentMap.width - 1) / 2f;
+        float offsetY = (CurrentMap.height - 1) / 2f;
+        Vector3 worldPos = new Vector3(gridPos.x + offsetX, -gridPos.y + offsetY, 0f);
+
+        GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity, mapContainer);
+        obj.name = $"{prefab.name}_({gridPos.x},{gridPos.y})";
+
+        BattleDoorController door = obj.GetComponent<BattleDoorController>();
+        if (door != null)
+        {
+            door.gridPosition = gridPos;
+            door.floorNumber = floor;
+            door.Initialize();
+        }
+        else
+        {
+            Debug.LogWarning($"[MapGenerator] SpawnBattleDoor: Prefab {prefab.name} 上未找到 BattleDoorController");
+        }
+    }
+
     /// <summary>销毁挂载点下的所有子物体</summary>
     private void ClearMap()
     {
@@ -411,4 +587,14 @@ public class MapGenerator : MonoBehaviour
 
         Debug.Log("[MapGenerator] 地图已清空");
     }
+}
+
+/// <summary>
+/// 楼层进入方向 — 决定玩家在新楼层的出生位置
+/// </summary>
+public enum EntryDirection
+{
+    Default,    // 首次加载，使用 JSON 中的 player_spawn
+    FromBelow,  // 从下层通过上楼梯进入 → 出生在目标层的下楼梯(9)
+    FromAbove   // 从上层通过下楼梯进入 → 出生在目标层的上楼梯(8)
 }

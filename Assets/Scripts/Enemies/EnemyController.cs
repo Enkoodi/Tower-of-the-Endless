@@ -29,6 +29,15 @@ public class EnemyController : MonoBehaviour
 
     private bool isDefeated = false;
 
+    /// <summary>敌人被击败时触发，参数为被击败的敌人自身</summary>
+    public event System.Action<EnemyController> OnDefeated;
+
+    /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public Vector2Int gridPosition;
+
+    /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public int floorNumber;
+
     // ============================================================
     //  公开属性
     // ============================================================
@@ -113,11 +122,17 @@ public class EnemyController : MonoBehaviour
         if (isDefeated) return;
         isDefeated = true;
 
+        // 记录到楼层记忆中
+        FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkEnemyDefeated(gridPosition);
+
+        // 通知订阅者（如战斗门等）
+        OnDefeated?.Invoke(this);
+
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
         gameObject.SetActive(false);
 
-        Debug.Log($"[Enemy] {enemyName} 被击败！");
+        Debug.Log($"[Enemy] {enemyName} 被击败！(楼层{floorNumber}, 坐标{gridPosition})");
     }
 }

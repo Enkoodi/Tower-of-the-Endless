@@ -13,6 +13,12 @@ public class BlessingPickup : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public Vector2Int gridPosition;
+
+    /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public int floorNumber;
+
     public BlessingPool OverridePool => overridePool;
 
     void Awake()
@@ -46,6 +52,10 @@ public class BlessingPickup : MonoBehaviour
         }
 
         Debug.Log("[BlessingPickup] 拾取祝福道具，弹出选择面板");
+
+        // 记录到楼层记忆中
+        FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
+
         BlessingManager.Instance.Show(playerData, this);
         return true;
     }
