@@ -143,4 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e84782d43256ab4ea04ad192c1c16ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: 4bec7e302f649f041a0e045a06fd2ab2, type: 2}
+  stats: {fileID: 11400000, guid: a5507224a34c73f4882b9a7f1afea34d, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0

@@ -196,6 +196,18 @@ MonoBehaviour:
   - id: 12
     prefab: {fileID: 6778320178882896130, guid: df021f831ca5bf8438e2f9990a3f1e77, type: 3}
     displayName: "3F\u6218\u6597\u95E8"
+  - id: 13
+    prefab: {fileID: 6778320178882896130, guid: dcf3ad4f9277f834dbeaf4fdf2acd86d, type: 3}
+    displayName: "19F\u6218\u6597\u95E8"
+  - id: 14
+    prefab: {fileID: 4753265014372371655, guid: 554186e1b0d41a14ea271e06306f8621, type: 3}
+    displayName: "20F\u6218\u6597\u95E8\u89E6\u53D1\u5668"
+  - id: 15
+    prefab: {fileID: 6778320178882896130, guid: cf96cfd1ea565c94e8c01b86b0e3d42e, type: 3}
+    displayName: "24F\u6218\u6597\u95E8\u89E6\u53D1\u5668"
+  - id: 16
+    prefab: {fileID: 4753265014372371655, guid: d381703b9c136ee46b3f36dd9d29211b, type: 3}
+    displayName: "25F\u6218\u6597\u95E8\u89E6\u53D1\u5668"
   enemyPrefabs:
   - id: 1
     prefab: {fileID: 6609138336521278666, guid: 6669881b3a87d1e449d2a773f7ef9dbd, type: 3}
@@ -405,7 +417,7 @@ MonoBehaviour:
   player: {fileID: 1606523439}
   autoFitCamera: 1
   marginCells: 3
-  testMap: {fileID: 4900000, guid: 0d4c2d8972cbd2c47bbc70f22e51d0fb, type: 3}
+  testMap: {fileID: 4900000, guid: 1c2ab21c8ceadd746850871418e3d8cb, type: 3}
   onFloorLoaded:
     m_PersistentCalls:
       m_Calls: []

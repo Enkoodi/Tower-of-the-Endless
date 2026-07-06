@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Shield2
   m_EditorClassIdentifier: 
   boostType: 1
-  value: 20
-  displayName: "\u9632\u5FA1\u529B +20"
+  value: 50
+  displayName: "\u9632\u5FA1\u529B +50"
   pickupSprite: {fileID: 21300000, guid: df7f33c3fe2c5fe42a51cc7b4b2b00fb, type: 3}
