@@ -9,6 +9,19 @@ using UnityEngine;
 public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 {
     // ============================================================
+    //  初始化
+    // ============================================================
+
+    void Start()
+    {
+        // 从全局存档读取 Aeon 钥匙数量
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.ApplyGlobalAeonKeys();
+        }
+    }
+
+    // ============================================================
     //  Inspector 字段
     // ============================================================
 
@@ -291,6 +304,17 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         Debug.Log($"[PlayerData] 金币 +{amount}×{goldMultiplier}%={actualGold}（当前 {gold}）");
     }
 
+    /// <summary>
+    /// 花费金币。返回是否成功（金币不足时失败）。
+    /// </summary>
+    public bool SpendGold(int amount)
+    {
+        if (gold < amount) return false;
+        gold -= amount;
+        Debug.Log($"[PlayerData] 金币 -{amount}（剩余 {gold}）");
+        return true;
+    }
+
     public void AddManaMax(int amount)
     {
         manaMax += amount;
@@ -455,5 +479,39 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         defense += defGain;
 
         Debug.Log($"[PlayerData] 获得百分比加成「{b.blessingName}」HP+{b.hpPercentBonus}%({hpGain}) 攻+{b.attackPercentBonus}%({atkGain}) 防+{b.defensePercentBonus}%({defGain})");
+    }
+
+    // ============================================================
+    //  存档恢复接口（直接设置字段，供 SaveManager 读档使用）
+    // ============================================================
+
+    public void SetAttack(int v) => attack = v;
+    public void SetDefense(int v) => defense = v;
+    public void SetAttackCount(int v) => attackCount = v;
+    public void SetLifeSteal(int v) => lifeSteal = v;
+    public void SetReflectDamage(int v) => reflectDamage = v;
+    public void SetDamageReduction(int v) => damageReduction = v;
+    public void SetManaMax(int v) => manaMax = v;
+    public void SetSpeed(int v) => speed = v;
+    public void SetGold(int v) => gold = v;
+    public void SetGoldMultiplier(int v) => goldMultiplier = v;
+    public void SetHPMultiplier(int v) => hpMultiplier = v;
+    public void SetAttackMultiplier(int v) => attackMultiplier = v;
+    public void SetDefenseMultiplier(int v) => defenseMultiplier = v;
+
+    /// <summary>直接设置 Aeon 钥匙数量（供全局存档覆盖）</summary>
+    public void SetAeonKeys(int v) => aeonKeys = v;
+
+    /// <summary>直接设置指定类型钥匙数量（供读档恢复）</summary>
+    public void SetKeyCountDirect(KeyType keyType, int count)
+    {
+        switch (keyType)
+        {
+            case KeyType.Yellow: yellowKeys = count; break;
+            case KeyType.Blue:   blueKeys   = count; break;
+            case KeyType.Red:    redKeys    = count; break;
+            case KeyType.Psyche: psycheKeys = count; break;
+            case KeyType.Aeon:   aeonKeys   = count; break;
+        }
     }
 }

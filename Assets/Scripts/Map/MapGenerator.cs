@@ -21,6 +21,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private PrefabEntry[] objectPrefabs;
     [SerializeField] private PrefabEntry[] enemyPrefabs;
     [SerializeField] private PrefabEntry[] itemPrefabs;
+    [SerializeField] private PrefabEntry[] npcPrefabs;
 
     [Header("玩家")]
     [SerializeField] private Transform player;
@@ -50,6 +51,7 @@ public class MapGenerator : MonoBehaviour
     private Dictionary<int, PrefabEntry> objectMap;
     private Dictionary<int, PrefabEntry> enemyMap;
     private Dictionary<int, PrefabEntry> itemMap;
+    private Dictionary<int, PrefabEntry> npcMap;
 
     /// <summary>本次加载的进入方向（决定出生在哪个楼梯）</summary>
     private EntryDirection entryDirection;
@@ -194,6 +196,8 @@ public class MapGenerator : MonoBehaviour
 
         // 逐格生成四层内容
         int floor = data.floor;
+        bool hasMemory = FloorMemoryManager.Instance != null;
+        Debug.Log($"[MapGenerator] 开始生成楼层 {floor}，FloorMemoryManager = {(hasMemory ? "存在" : "NULL（记忆功能不可用）")}");
         for (int y = 0; y < data.height; y++)
         {
             for (int x = 0; x < data.width; x++)
@@ -205,6 +209,7 @@ public class MapGenerator : MonoBehaviour
                 SpawnObject( GetCell(data.objects,  x, y), cellPos, gridPos, floor);
                 SpawnEnemy(  GetCell(data.enemies,  x, y), cellPos, gridPos, floor);
                 SpawnItem(   GetCell(data.items,    x, y), cellPos, gridPos, floor);
+                SpawnNpc(    GetCell(data.npcs,     x, y), cellPos, gridPos, floor);
             }
         }
 
@@ -396,18 +401,27 @@ public class MapGenerator : MonoBehaviour
     {
         if (id == 0) return;
 
-        FloorState state = FloorMemoryManager.Instance?.GetState(floor);
-        if (state != null && state.IsEnemyDefeated(gridPos))
-            return;
+        FloorMemoryManager mgr = FloorMemoryManager.Instance;
+        FloorState state = mgr?.GetState(floor);
 
-        if (enemyMap == null || !enemyMap.TryGetValue(id, out PrefabEntry entry))
+        if (state != null && state.IsEnemyDefeated(gridPos))
+        {
+            // 敌人已击败 — 通过 DropManager 复活尚未被拾取的掉落物
+            if (enemyMap != null && enemyMap.TryGetValue(id, out PrefabEntry entry) && entry.prefab != null)
+            {
+                DropManager.Instance?.RespawnDropsForEnemy(entry.prefab, worldPos, floor, state, mapContainer);
+            }
+            return;
+        }
+
+        if (enemyMap == null || !enemyMap.TryGetValue(id, out PrefabEntry entry2))
         {
             Debug.LogWarning($"[MapGenerator] 未注册的敌人 ID={id}");
             return;
         }
 
-        GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
-        obj.name = entry.displayName;
+        GameObject obj = Instantiate(entry2.prefab, worldPos, Quaternion.identity, mapContainer);
+        obj.name = entry2.displayName;
 
         EnemyController ec = obj.GetComponent<EnemyController>();
         if (ec != null)
@@ -442,6 +456,27 @@ public class MapGenerator : MonoBehaviour
 
         BlessingPickup bp = obj.GetComponent<BlessingPickup>();
         if (bp != null) { bp.gridPosition = gridPos; bp.floorNumber = floor; }
+    }
+
+    private void SpawnNpc(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
+    {
+        if (id == 0) return;
+
+        if (npcMap == null || !npcMap.TryGetValue(id, out PrefabEntry entry))
+        {
+            Debug.LogWarning($"[MapGenerator] 未注册的NPC ID={id}");
+            return;
+        }
+
+        GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
+        obj.name = entry.displayName;
+
+        NPCController npc = obj.GetComponent<NPCController>();
+        if (npc != null)
+        {
+            npc.gridPosition = gridPos;
+            npc.floorNumber = floor;
+        }
     }
 
     /// <summary>从查找表中取出对应的 PrefabEntry 并实例化</summary>
@@ -503,6 +538,7 @@ public class MapGenerator : MonoBehaviour
         objectMap  = BuildTable(objectPrefabs);
         enemyMap   = BuildTable(enemyPrefabs);
         itemMap    = BuildTable(itemPrefabs);
+        npcMap     = BuildTable(npcPrefabs);
     }
 
     private static Dictionary<int, PrefabEntry> BuildTable(PrefabEntry[] entries)

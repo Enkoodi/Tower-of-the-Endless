@@ -56,6 +56,9 @@ public class BlessingPickup : MonoBehaviour
         // 记录到楼层记忆中
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
 
+        // 通知 DropManager 移除此位置的活跃掉落记录
+        DropManager.Instance?.MarkDropPickedUp(floorNumber, gridPosition);
+
         BlessingManager.Instance.Show(playerData, this);
         return true;
     }

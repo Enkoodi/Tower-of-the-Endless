@@ -1,0 +1,56 @@
+{
+  "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a",
+  "imageCount": 9,
+  "failureCount": 0,
+  "images": [
+    {
+      "index": "01",
+      "fileName": "01_星空史莱姆.png",
+      "name": "星空史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "02",
+      "fileName": "02_翠绿史莱姆.png",
+      "name": "翠绿史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "03",
+      "fileName": "03_熔岩史莱姆.png",
+      "name": "熔岩史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "04",
+      "fileName": "04_齿轮史莱姆.png",
+      "name": "齿轮史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "05",
+      "fileName": "05_蜂巢史莱姆.png",
+      "name": "蜂巢史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "06",
+      "fileName": "06_爱心史莱姆.png",
+      "name": "爱心史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "07",
+      "fileName": "07_岩石史莱姆.png",
+      "name": "岩石史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    },
+    {
+      "index": "08",
+      "fileName": "08_彩虹史莱姆.png",
+      "name": "彩虹史莱姆",
+      "jobId": "80226801-14e4-4e0d-b9d1-ef9843b9657a"
+    }
+  ],
+  "failures": []
+}

@@ -123,7 +123,13 @@ public class EnemyController : MonoBehaviour
         isDefeated = true;
 
         // 记录到楼层记忆中
-        FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkEnemyDefeated(gridPosition);
+        if (FloorMemoryManager.Instance != null)
+            FloorMemoryManager.Instance.GetOrCreateState(floorNumber).MarkEnemyDefeated(gridPosition);
+        else
+            Debug.LogWarning($"[Enemy] FloorMemoryManager.Instance 为 null，无法记录击败：{enemyName} (楼层{floorNumber}, 坐标{gridPosition})");
+
+        // 通知 DropManager 处理掉落物
+        DropManager.Instance?.OnEnemyDefeated(this);
 
         // 通知订阅者（如战斗门等）
         OnDefeated?.Invoke(this);

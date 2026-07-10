@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 单个楼层的记忆状态 — 记录哪些敌人已被击败、哪些物品已被拾取、哪些门已开启。
+/// 单个楼层的记忆状态 — 记录哪些敌人已被击败、哪些物品已被拾取、
+/// 哪些门已开启、哪些掉落物仍活跃。
 /// </summary>
 [System.Serializable]
 public class FloorState
@@ -12,7 +13,7 @@ public class FloorState
     /// <summary>已被击败的敌人网格坐标</summary>
     public HashSet<Vector2Int> defeatedEnemies = new HashSet<Vector2Int>();
 
-    /// <summary>已被拾取的物品网格坐标</summary>
+    /// <summary>已被拾取的物品网格坐标（地图预设物品）</summary>
     public HashSet<Vector2Int> pickedUpItems = new HashSet<Vector2Int>();
 
     /// <summary>已开启的门网格坐标</summary>
@@ -20,6 +21,9 @@ public class FloorState
 
     /// <summary>已开启的战斗门网格坐标</summary>
     public HashSet<Vector2Int> openedBattleDoors = new HashSet<Vector2Int>();
+
+    /// <summary>当前楼层活跃的掉落物位置（未被拾取）</summary>
+    public HashSet<Vector2Int> activeDropItems = new HashSet<Vector2Int>();
 
     public FloorState(int floor)
     {
@@ -30,11 +34,14 @@ public class FloorState
     public bool IsItemPickedUp(Vector2Int pos) => pickedUpItems.Contains(pos);
     public bool IsDoorOpened(Vector2Int pos) => openedDoors.Contains(pos);
     public bool IsBattleDoorOpened(Vector2Int pos) => openedBattleDoors.Contains(pos);
+    public bool IsDropActive(Vector2Int pos) => activeDropItems.Contains(pos);
 
     public void MarkEnemyDefeated(Vector2Int pos) => defeatedEnemies.Add(pos);
     public void MarkItemPickedUp(Vector2Int pos) => pickedUpItems.Add(pos);
     public void MarkDoorOpened(Vector2Int pos) => openedDoors.Add(pos);
     public void MarkBattleDoorOpened(Vector2Int pos) => openedBattleDoors.Add(pos);
+    public void MarkDropActive(Vector2Int pos) => activeDropItems.Add(pos);
+    public void MarkDropPickedUp(Vector2Int pos) => activeDropItems.Remove(pos);
 
     public void Reset()
     {
@@ -42,5 +49,6 @@ public class FloorState
         pickedUpItems.Clear();
         openedDoors.Clear();
         openedBattleDoors.Clear();
+        activeDropItems.Clear();
     }
 }

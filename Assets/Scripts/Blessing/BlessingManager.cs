@@ -253,6 +253,25 @@ public class BlessingManager : MonoBehaviour
         OnPanelOpen?.Invoke();
     }
 
+    /// <summary>
+    /// 使用自定义祝福池弹出祝福选择面板。
+    /// 供商店等外部系统使用。pool 为 null 时回退到默认池。
+    /// </summary>
+    public void ShowWithPool(PlayerData playerData, BlessingPool pool, BlessingPickup pickup = null)
+    {
+        if (pool == null)
+        {
+            Show(playerData, pickup);
+            return;
+        }
+
+        // 临时切换池子，抽取完成后恢复
+        BlessingPool savedPool = blessingPool;
+        blessingPool = pool;
+        Show(playerData, pickup);
+        blessingPool = savedPool;
+    }
+
     private void OnBlessingChosen(BlessingData chosen)
     {
         if (currentPlayerData != null && chosen != null)

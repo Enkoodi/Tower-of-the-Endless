@@ -1,0 +1,53 @@
+{
+  "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1",
+  "images": [
+    {
+      "index": "01",
+      "fileName": "01_花岗岩魔像.png",
+      "name": "花岗岩魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "02",
+      "fileName": "02_青铜齿轮魔像.png",
+      "name": "青铜齿轮魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "03",
+      "fileName": "03_橡木树根魔像.png",
+      "name": "橡木树根魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "04",
+      "fileName": "04_玄武岩魔像.png",
+      "name": "玄武岩魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "05",
+      "fileName": "05_铁剑盾牌魔像.png",
+      "name": "铁剑盾牌魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "06",
+      "fileName": "06_冰块魔像.png",
+      "name": "冰块魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "07",
+      "fileName": "07_泥土沼泽魔像.png",
+      "name": "泥土沼泽魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    },
+    {
+      "index": "08",
+      "fileName": "08_符文石板魔像.png",
+      "name": "符文石板魔像",
+      "jobId": "e935dff2-ef45-420f-9cb0-2660fcd21be1"
+    }
+  ]
+}

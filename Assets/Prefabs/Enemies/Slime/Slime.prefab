@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6635110731164974654}
   - component: {fileID: 6770986023308066431}
   - component: {fileID: 267000913313305644}
+  - component: {fileID: 605802483364172111}
   m_Layer: 7
   m_Name: Slime
   m_TagString: Untagged
@@ -146,3 +147,18 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: eca85069ec436324da9fb953e9081255, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!114 &605802483364172111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138372272903170833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ee00982edff9f45b4571d4538f8051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drops:
+  - prefab: {fileID: 1887701342794059016, guid: 1954f8344c8bc5246b5f23fa4c36fd9f, type: 3}
+    offset: {x: 1, y: 0}

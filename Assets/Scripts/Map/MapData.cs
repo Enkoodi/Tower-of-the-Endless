@@ -21,6 +21,7 @@ public class MapData
     public List<List<int>> objects { get; set; }
     public List<List<int>> enemies { get; set; }
     public List<List<int>> items { get; set; }
+    public List<List<int>> npcs { get; set; }
 }
 
 /// <summary>

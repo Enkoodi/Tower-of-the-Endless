@@ -18,11 +18,13 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private LayerMask itemLayer;
     [SerializeField] private LayerMask stairLayer;
+    [SerializeField] private LayerMask npcLayer;
     [SerializeField] private float checkRadius = 0.4f;
 
     private bool isMoving = false;
     private bool isInBattle = false;
     private bool isChoosingBlessing = false;
+    private bool isInteractingWithNPC = false;
     private Vector3 targetPosition;
     private Vector2 battleDirection;
     private float lastMoveTime = 0f;
@@ -44,11 +46,18 @@ public class PlayerMove : MonoBehaviour
             keyStack.Clear();
         };
         BlessingManager.OnPanelClose += () => isChoosingBlessing = false;
+
+        NPCInteractionUI.OnPanelOpen += () =>
+        {
+            isInteractingWithNPC = true;
+            keyStack.Clear();
+        };
+        NPCInteractionUI.OnPanelClose += () => isInteractingWithNPC = false;
     }
 
     void Update()
     {
-        if (isInBattle || isChoosingBlessing) return;
+        if (isInBattle || isChoosingBlessing || isInteractingWithNPC) return;
 
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);
@@ -89,8 +98,8 @@ public class PlayerMove : MonoBehaviour
     {
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
-        // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯，按组件类型分流
-        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer;
+        // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC，按组件类型分流
+        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer | npcLayer;
         Collider2D hit = Physics2D.OverlapCircle(target, checkRadius, obstacleMask);
 
         if (hit == null)
@@ -184,6 +193,22 @@ public class PlayerMove : MonoBehaviour
             targetPosition = target;
             isMoving = true;
             StartCoroutine(SmoothMoveToStair(stair));
+            return;
+        }
+
+        // 检查 NPCController — 停止移动，打开NPC交互界面
+        NPCController npc = hit.GetComponent<NPCController>();
+        if (npc != null)
+        {
+            NPCInteractionUI npcUI = FindAnyObjectByType<NPCInteractionUI>();
+            if (npcUI != null)
+            {
+                npcUI.OpenInteraction(npc, playerData);
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerMove] 未找到 NPCInteractionUI，无法与NPC交互");
+            }
             return;
         }
 

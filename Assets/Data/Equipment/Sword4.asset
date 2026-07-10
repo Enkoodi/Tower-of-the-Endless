@@ -15,4 +15,4 @@ MonoBehaviour:
   boostType: 0
   value: 100
   displayName: "\u653B\u51FB\u529B +100"
-  pickupSprite: {fileID: 21300000, guid: 0e5a9ea9ca32f4245a39e6908cdd8d04, type: 3}
+  pickupSprite: {fileID: 21300000, guid: d84ebe7e7dba375468effd8355afb043, type: 3}
