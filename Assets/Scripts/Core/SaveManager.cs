@@ -107,6 +107,9 @@ public class SaveManager : MonoBehaviour
         data.floorStates = FloorMemoryManager.Instance != null
             ? FloorMemoryManager.Instance.GetAllFloorEntries()
             : null;
+        data.visitedFloors = FloorMemoryManager.Instance != null
+            ? FloorMemoryManager.Instance.GetVisitedFloors()
+            : null;
 
         WriteJson(gameSavePath, data);
 
@@ -195,6 +198,12 @@ public class SaveManager : MonoBehaviour
         if (FloorMemoryManager.Instance != null && data.floorStates != null)
         {
             FloorMemoryManager.Instance.RestoreFromEntries(data.floorStates);
+        }
+
+        // 3.5. 恢复已访问楼层列表（快速跳层功能）
+        if (FloorMemoryManager.Instance != null && data.visitedFloors != null)
+        {
+            FloorMemoryManager.Instance.SetVisitedFloors(data.visitedFloors);
         }
 
         // 4. 重新加载楼层

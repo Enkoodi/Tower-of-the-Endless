@@ -16,10 +16,11 @@ MonoBehaviour:
   enemySprite: {fileID: 21300000, guid: 7caabf41454bdbb47ae8d55a9d06a725, type: 3}
   hp: 210
   attack: 30
-  defense: 86
+  defense: 66
   attackCount: 1
   lifeSteal: 0
   reflectDamage: 0
+  damageReduction: 0
   manaCharge: 1000
   manaMax: 150
   speed: 144

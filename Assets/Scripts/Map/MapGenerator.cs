@@ -228,12 +228,18 @@ public class MapGenerator : MonoBehaviour
         Debug.Log($"[MapGenerator] 地图加载完成：{data.name}（{data.width}×{data.height}，楼层 {data.floor}）");
         onFloorLoaded?.Invoke(data);
 
+        // 标记楼层为已访问（用于快速跳层功能）
+        FloorMemoryManager.Instance?.MarkFloorVisited(data.floor);
+
         // 特殊祝福生命周期：进入楼层
         BlessingManager.Instance?.OnEnterFloor(
             FindAnyObjectByType<PlayerData>(),
             data.floor,
             FindAnyObjectByType<BattleUI>()
         );
+
+        // 夹击阵型扫描：进入楼层时检测预置的 ABA/AAA 站位
+        PincerAttack.CheckFloorEntry(FindAnyObjectByType<PlayerData>());
     }
 
     // ========================================================================
@@ -456,6 +462,12 @@ public class MapGenerator : MonoBehaviour
 
         BlessingPickup bp = obj.GetComponent<BlessingPickup>();
         if (bp != null) { bp.gridPosition = gridPos; bp.floorNumber = floor; }
+
+        FloorUpTeleporter ut = obj.GetComponent<FloorUpTeleporter>();
+        if (ut != null) { ut.gridPosition = gridPos; ut.floorNumber = floor; }
+
+        FloorDownTeleporter dt = obj.GetComponent<FloorDownTeleporter>();
+        if (dt != null) { dt.gridPosition = gridPos; dt.floorNumber = floor; }
     }
 
     private void SpawnNpc(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -609,6 +621,42 @@ public class MapGenerator : MonoBehaviour
         {
             Debug.LogWarning($"[MapGenerator] SpawnBattleDoor: Prefab {prefab.name} 上未找到 BattleDoorController");
         }
+    }
+
+    // ========================================================================
+    //  怪物手册接口
+    // ========================================================================
+
+    /// <summary>根据敌人ID获取EnemyStats（从prefab上读取），用于怪物手册</summary>
+    public EnemyStats GetEnemyStatsByID(int enemyId)
+    {
+        if (enemyMap == null || !enemyMap.TryGetValue(enemyId, out PrefabEntry entry) || entry.prefab == null)
+            return null;
+
+        EnemyController ec = entry.prefab.GetComponent<EnemyController>();
+        return ec != null ? ec.Stats : null;
+    }
+
+    /// <summary>获取当前楼层中所有唯一敌人ID列表（去重、排除0）</summary>
+    public List<int> GetCurrentFloorUniqueEnemyIDs()
+    {
+        List<int> ids = new List<int>();
+        if (CurrentMap?.enemies == null) return ids;
+
+        HashSet<int> seen = new HashSet<int>();
+        foreach (var row in CurrentMap.enemies)
+        {
+            if (row == null) continue;
+            foreach (int id in row)
+            {
+                if (id != 0 && !seen.Contains(id))
+                {
+                    seen.Add(id);
+                    ids.Add(id);
+                }
+            }
+        }
+        return ids;
     }
 
     /// <summary>销毁挂载点下的所有子物体</summary>

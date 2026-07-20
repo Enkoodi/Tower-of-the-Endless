@@ -159,4 +159,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ee00982edff9f45b4571d4538f8051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drops: []
+  drops:
+  - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
+    offset: {x: 0, y: 2}

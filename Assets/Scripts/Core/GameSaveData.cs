@@ -45,6 +45,11 @@ public class GameSaveData
     public List<FloorStateEntry> floorStates = new List<FloorStateEntry>();
 
     // ============================================================
+    //  已访问楼层（用于快速跳层功能）
+    // ============================================================
+    public List<int> visitedFloors = new List<int>();
+
+    // ============================================================
     //  玩家位置
     // ============================================================
     public float playerX;
@@ -69,6 +74,7 @@ public class FloorStateEntry
     public List<string> openedDoors = new List<string>();
     public List<string> openedBattleDoors = new List<string>();
     public List<string> activeDropItems = new List<string>();
+    public List<string> pinceredEnemies = new List<string>(); // 格式: "x,y,剩余HP"
 
     /// <summary>将 Vector2Int 序列化为 "x,y" 字符串</summary>
     public static string PosToString(Vector2Int pos) => $"{pos.x},{pos.y}";

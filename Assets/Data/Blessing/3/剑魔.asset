@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 34
   blessingName: "\u5251\u9B54  "
-  description: "\u653B\u51FB\u529B+10\n\u9632\u5FA1\u529B-20\n\u751F\u547D\u5077\u53D6+5"
+  description: "\u653B\u51FB\u529B+25\n\u9632\u5FA1\u529B-25\n\u751F\u547D\u5077\u53D6+5"
   rarity: 2
   backgroundSprite: {fileID: 21300000, guid: 7904e25be8fedd342b6f11ff9e5471f3, type: 3}
   type: 0
-  attackBonus: 10
-  defenseBonus: -20
+  attackBonus: 25
+  defenseBonus: -25
   manaMaxBonus: 0
   manaChargeBonus: 0
   speedBonus: 0

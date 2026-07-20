@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5665431624972974714}
   - component: {fileID: 2838237945660585813}
   - component: {fileID: 598433164514488403}
+  - component: {fileID: -8815414498494216242}
   m_Layer: 7
   m_Name: UndeadTotem
   m_TagString: Untagged
@@ -144,3 +145,52 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: fe060439a2c5a5f49821a0458dbecc0a, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &-8815414498494216242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3847965785534278910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ee00982edff9f45b4571d4538f8051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drops:
+  - prefab: {fileID: 7552707377271231737, guid: dc890fd3cbfa24b429865c1cd9eb3d89, type: 3}
+    offset: {x: -4, y: -5}
+  - prefab: {fileID: 7552707377271231737, guid: dc890fd3cbfa24b429865c1cd9eb3d89, type: 3}
+    offset: {x: -4, y: -6}
+  - prefab: {fileID: 3956642881464390929, guid: fb15186b57c75614eb7ebb54c32be3fb, type: 3}
+    offset: {x: -5, y: -5}
+  - prefab: {fileID: 5977418593735372463, guid: 48cd7166d908b4d448632da5cba40c86, type: 3}
+    offset: {x: -5, y: -6}
+  - prefab: {fileID: 1222045284370309947, guid: 5b1e91cde744f344aa0bef5c8499000d, type: 3}
+    offset: {x: -6, y: -5}
+  - prefab: {fileID: 1222045284370309947, guid: 5b1e91cde744f344aa0bef5c8499000d, type: 3}
+    offset: {x: -6, y: -6}
+  - prefab: {fileID: 3480379554661442434, guid: b847a3a53ae67014ca2101f0c012fd0c, type: 3}
+    offset: {x: -7, y: -5}
+  - prefab: {fileID: 3480379554661442434, guid: b847a3a53ae67014ca2101f0c012fd0c, type: 3}
+    offset: {x: -7, y: -6}
+  - prefab: {fileID: 904655309459682807, guid: d7fb0bf4ff8a28e42809be383059b871, type: 3}
+    offset: {x: 4, y: -5}
+  - prefab: {fileID: 904655309459682807, guid: d7fb0bf4ff8a28e42809be383059b871, type: 3}
+    offset: {x: 4, y: -6}
+  - prefab: {fileID: 904655309459682807, guid: d7fb0bf4ff8a28e42809be383059b871, type: 3}
+    offset: {x: 5, y: -5}
+  - prefab: {fileID: 904655309459682807, guid: d7fb0bf4ff8a28e42809be383059b871, type: 3}
+    offset: {x: 5, y: -6}
+  - prefab: {fileID: 6369049314569992081, guid: 3e7479d9ac7589d44a31979e81612102, type: 3}
+    offset: {x: 6, y: -5}
+  - prefab: {fileID: 6369049314569992081, guid: 3e7479d9ac7589d44a31979e81612102, type: 3}
+    offset: {x: 6, y: -6}
+  - prefab: {fileID: 6369049314569992081, guid: 3e7479d9ac7589d44a31979e81612102, type: 3}
+    offset: {x: 7, y: -5}
+  - prefab: {fileID: 6369049314569992081, guid: 3e7479d9ac7589d44a31979e81612102, type: 3}
+    offset: {x: 7, y: -6}
+  - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
+    offset: {x: 0, y: 1}

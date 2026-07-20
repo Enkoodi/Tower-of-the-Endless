@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: "\u7EA2\u53F2\u83B1\u59C6"
   enemySprite: {fileID: 21300000, guid: 3c03e8f3445d4d940a3b67f9f326014a, type: 3}
-  hp: 23
-  attack: 15
-  defense: 0
+  hp: 25
+  attack: 25
+  defense: 5
   attackCount: 1
   lifeSteal: 0
   reflectDamage: 0
+  damageReduction: 0
   manaCharge: 0
   manaMax: 0
   speed: 20

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: "\u7EFF\u53F2\u83B1\u59C6"
   enemySprite: {fileID: 21300000, guid: c7ae9a3fba8e7774ba3b35805e150f5d, type: 3}
-  hp: 28
-  attack: 10
-  defense: 2
+  hp: 30
+  attack: 22
+  defense: 5
   attackCount: 1
   lifeSteal: 0
   reflectDamage: 0

@@ -18,7 +18,7 @@ MonoBehaviour:
   rarity: 0
   backgroundSprite: {fileID: 21300000, guid: bf7971b2ef3ccd845805a643f045b313, type: 3}
   type: 0
-  attackBonus: 5
+  attackBonus: 10
   defenseBonus: 0
   manaMaxBonus: 0
   manaChargeBonus: 0

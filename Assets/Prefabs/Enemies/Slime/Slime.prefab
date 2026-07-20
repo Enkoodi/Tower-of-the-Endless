@@ -160,5 +160,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drops:
-  - prefab: {fileID: 1887701342794059016, guid: 1954f8344c8bc5246b5f23fa4c36fd9f, type: 3}
-    offset: {x: 1, y: 0}
+  - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
+    offset: {x: 0, y: 2}

@@ -35,12 +35,6 @@ public class StairController : MonoBehaviour
         int currentFloor = mapGen.CurrentFloor;
         int targetFloor = stairType == StairType.Up ? currentFloor + 1 : currentFloor - 1;
 
-        if (targetFloor < 1)
-        {
-            Debug.LogWarning($"[Stair] 已经是第一层，无法再向下");
-            return;
-        }
-
         // 上楼梯 = 从下层进入目标层；下楼梯 = 从上层进入目标层
         EntryDirection entryDir = stairType == StairType.Up
             ? EntryDirection.FromBelow

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: HP 8
   m_EditorClassIdentifier: 
   boostType: 5
-  value: 600
-  displayName: "\u751F\u547D\u503C +600"
+  value: 800
+  displayName: "\u751F\u547D\u503C +800"
   pickupSprite: {fileID: 21300000, guid: 7cacb3b08e8e7ec4caae12153b635f93, type: 3}

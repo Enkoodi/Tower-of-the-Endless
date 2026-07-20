@@ -159,4 +159,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ee00982edff9f45b4571d4538f8051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drops: []
+  drops:
+  - prefab: {fileID: 6702015399659098275, guid: 3ce6ce46cc157304dbcd372d6a1e0743, type: 3}
+    offset: {x: -3, y: 0}
+  - prefab: {fileID: 6702015399659098275, guid: 3ce6ce46cc157304dbcd372d6a1e0743, type: 3}
+    offset: {x: -3, y: 1}
+  - prefab: {fileID: 6702015399659098275, guid: 3ce6ce46cc157304dbcd372d6a1e0743, type: 3}
+    offset: {x: -4, y: 0}
+  - prefab: {fileID: 6702015399659098275, guid: 3ce6ce46cc157304dbcd372d6a1e0743, type: 3}
+    offset: {x: -4, y: 1}
+  - prefab: {fileID: 4493813173837221021, guid: e7bb071e18b20c742bad24f5bc4f0a62, type: 3}
+    offset: {x: -5, y: 0}
+  - prefab: {fileID: 4493813173837221021, guid: e7bb071e18b20c742bad24f5bc4f0a62, type: 3}
+    offset: {x: -5, y: 1}
+  - prefab: {fileID: 472141502377721362, guid: 032012acec7c9634d8a359087f737782, type: 3}
+    offset: {x: -6, y: 0}
+  - prefab: {fileID: 2414409632601816854, guid: 8b98fa8cde05ac443ae2b3f45e2d9b00, type: 3}
+    offset: {x: -6, y: 1}
+  - prefab: {fileID: 1708672692918631961, guid: cf38872df0c5f414ebeb448ba9608114, type: 3}
+    offset: {x: 3, y: 0}
+  - prefab: {fileID: 1708672692918631961, guid: cf38872df0c5f414ebeb448ba9608114, type: 3}
+    offset: {x: 3, y: 1}
+  - prefab: {fileID: 1708672692918631961, guid: cf38872df0c5f414ebeb448ba9608114, type: 3}
+    offset: {x: 4, y: 0}
+  - prefab: {fileID: 1708672692918631961, guid: cf38872df0c5f414ebeb448ba9608114, type: 3}
+    offset: {x: 4, y: 1}
+  - prefab: {fileID: 4764446232100942633, guid: 2b7c022b4f1dfd7468306fe82911c4ba, type: 3}
+    offset: {x: 5, y: 0}
+  - prefab: {fileID: 4764446232100942633, guid: 2b7c022b4f1dfd7468306fe82911c4ba, type: 3}
+    offset: {x: 5, y: 1}
+  - prefab: {fileID: 4764446232100942633, guid: 2b7c022b4f1dfd7468306fe82911c4ba, type: 3}
+    offset: {x: 6, y: 0}
+  - prefab: {fileID: 4764446232100942633, guid: 2b7c022b4f1dfd7468306fe82911c4ba, type: 3}
+    offset: {x: 6, y: 1}
+  - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
+    offset: {x: 0, y: 1}

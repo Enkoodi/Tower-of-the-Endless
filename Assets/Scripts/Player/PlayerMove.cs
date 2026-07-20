@@ -25,6 +25,7 @@ public class PlayerMove : MonoBehaviour
     private bool isInBattle = false;
     private bool isChoosingBlessing = false;
     private bool isInteractingWithNPC = false;
+    private bool isViewingManual = false;
     private Vector3 targetPosition;
     private Vector2 battleDirection;
     private float lastMoveTime = 0f;
@@ -53,11 +54,25 @@ public class PlayerMove : MonoBehaviour
             keyStack.Clear();
         };
         NPCInteractionUI.OnPanelClose += () => isInteractingWithNPC = false;
+
+        MonsterManualUI.OnPanelOpen += () =>
+        {
+            isViewingManual = true;
+            keyStack.Clear();
+        };
+        MonsterManualUI.OnPanelClose += () => isViewingManual = false;
     }
 
     void Update()
     {
-        if (isInBattle || isChoosingBlessing || isInteractingWithNPC) return;
+        // 怪物手册快捷键 — 始终可响应，不受面板打开状态影响
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            MonsterManualUI manual = FindAnyObjectByType<MonsterManualUI>();
+            if (manual != null) manual.Toggle();
+        }
+
+        if (isInBattle || isChoosingBlessing || isInteractingWithNPC || isViewingManual) return;
 
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);
@@ -68,6 +83,16 @@ public class PlayerMove : MonoBehaviour
         TrackKeyRelease(KeyCode.S, KeyCode.DownArrow, Vector2.down);
         TrackKeyRelease(KeyCode.A, KeyCode.LeftArrow, Vector2.left);
         TrackKeyRelease(KeyCode.D, KeyCode.RightArrow, Vector2.right);
+
+        // 快速跳层：Q上楼梯，E下楼梯（需在楼梯9宫格内）
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            TryQuickFloorJump(true);
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            TryQuickFloorJump(false);
+        }
 
         if (!isMoving && Time.time - lastMoveTime >= moveDelay && keyStack.Count > 0)
         {
@@ -142,6 +167,30 @@ public class PlayerMove : MonoBehaviour
             isMoving = true;
             if (playerData != null)
                 blessing.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 FloorUpTeleporter — 上楼传送器，拾取后直接走到该格
+        FloorUpTeleporter upTeleporter = hit.GetComponent<FloorUpTeleporter>();
+        if (upTeleporter != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                upTeleporter.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 FloorDownTeleporter — 下楼传送器，拾取后直接走到该格
+        FloorDownTeleporter downTeleporter = hit.GetComponent<FloorDownTeleporter>();
+        if (downTeleporter != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                downTeleporter.TryPickup(playerData);
             StartCoroutine(SmoothMove());
             return;
         }
@@ -243,6 +292,9 @@ public class PlayerMove : MonoBehaviour
 
         transform.position = targetPosition;
         isMoving = false;
+
+        // 夹击检测
+        PincerAttack.CheckPincerFormation(playerData);
     }
 
     /// <summary>
@@ -267,5 +319,86 @@ public class PlayerMove : MonoBehaviour
         // 移动完成后切换楼层
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
         stair.Use(mapGen);
+    }
+
+    /// <summary>
+    /// 快速跳层：检测玩家是否在楼梯9宫格内，若是则跳到指定方向的已访问楼层。
+    /// </summary>
+    /// <param name="goingUp">true=上楼(Q)，false=下楼(E)</param>
+    private void TryQuickFloorJump(bool goingUp)
+    {
+        if (!IsNearStair())
+        {
+            Debug.Log($"[QuickJump] 不在楼梯9宫格范围内，无法快速跳层");
+            return;
+        }
+
+        MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
+        if (mapGen == null)
+        {
+            Debug.LogError("[QuickJump] 未找到 MapGenerator");
+            return;
+        }
+
+        int currentFloor = mapGen.CurrentFloor;
+        int targetFloor = FindNextVisitedFloor(currentFloor, goingUp);
+
+        if (targetFloor == currentFloor)
+        {
+            Debug.Log($"[QuickJump] 没有{(goingUp ? "更高" : "更低")}的已访问楼层");
+            return;
+        }
+
+        EntryDirection entryDir = goingUp ? EntryDirection.FromBelow : EntryDirection.FromAbove;
+        Debug.Log($"[QuickJump] 快速跳层：第 {currentFloor} 层 → 第 {targetFloor} 层（{entryDir}）");
+        mapGen.LoadFloor(targetFloor, entryDir);
+    }
+
+    /// <summary>检测玩家周围9宫格内是否有楼梯</summary>
+    private bool IsNearStair()
+    {
+        // 9宫格最大距离为 sqrt(2) ≈ 1.414，用 1.5f 覆盖
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 1.5f, stairLayer);
+        foreach (var hit in hits)
+        {
+            if (hit.GetComponent<StairController>() != null)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 在已访问楼层中查找下一个目标楼层。
+    /// </summary>
+    /// <param name="currentFloor">当前楼层</param>
+    /// <param name="goingUp">true=向上找，false=向下找</param>
+    /// <returns>目标楼层编号，若找不到则返回 currentFloor</returns>
+    private int FindNextVisitedFloor(int currentFloor, bool goingUp)
+    {
+        if (FloorMemoryManager.Instance == null) return currentFloor;
+
+        List<int> visited = FloorMemoryManager.Instance.GetVisitedFloors();
+        if (visited == null || visited.Count == 0) return currentFloor;
+
+        if (goingUp)
+        {
+            // 找比当前楼层高的最小已访问楼层
+            foreach (int floor in visited)
+            {
+                if (floor > currentFloor)
+                    return floor;
+            }
+        }
+        else
+        {
+            // 找比当前楼层低的最大已访问楼层（倒序遍历）
+            for (int i = visited.Count - 1; i >= 0; i--)
+            {
+                if (visited[i] < currentFloor)
+                    return visited[i];
+            }
+        }
+
+        return currentFloor;
     }
 }

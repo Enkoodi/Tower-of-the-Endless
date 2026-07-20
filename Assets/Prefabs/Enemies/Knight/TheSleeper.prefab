@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7120369492481893498}
   - component: {fileID: 483893047847115834}
   - component: {fileID: 3247303231816975993}
+  - component: {fileID: 5195785990114238603}
   m_Layer: 7
   m_Name: TheSleeper
   m_TagString: Untagged
@@ -144,3 +145,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 47992d02e35a8ce488b4aa9f5b7bf8b6, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &5195785990114238603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8625133424745618718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78c2e8a5ccd70b46829dbd78c94fe2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isImmune: 0
+  hasTriggered: 0

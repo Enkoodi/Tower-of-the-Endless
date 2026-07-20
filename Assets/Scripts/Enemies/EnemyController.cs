@@ -45,6 +45,7 @@ public class EnemyController : MonoBehaviour
     public int Attack          => attack;
     public int Defense         => defense;
     public int HP              => hp;
+    public void SetHP(int value) { hp = Mathf.Max(0, value); }
     public int AttackCount     => attackCount;
     public int LifeSteal       => lifeSteal;
     public int ReflectDamage   => reflectDamage;
@@ -55,6 +56,7 @@ public class EnemyController : MonoBehaviour
     public int GoldReward      => goldReward;
     public bool IsDefeated     => isDefeated;
     public Sprite EnemySprite  => enemySprite;
+    public EnemyStats Stats     => stats;
 
     // ============================================================
     //  生命周期

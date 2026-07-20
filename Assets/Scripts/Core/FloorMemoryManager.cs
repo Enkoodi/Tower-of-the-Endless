@@ -10,6 +10,7 @@ public class FloorMemoryManager : MonoBehaviour
     public static FloorMemoryManager Instance { get; private set; }
 
     private Dictionary<int, FloorState> floorStates = new Dictionary<int, FloorState>();
+    private HashSet<int> visitedFloors = new HashSet<int>();
 
     void Awake()
     {
@@ -44,10 +45,41 @@ public class FloorMemoryManager : MonoBehaviour
         return state;
     }
 
+    /// <summary>标记楼层为已访问</summary>
+    public void MarkFloorVisited(int floor)
+    {
+        if (visitedFloors.Add(floor))
+            Debug.Log($"[FloorMemory] 第 {floor} 层已标记为已访问");
+    }
+
+    /// <summary>检查楼层是否已访问过</summary>
+    public bool IsFloorVisited(int floor) => visitedFloors.Contains(floor);
+
+    /// <summary>获取所有已访问的楼层编号列表</summary>
+    public List<int> GetVisitedFloors()
+    {
+        var list = new List<int>(visitedFloors);
+        list.Sort();
+        return list;
+    }
+
+    /// <summary>从存档恢复已访问楼层列表</summary>
+    public void SetVisitedFloors(List<int> floors)
+    {
+        visitedFloors.Clear();
+        if (floors != null)
+        {
+            foreach (int f in floors)
+                visitedFloors.Add(f);
+        }
+        Debug.Log($"[FloorMemory] 从存档恢复了 {visitedFloors.Count} 个已访问楼层");
+    }
+
     /// <summary>清除所有楼层记忆（新游戏时调用）</summary>
     public void ResetAll()
     {
         floorStates.Clear();
+        visitedFloors.Clear();
         Debug.Log("[FloorMemory] 所有楼层记忆已清除");
     }
 
@@ -84,6 +116,8 @@ public class FloorMemoryManager : MonoBehaviour
                 entry.openedBattleDoors.Add(FloorStateEntry.PosToString(pos));
             foreach (var pos in state.activeDropItems)
                 entry.activeDropItems.Add(FloorStateEntry.PosToString(pos));
+            foreach (var pkv in state.pinceredEnemies)
+                entry.pinceredEnemies.Add($"{pkv.Key.x},{pkv.Key.y},{pkv.Value}");
 
             entries.Add(entry);
         }
@@ -109,6 +143,12 @@ public class FloorMemoryManager : MonoBehaviour
                 state.openedBattleDoors.Add(FloorStateEntry.StringToPos(s));
             foreach (var s in entry.activeDropItems)
                 state.activeDropItems.Add(FloorStateEntry.StringToPos(s));
+            foreach (var s in entry.pinceredEnemies)
+            {
+                string[] parts = s.Split(',');
+                if (parts.Length == 3 && int.TryParse(parts[0], out int px) && int.TryParse(parts[1], out int py) && int.TryParse(parts[2], out int hp))
+                    state.pinceredEnemies[new Vector2Int(px, py)] = hp;
+            }
 
             floorStates[entry.floorNumber] = state;
         }

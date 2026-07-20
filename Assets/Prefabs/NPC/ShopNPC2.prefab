@@ -148,6 +148,6 @@ MonoBehaviour:
   hpPercent: 15
   atkPercent: 15
   defPercent: 15
-  blessingPool: {fileID: 11400000, guid: 4294ba51201491c408d57c8f703fd005, type: 2}
+  blessingPool: {fileID: 11400000, guid: 575fdfd0202c19546a7cf5b007a2b351, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
