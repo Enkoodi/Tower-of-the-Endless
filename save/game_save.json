@@ -1,7 +1,7 @@
 {
-  "hp": 500,
+  "hp": 584,
   "attack": 10,
-  "defense": 10,
+  "defense": 12,
   "attackCount": 1,
   "lifeSteal": 0,
   "reflectDamage": 0,
@@ -9,19 +9,19 @@
   "manaCharge": 0,
   "manaMax": 50,
   "speed": 100,
-  "goldMultiplier": 100,
+  "goldMultiplier": 200,
   "hpMultiplier": 100,
   "attackMultiplier": 100,
   "defenseMultiplier": 100,
-  "gold": 0,
-  "yellowKeys": 1,
+  "gold": 5,
+  "yellowKeys": 3,
   "blueKeys": 0,
   "redKeys": 0,
   "psycheKeys": 0,
   "aeonKeys": 0,
   "floorStates": [
     {
-      "floorNumber": 1,
+      "floorNumber": 26,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -30,7 +30,28 @@
       "pinceredEnemies": []
     },
     {
-      "floorNumber": 2,
+      "floorNumber": 27,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": [
+        "3,10,225",
+        "3,9,225",
+        "3,8,225",
+        "3,7,225",
+        "3,6,375",
+        "3,5,225",
+        "3,4,225",
+        "3,3,225",
+        "3,2,225",
+        "11,11,150",
+        "3,11,225"
+      ]
+    },
+    {
+      "floorNumber": 25,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -39,7 +60,7 @@
       "pinceredEnemies": []
     },
     {
-      "floorNumber": 3,
+      "floorNumber": 24,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -48,7 +69,19 @@
       "pinceredEnemies": []
     },
     {
-      "floorNumber": 4,
+      "floorNumber": 23,
+      "defeatedEnemies": [],
+      "pickedUpItems": [
+        "10,10",
+        "7,10"
+      ],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 22,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -57,7 +90,7 @@
       "pinceredEnemies": []
     },
     {
-      "floorNumber": 5,
+      "floorNumber": 21,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -66,7 +99,115 @@
       "pinceredEnemies": []
     },
     {
-      "floorNumber": 6,
+      "floorNumber": 20,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 19,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 18,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 17,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 16,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 15,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 14,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 13,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 12,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 11,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 10,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 9,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 8,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -84,7 +225,134 @@
       "pinceredEnemies": []
     },
     {
-      "floorNumber": 8,
+      "floorNumber": 6,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 5,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 4,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 3,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 2,
+      "defeatedEnemies": [
+        "3,4"
+      ],
+      "pickedUpItems": [
+        "1,4",
+        "2,4"
+      ],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 1,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 28,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 29,
+      "defeatedEnemies": [],
+      "pickedUpItems": [
+        "8,8",
+        "7,8"
+      ],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 30,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": [
+        "10,7,375",
+        "6,7,375",
+        "10,6,375",
+        "6,6,375",
+        "11,6,375",
+        "10,5,375",
+        "9,6,375",
+        "7,6,375",
+        "6,5,375",
+        "5,6,375",
+        "11,5,375",
+        "10,4,375",
+        "9,5,375",
+        "7,5,375",
+        "6,4,375",
+        "5,5,375",
+        "7,10,375"
+      ]
+    },
+    {
+      "floorNumber": 31,
+      "defeatedEnemies": [],
+      "pickedUpItems": [],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": 0,
+      "defeatedEnemies": [],
+      "pickedUpItems": [
+        "8,6"
+      ],
+      "openedDoors": [],
+      "openedBattleDoors": [],
+      "activeDropItems": [],
+      "pinceredEnemies": []
+    },
+    {
+      "floorNumber": -1,
       "defeatedEnemies": [],
       "pickedUpItems": [],
       "openedDoors": [],
@@ -94,6 +362,8 @@
     }
   ],
   "visitedFloors": [
+    -1,
+    0,
     1,
     2,
     3,
@@ -101,10 +371,33 @@
     5,
     6,
     7,
-    8
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
   ],
-  "playerX": 0.0,
-  "playerY": -5.0,
+  "playerX": -2.0,
+  "playerY": -1.0,
   "playerZ": 0.0,
-  "currentFloor": 4
+  "currentFloor": 2
 }

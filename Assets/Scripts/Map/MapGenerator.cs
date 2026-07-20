@@ -34,7 +34,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private TextAsset testMap;
 
     [Header("事件")]
-    [SerializeField] private UnityEvent<MapData> onFloorLoaded;
+    [SerializeField] public UnityEvent<MapData> onFloorLoaded;
 
     // ========================================================================
     //  运行时数据

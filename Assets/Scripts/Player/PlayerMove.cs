@@ -25,6 +25,7 @@ public class PlayerMove : MonoBehaviour
     private bool isInBattle = false;
     private bool isChoosingBlessing = false;
     private bool isInteractingWithNPC = false;
+    private bool isInDialogue = false;
     private bool isViewingManual = false;
     private Vector3 targetPosition;
     private Vector2 battleDirection;
@@ -55,6 +56,13 @@ public class PlayerMove : MonoBehaviour
         };
         NPCInteractionUI.OnPanelClose += () => isInteractingWithNPC = false;
 
+        DialogueUI.OnPanelOpen += () =>
+        {
+            isInDialogue = true;
+            keyStack.Clear();
+        };
+        DialogueUI.OnPanelClose += () => isInDialogue = false;
+
         MonsterManualUI.OnPanelOpen += () =>
         {
             isViewingManual = true;
@@ -72,7 +80,7 @@ public class PlayerMove : MonoBehaviour
             if (manual != null) manual.Toggle();
         }
 
-        if (isInBattle || isChoosingBlessing || isInteractingWithNPC || isViewingManual) return;
+        if (isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isViewingManual) return;
 
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);
@@ -242,6 +250,22 @@ public class PlayerMove : MonoBehaviour
             targetPosition = target;
             isMoving = true;
             StartCoroutine(SmoothMoveToStair(stair));
+            return;
+        }
+
+        // 检查 DialogueTrigger — 对话NPC，不移动，触发对话
+        DialogueTrigger dialogue = hit.GetComponent<DialogueTrigger>();
+        if (dialogue != null)
+        {
+            DialogueUI dialogueUI = FindAnyObjectByType<DialogueUI>();
+            if (dialogueUI != null)
+            {
+                dialogueUI.OpenDialogue(dialogue);
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerMove] 未找到 DialogueUI，无法打开对话");
+            }
             return;
         }
 

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1375199842500960785}
   - component: {fileID: 4375110233206308319}
   - component: {fileID: -4972692971317779685}
+  - component: {fileID: -2454841182457994963}
   m_Layer: 7
   m_Name: VampireLord
   m_TagString: Untagged
@@ -164,3 +165,23 @@ MonoBehaviour:
     offset: {x: 2, y: 1}
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
     offset: {x: -2, y: 1}
+--- !u!114 &-2454841182457994963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3729011368856514771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c6e4c523e0264b44a4ed104c88dcb59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueLines: []
+  exitButtonText: "\u79BB\u5F00"
+  actionButtonText: "\u786E\u8BA4"
+  onActionTriggered:
+    m_PersistentCalls:
+      m_Calls: []
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
