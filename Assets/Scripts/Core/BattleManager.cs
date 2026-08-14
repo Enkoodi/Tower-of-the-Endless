@@ -9,6 +9,10 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance { get; private set; }
 
+    /// <summary>战斗开始/结束事件（供 PlayerMove 等订阅以锁定/解锁移动）</summary>
+    public static event System.Action OnBattleOpen;
+    public static event System.Action OnBattleClose;
+
     [Header("UI 引用")]
     [SerializeField] private BattleUI battleUI;
 
@@ -66,6 +70,7 @@ public class BattleManager : MonoBehaviour
         battleUI.OpenBattle(playerData, enemy);
         battleUI.UpdateTurn(turnCount);
         BlessingManager.Instance?.OnBattleStart(playerData, enemy, battleUI);
+        OnBattleOpen?.Invoke();
         StartCoroutine(BattleCoroutine(playerData, enemy));
     }
 
@@ -87,7 +92,12 @@ public class BattleManager : MonoBehaviour
         void ComputeRoundDamage()
         {
             ManaCost = playerData.ManaCharge < playerData.ManaMax ? playerData.ManaCharge : playerData.ManaMax;
-            damageToEnemy = playerPhysical + ManaCost;
+
+            // 魔力增幅（拾取魔力增幅器后生效）
+            MagicAmplifier amp = playerData.GetComponent<MagicAmplifier>();
+            int playerMagicDamage = amp != null ? ManaCost * amp.MultiplierPercent / 100 : ManaCost;
+
+            damageToEnemy = playerPhysical + playerMagicDamage;
 
             EnemyManaCost = enemy.ManaCharge < enemy.ManaMax ? enemy.ManaCharge : enemy.ManaMax;
             enemyDamageToPlayer = enemyPhysical + EnemyManaCost;
@@ -240,6 +250,7 @@ public class BattleManager : MonoBehaviour
         }
 
         StartCoroutine(CloseAfterDelay());
+        OnBattleClose?.Invoke();
         onBattleEnd?.Invoke(won);
         onBattleEnd = null;
     }

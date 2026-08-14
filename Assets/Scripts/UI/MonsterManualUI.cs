@@ -91,23 +91,31 @@ public class MonsterManualUI : MonoBehaviour
             return;
         }
 
-        // 按攻击力排序（高攻在前，方便玩家判断威胁）
-        List<EnemyStats> enemies = new List<EnemyStats>();
+        // 收集敌人并按预计损失HP排序（低→高，无法战胜的排在最后）
+        List<(EnemyStats stats, int hpLoss)> enemies = new List<(EnemyStats, int)>();
         foreach (int id in enemyIDs)
         {
             EnemyStats stats = mapGen.GetEnemyStatsByID(id);
-            if (stats != null) enemies.Add(stats);
+            if (stats == null) continue;
+            enemies.Add((stats, MonsterManualEntryUI.SimulateBattle(player, stats)));
         }
-        enemies.Sort((a, b) => b.attack.CompareTo(a.attack));
+        enemies.Sort((a, b) =>
+        {
+            // 无法战胜(-1)排在最后，其余按损失HP升序
+            if (a.hpLoss < 0 && b.hpLoss < 0) return 0;
+            if (a.hpLoss < 0) return 1;
+            if (b.hpLoss < 0) return -1;
+            return a.hpLoss.CompareTo(b.hpLoss);
+        });
 
         // 生成条目
-        foreach (var enemy in enemies)
+        foreach (var entry in enemies)
         {
             GameObject entryGO = Instantiate(entryPrefab, contentTransform);
             MonsterManualEntryUI entryUI = entryGO.GetComponent<MonsterManualEntryUI>();
             if (entryUI != null)
             {
-                entryUI.Setup(enemy, player);
+                entryUI.Setup(entry.stats, player);
             }
         }
 

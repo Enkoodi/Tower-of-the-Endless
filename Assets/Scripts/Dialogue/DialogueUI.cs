@@ -10,8 +10,8 @@ using TMPro;
 ///   - Panel（可点击区域）
 ///     - 名称文本（TextMeshProUGUI）
 ///     - 对话内容文本（TextMeshProUGUI，支持打字机逐字显示）
-///     - 退出按钮（默认隐藏，最后一句showChoices=true时显示）
-///     - 动作按钮（默认隐藏，最后一句showChoices=true时显示）
+///     - 选项1按钮（默认隐藏，最后一句showChoices=true时显示）
+///     - 选项2按钮（默认隐藏，最后一句showChoices=true时显示）
 /// </summary>
 public class DialogueUI : MonoBehaviour
 {
@@ -26,10 +26,10 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI contentText;
 
     [Header("选项按钮（默认隐藏，最后一句对话打字完成后出现）")]
-    [SerializeField] private Button exitButton;
-    [SerializeField] private Button actionButton;
-    [SerializeField] private TextMeshProUGUI exitButtonLabel;
-    [SerializeField] private TextMeshProUGUI actionButtonLabel;
+    [SerializeField] private Button choice1Button;
+    [SerializeField] private Button choice2Button;
+    [SerializeField] private TextMeshProUGUI choice1Label;
+    [SerializeField] private TextMeshProUGUI choice2Label;
 
     [Header("打字机效果")]
     [SerializeField] private float charsPerSecond = 30f;
@@ -65,16 +65,16 @@ public class DialogueUI : MonoBehaviour
         if (clickArea != null)
             clickArea.onClick.AddListener(OnPanelClicked);
 
-        if (exitButton != null)
+        if (choice1Button != null)
         {
-            exitButton.onClick.AddListener(CloseDialogue);
-            exitButton.gameObject.SetActive(false);
+            choice1Button.onClick.AddListener(OnChoice1Clicked);
+            choice1Button.gameObject.SetActive(false);
         }
 
-        if (actionButton != null)
+        if (choice2Button != null)
         {
-            actionButton.onClick.AddListener(OnActionClicked);
-            actionButton.gameObject.SetActive(false);
+            choice2Button.onClick.AddListener(OnChoice2Clicked);
+            choice2Button.gameObject.SetActive(false);
         }
     }
 
@@ -98,8 +98,8 @@ public class DialogueUI : MonoBehaviour
             panelRoot.SetActive(true);
 
         // 隐藏选项按钮
-        if (exitButton != null) exitButton.gameObject.SetActive(false);
-        if (actionButton != null) actionButton.gameObject.SetActive(false);
+        if (choice1Button != null) choice1Button.gameObject.SetActive(false);
+        if (choice2Button != null) choice2Button.gameObject.SetActive(false);
 
         ShowLine(currentLineIndex);
         OnPanelOpen?.Invoke();
@@ -150,8 +150,8 @@ public class DialogueUI : MonoBehaviour
         // 如果是最后一句且选项按钮已显示，不拦截点击（让按钮响应）
         if (currentLineIndex >= lines.Length - 1 && currentLine.showChoices)
         {
-            bool choicesVisible = (exitButton != null && exitButton.gameObject.activeSelf)
-                               || (actionButton != null && actionButton.gameObject.activeSelf);
+            bool choicesVisible = (choice1Button != null && choice1Button.gameObject.activeSelf)
+                               || (choice2Button != null && choice2Button.gameObject.activeSelf);
             if (choicesVisible) return;
         }
 
@@ -243,27 +243,36 @@ public class DialogueUI : MonoBehaviour
 
     private void ShowChoiceButtons()
     {
-        if (exitButton != null)
+        if (choice1Button != null)
         {
-            exitButton.gameObject.SetActive(true);
-            if (exitButtonLabel != null)
-                exitButtonLabel.text = currentTrigger.ExitButtonText;
+            choice1Button.gameObject.SetActive(true);
+            if (choice1Label != null)
+                choice1Label.text = currentTrigger.Choice1Text;
         }
 
-        if (actionButton != null)
+        if (choice2Button != null)
         {
-            actionButton.gameObject.SetActive(true);
-            if (actionButtonLabel != null)
-                actionButtonLabel.text = currentTrigger.ActionButtonText;
+            choice2Button.gameObject.SetActive(true);
+            if (choice2Label != null)
+                choice2Label.text = currentTrigger.Choice2Text;
         }
     }
 
-    /// <summary>"确认"按钮点击 → 执行挂载在DialogueTrigger上的自定义逻辑</summary>
-    private void OnActionClicked()
+    /// <summary>"选项1"按钮点击 → 执行选项1逻辑，然后关闭对话</summary>
+    private void OnChoice1Clicked()
     {
         if (currentTrigger == null) return;
 
-        currentTrigger.OnActionTriggered?.Invoke();
+        currentTrigger.OnChoice1?.Invoke();
+        CloseDialogue();
+    }
+
+    /// <summary>"选项2"按钮点击 → 执行选项2逻辑，然后关闭对话</summary>
+    private void OnChoice2Clicked()
+    {
+        if (currentTrigger == null) return;
+
+        currentTrigger.OnChoice2?.Invoke();
         CloseDialogue();
     }
 }

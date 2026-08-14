@@ -53,6 +53,9 @@ public class MapGenerator : MonoBehaviour
     private Dictionary<int, PrefabEntry> itemMap;
     private Dictionary<int, PrefabEntry> npcMap;
 
+    /// <summary>当前楼层已生成的地形物体（网格坐标 → GameObject），用于移除墙等操作</summary>
+    private Dictionary<Vector2Int, GameObject> terrainObjects = new Dictionary<Vector2Int, GameObject>();
+
     /// <summary>本次加载的进入方向（决定出生在哪个楼梯）</summary>
     private EntryDirection entryDirection;
 
@@ -205,7 +208,7 @@ public class MapGenerator : MonoBehaviour
                 Vector3 cellPos = new Vector3(x + offsetX, -y + offsetY, 0f);
                 Vector2Int gridPos = new Vector2Int(x, y);
 
-                SpawnTerrain(GetCell(data.terrain, x, y), cellPos);
+                SpawnTerrain(GetCell(data.terrain, x, y), cellPos, gridPos, floor);
                 SpawnObject( GetCell(data.objects,  x, y), cellPos, gridPos, floor);
                 SpawnEnemy(  GetCell(data.enemies,  x, y), cellPos, gridPos, floor);
                 SpawnItem(   GetCell(data.items,    x, y), cellPos, gridPos, floor);
@@ -342,11 +345,19 @@ public class MapGenerator : MonoBehaviour
     //  生成四层内容（查字典 → 实例化）
     // ========================================================================
 
-    private void SpawnTerrain(int id, Vector3 pos)
+    private void SpawnTerrain(int id, Vector3 pos, Vector2Int gridPos, int floor)
     {
         // 地形层：0 = 空地（不生成），1+ 查表
         if (id == 0) return;
-        SpawnFromMap(terrainMap, id, pos);
+
+        // 若该墙已被移除（记忆），跳过生成
+        FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+        if (state != null && state.IsWallRemoved(gridPos))
+            return;
+
+        GameObject obj = SpawnFromMap(terrainMap, id, pos);
+        if (obj != null)
+            terrainObjects[gridPos] = obj;
     }
 
     private void SpawnObject(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -468,6 +479,12 @@ public class MapGenerator : MonoBehaviour
 
         FloorDownTeleporter dt = obj.GetComponent<FloorDownTeleporter>();
         if (dt != null) { dt.gridPosition = gridPos; dt.floorNumber = floor; }
+
+        AegisAmuletPickup amulet = obj.GetComponent<AegisAmuletPickup>();
+        if (amulet != null) { amulet.gridPosition = gridPos; amulet.floorNumber = floor; }
+
+        MagicAmplifierPickup amplifier = obj.GetComponent<MagicAmplifierPickup>();
+        if (amplifier != null) { amplifier.gridPosition = gridPos; amplifier.floorNumber = floor; }
     }
 
     private void SpawnNpc(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -480,6 +497,17 @@ public class MapGenerator : MonoBehaviour
             return;
         }
 
+        // 若该NPC已被移除（记忆），跳过生成；但需复活尚未被拾取的掉落物
+        FloorState state = FloorMemoryManager.Instance?.GetState(floor);
+        if (state != null && state.IsNpcRemoved(gridPos))
+        {
+            if (entry.prefab != null)
+            {
+                DropManager.Instance?.RespawnDropsForEnemy(entry.prefab, worldPos, floor, state, mapContainer);
+            }
+            return;
+        }
+
         GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
         obj.name = entry.displayName;
 
@@ -489,34 +517,57 @@ public class MapGenerator : MonoBehaviour
             npc.gridPosition = gridPos;
             npc.floorNumber = floor;
         }
+
+        // 这些组件可能挂在子物体上，用 GetComponentInChildren 更稳健
+        NpcRemover remover = obj.GetComponentInChildren<NpcRemover>();
+        if (remover != null)
+        {
+            remover.gridPosition = gridPos;
+            remover.floorNumber = floor;
+        }
+
+        DialogueTrigger trigger = obj.GetComponentInChildren<DialogueTrigger>();
+        if (trigger != null)
+        {
+            trigger.gridPosition = gridPos;
+            trigger.floorNumber = floor;
+        }
+
+        NpcBattler battler = obj.GetComponentInChildren<NpcBattler>();
+        if (battler != null)
+        {
+            battler.gridPosition = gridPos;
+            battler.floorNumber = floor;
+        }
     }
 
-    /// <summary>从查找表中取出对应的 PrefabEntry 并实例化</summary>
-    private void SpawnFromMap(Dictionary<int, PrefabEntry> map, int id, Vector3 pos)
+    /// <summary>从查找表中取出对应的 PrefabEntry 并实例化，返回实例化的 GameObject（失败返回 null）</summary>
+    private GameObject SpawnFromMap(Dictionary<int, PrefabEntry> map, int id, Vector3 pos)
     {
         if (map == null)
         {
             Debug.LogWarning($"[MapGenerator] 查找表未初始化，跳过 ID={id}");
-            return;
+            return null;
         }
 
         if (map.TryGetValue(id, out PrefabEntry entry))
         {
-            InstantiatePrefab(entry.prefab, pos, entry.displayName);
+            return InstantiatePrefab(entry.prefab, pos, entry.displayName);
         }
         else
         {
             Debug.LogWarning($"[MapGenerator] 未注册的 ID={id}，请在 Inspector 中补充对应 PrefabEntry");
+            return null;
         }
     }
 
-    /// <summary>实际的 Instantiate 操作</summary>
-    private void InstantiatePrefab(GameObject prefab, Vector3 pos, string displayName)
+    /// <summary>实际的 Instantiate 操作，返回实例化的 GameObject（失败返回 null）</summary>
+    private GameObject InstantiatePrefab(GameObject prefab, Vector3 pos, string displayName)
     {
         if (prefab == null)
         {
             Debug.LogWarning($"[MapGenerator] Prefab 为空：{displayName}");
-            return;
+            return null;
         }
 
         GameObject obj = Instantiate(prefab, pos, Quaternion.identity, mapContainer);
@@ -524,6 +575,7 @@ public class MapGenerator : MonoBehaviour
         {
             obj.name = displayName;
         }
+        return obj;
     }
 
     // ========================================================================
@@ -669,7 +721,27 @@ public class MapGenerator : MonoBehaviour
             Destroy(mapContainer.GetChild(i).gameObject);
         }
 
+        terrainObjects.Clear();
         Debug.Log("[MapGenerator] 地图已清空");
+    }
+
+    /// <summary>
+    /// 移除指定网格坐标的墙（变为可通行）。仅移除当前已生成的地形物体，
+    /// 记忆记录由调用方（如 WallRemover）通过 FloorMemoryManager 完成。
+    /// </summary>
+    public void RemoveWallAt(Vector2Int gridPos)
+    {
+        if (terrainObjects.TryGetValue(gridPos, out GameObject obj))
+        {
+            if (obj != null)
+                Destroy(obj);
+            terrainObjects.Remove(gridPos);
+            Debug.Log($"[MapGenerator] 已移除墙 ({gridPos.x}, {gridPos.y})");
+        }
+        else
+        {
+            Debug.LogWarning($"[MapGenerator] 坐标 ({gridPos.x}, {gridPos.y}) 没有已生成的地形物体");
+        }
     }
 }
 

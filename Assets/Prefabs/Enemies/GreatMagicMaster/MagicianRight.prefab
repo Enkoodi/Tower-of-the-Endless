@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 870108904562937808}
   - component: {fileID: 4821260502276366771}
   - component: {fileID: 7111369101488223564}
+  - component: {fileID: 4818609570732384728}
   m_Layer: 7
   m_Name: MagicianRight
   m_TagString: Untagged
@@ -146,3 +147,16 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: a5507224a34c73f4882b9a7f1afea34d, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!114 &4818609570732384728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6887109803221762784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d2d7312c4353c4481e4230496db29a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damagePercent: 100

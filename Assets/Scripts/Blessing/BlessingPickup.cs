@@ -59,7 +59,7 @@ public class BlessingPickup : MonoBehaviour
         // 通知 DropManager 移除此位置的活跃掉落记录
         DropManager.Instance?.MarkDropPickedUp(floorNumber, gridPosition);
 
-        BlessingManager.Instance.Show(playerData, this);
+        BlessingManager.Instance.ShowWithPool(playerData, overridePool, this);
         return true;
     }
 

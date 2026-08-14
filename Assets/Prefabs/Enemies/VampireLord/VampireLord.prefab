@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 7673389579196069063}
   - component: {fileID: 628805217729711535}
   - component: {fileID: 1375199842500960785}
-  - component: {fileID: 4375110233206308319}
   - component: {fileID: -4972692971317779685}
   - component: {fileID: -2454841182457994963}
-  m_Layer: 7
+  - component: {fileID: -3616625670769001871}
+  m_Layer: 11
   m_Name: VampireLord
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,21 +133,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4375110233206308319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3729011368856514771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e84782d43256ab4ea04ad192c1c16ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: fbc6fbca86ab0064ca4b0e988cedb114, type: 2}
-  gridPosition: {x: 0, y: 0}
-  floorNumber: 0
 --- !u!114 &-4972692971317779685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,9 +147,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drops:
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
-    offset: {x: 2, y: 1}
+    offset: {x: 1, y: 1}
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
-    offset: {x: -2, y: 1}
+    offset: {x: -1, y: 1}
 --- !u!114 &-2454841182457994963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,11 +162,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c6e4c523e0264b44a4ed104c88dcb59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueLines: []
+  dialogueLines:
+  - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
+    content: "......\u8FD9\u662F\u7B2C\u51E0\u6B21\u4E86"
+    showChoices: 0
+  - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
+    content: "\u4F60\u7684\u4EFB\u52A1\u662F\u6740\u6B7B\u9B54\u738B\uFF0C\u7136\u540E\u8FDB\u5165\u79FB\u6D8C\u4E4B\u95E8\uFF0C\u8FD9\u5F88\u7B80\u5355\u5BF9\u5427"
+    showChoices: 0
+  - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
+    content: ...
+    showChoices: 0
+  - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
+    content: "\u4F60\u600E\u4E48\u8FD8\u5728\uFF0C\u662F\u60F3\u8981\u6311\u6218\u6211\u5417\uFF1F"
+    showChoices: 1
   exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
+  actionButtonText: "\u6218\u6597"
   onActionTriggered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -3616625670769001871}
+        m_TargetAssemblyTypeName: NpcBattler, Assembly-CSharp
+        m_MethodName: StartBattleWithPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &-3616625670769001871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3729011368856514771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce80629684a318e42beee20dc245e6b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyStats: {fileID: 11400000, guid: fbc6fbca86ab0064ca4b0e988cedb114, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0

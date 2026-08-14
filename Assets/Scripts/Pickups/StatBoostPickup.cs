@@ -13,6 +13,9 @@ public class StatBoostPickup : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    /// <summary>增益数据（供 MerchantPurchase 等外部脚本读取）</summary>
+    public StatBoostData Data => data;
+
     /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public Vector2Int gridPosition;
 

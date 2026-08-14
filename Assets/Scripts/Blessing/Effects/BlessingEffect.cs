@@ -18,11 +18,39 @@ public abstract class BlessingEffect
         Level = 1;
     }
 
+    /// <summary>
+    /// 根据 BlessingID 创建对应的特殊祝福效果实例（未注册返回 null）。
+    /// </summary>
+    public static BlessingEffect Create(BlessingID id)
+    {
+        return id switch
+        {
+            BlessingID.BythosBlessing => new BythosBlessingEffect(),
+            BlessingID.AgapeBlessing => new AgapeBlessingEffect(),
+            BlessingID.AletheiaBlessing => new AletheiaBlessingEffect(),
+            BlessingID.Allotrioi => new AllotrioiEffect(),
+            BlessingID.CharisBlessing => new CharisBlessingEffect(),
+            BlessingID.DemiurgeBlessing => new DemiurgeBlessingEffect(),
+            BlessingID.GnosisBlessing => new GnosisBlessingEffect(),
+            BlessingID.KabbalahTree => new KabbalahTreeEffect(),
+            BlessingID.Longinus => new LonginusEffect(),
+            BlessingID.SigeBlessing => new SigeBlessingEffect(),
+            BlessingID.SophiaBlessing => new SophiaBlessingEffect(),
+            _ => null,
+        };
+    }
+
     /// <summary>层数 +1。</summary>
     public virtual void AddLevel()
     {
         Level++;
         Debug.Log($"[BlessingEffect] {EffectId} 层数 +1（当前 {Level}）");
+    }
+
+    /// <summary>设置层数（供读档恢复使用，最小为 1）。</summary>
+    public void SetLevel(int level)
+    {
+        Level = Mathf.Max(1, level);
     }
 
     public bool HasLevel(int minLevel) => Level >= minLevel;

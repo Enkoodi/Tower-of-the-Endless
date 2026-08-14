@@ -101,6 +101,11 @@ public class SaveManager : MonoBehaviour
             playerZ = player.transform.position.z
         };
 
+        // 特殊祝福效果
+        data.specialBlessings = BlessingManager.Instance != null
+            ? BlessingManager.Instance.GetActiveEffectLevels()
+            : new System.Collections.Generic.Dictionary<string, int>();
+
         // 楼层状态
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
         data.currentFloor = mapGen != null ? mapGen.CurrentFloor : -1;
@@ -193,6 +198,12 @@ public class SaveManager : MonoBehaviour
 
         // 2. 从全局存档覆盖 aeonKeys
         ApplyGlobalAeonKeys();
+
+        // 2.5. 恢复特殊祝福效果
+        if (BlessingManager.Instance != null && data.specialBlessings != null)
+        {
+            BlessingManager.Instance.RestoreEffects(data.specialBlessings);
+        }
 
         // 3. 恢复楼层记忆
         if (FloorMemoryManager.Instance != null && data.floorStates != null)

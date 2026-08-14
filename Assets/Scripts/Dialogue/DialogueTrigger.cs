@@ -13,11 +13,14 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private DialogueLine[] dialogueLines;
 
     [Header("选项按钮文本")]
-    [SerializeField] private string exitButtonText = "离开";
-    [SerializeField] private string actionButtonText = "确认";
+    [SerializeField] private string choice1Text = "选项1";
+    [SerializeField] private string choice2Text = "选项2";
 
-    [Header("自定义逻辑（选择<确认>时触发，挂载目标脚本的方法）")]
-    [SerializeField] private UnityEvent onActionTriggered;
+    [Header("选项1逻辑（选择<选项1>时触发，挂载目标脚本的方法）")]
+    [SerializeField] private UnityEvent onChoice1;
+
+    [Header("选项2逻辑（选择<选项2>时触发，挂载目标脚本的方法）")]
+    [SerializeField] private UnityEvent onChoice2;
 
     /// <summary>在地图网格中的坐标（由MapGenerator在生成时设置）</summary>
     [HideInInspector] public Vector2Int gridPosition;
@@ -26,7 +29,8 @@ public class DialogueTrigger : MonoBehaviour
     [HideInInspector] public int floorNumber;
 
     public DialogueLine[] Lines => dialogueLines;
-    public string ExitButtonText => exitButtonText;
-    public string ActionButtonText => actionButtonText;
-    public UnityEvent OnActionTriggered => onActionTriggered;
+    public string Choice1Text => choice1Text;
+    public string Choice2Text => choice2Text;
+    public UnityEvent OnChoice1 => onChoice1;
+    public UnityEvent OnChoice2 => onChoice2;
 }

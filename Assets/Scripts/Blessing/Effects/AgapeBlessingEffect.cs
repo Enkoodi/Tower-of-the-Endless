@@ -1,13 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// 『爱』的祝福 — 每回合损失当前生命值 5%×Level，同时获得攻击力 +15×Level。
+/// 『爱』的祝福 — 每回合损失当前生命值 3%×Level，同时获得攻击力 +60×Level。
 /// 攻击力在战斗结束后移除。
 /// </summary>
 public class AgapeBlessingEffect : BlessingEffect
 {
-    private const int HpPercentPerLevel = 5;
-    private const int AttackPerLevel = 15;
+    private const int HpPercentPerLevel = 3;
+    private const int AttackPerLevel = 60;
 
     private int accumulatedAttackBonus = 0;
 

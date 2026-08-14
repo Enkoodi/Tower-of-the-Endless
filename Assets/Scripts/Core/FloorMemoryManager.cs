@@ -118,6 +118,10 @@ public class FloorMemoryManager : MonoBehaviour
                 entry.activeDropItems.Add(FloorStateEntry.PosToString(pos));
             foreach (var pkv in state.pinceredEnemies)
                 entry.pinceredEnemies.Add($"{pkv.Key.x},{pkv.Key.y},{pkv.Value}");
+            foreach (var pos in state.removedWalls)
+                entry.removedWalls.Add(FloorStateEntry.PosToString(pos));
+            foreach (var pos in state.removedNpcs)
+                entry.removedNpcs.Add(FloorStateEntry.PosToString(pos));
 
             entries.Add(entry);
         }
@@ -149,6 +153,10 @@ public class FloorMemoryManager : MonoBehaviour
                 if (parts.Length == 3 && int.TryParse(parts[0], out int px) && int.TryParse(parts[1], out int py) && int.TryParse(parts[2], out int hp))
                     state.pinceredEnemies[new Vector2Int(px, py)] = hp;
             }
+            foreach (var s in entry.removedWalls)
+                state.removedWalls.Add(FloorStateEntry.StringToPos(s));
+            foreach (var s in entry.removedNpcs)
+                state.removedNpcs.Add(FloorStateEntry.StringToPos(s));
 
             floorStates[entry.floorNumber] = state;
         }

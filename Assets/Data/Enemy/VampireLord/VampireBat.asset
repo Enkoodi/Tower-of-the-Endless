@@ -18,7 +18,7 @@ MonoBehaviour:
   attack: 450
   defense: 175
   attackCount: 1
-  lifeSteal: 50
+  lifeSteal: 20
   reflectDamage: 0
   damageReduction: 0
   manaCharge: 200

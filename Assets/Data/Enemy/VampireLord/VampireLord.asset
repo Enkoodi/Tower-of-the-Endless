@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: "\u5438\u8840\u9B3C\u9886\u4E3B"
   enemySprite: {fileID: 21300000, guid: ebd6fc0d8ca6d9a4f93379d35d4aaf12, type: 3}
-  hp: 1200
+  hp: 2000
   attack: 600
   defense: 300
   attackCount: 3
   lifeSteal: 100
   reflectDamage: 20
-  manaCharge: 500
-  manaMax: 50
+  damageReduction: 30
+  manaCharge: 1000
+  manaMax: 100
   speed: 200
   goldReward: 1000

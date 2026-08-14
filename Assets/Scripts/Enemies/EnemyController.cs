@@ -29,6 +29,9 @@ public class EnemyController : MonoBehaviour
 
     private bool isDefeated = false;
 
+    /// <summary>是否为脚本敌人（对话战斗等），为 true 时击败不记录楼层记忆、不生成掉落</summary>
+    [HideInInspector] public bool isScriptedEnemy;
+
     /// <summary>敌人被击败时触发，参数为被击败的敌人自身</summary>
     public event System.Action<EnemyController> OnDefeated;
 
@@ -64,26 +67,43 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
-        if (stats != null)
-        {
-            enemyName     = stats.enemyName;
-            enemySprite   = stats.enemySprite;
-            hp            = stats.hp;
-            attack        = stats.attack;
-            defense       = stats.defense;
-            attackCount   = stats.attackCount;
-            lifeSteal     = stats.lifeSteal;
-            reflectDamage = stats.reflectDamage;
-            damageReduction = stats.damageReduction;
-            manaCharge    = stats.manaCharge;
-            manaMax       = stats.manaMax;
-            speed         = stats.speed;
-            goldReward    = stats.goldReward;
-        }
+        LoadFromStats();
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (enemySprite != null && sr != null)
             sr.sprite = enemySprite;
+    }
+
+    /// <summary>
+    /// 运行时用指定数据资产初始化敌人（供对话战斗等动态生成敌人的脚本调用）。
+    /// </summary>
+    public void InitWithStats(EnemyStats newStats)
+    {
+        stats = newStats;
+        LoadFromStats();
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (enemySprite != null && sr != null)
+            sr.sprite = enemySprite;
+    }
+
+    private void LoadFromStats()
+    {
+        if (stats == null) return;
+
+        enemyName     = stats.enemyName;
+        enemySprite   = stats.enemySprite;
+        hp            = stats.hp;
+        attack        = stats.attack;
+        defense       = stats.defense;
+        attackCount   = stats.attackCount;
+        lifeSteal     = stats.lifeSteal;
+        reflectDamage = stats.reflectDamage;
+        damageReduction = stats.damageReduction;
+        manaCharge    = stats.manaCharge;
+        manaMax       = stats.manaMax;
+        speed         = stats.speed;
+        goldReward    = stats.goldReward;
     }
 
     // ============================================================
@@ -124,13 +144,16 @@ public class EnemyController : MonoBehaviour
         if (isDefeated) return;
         isDefeated = true;
 
-        // 记录到楼层记忆中
-        if (FloorMemoryManager.Instance != null)
-            FloorMemoryManager.Instance.GetOrCreateState(floorNumber).MarkEnemyDefeated(gridPosition);
-        else
-            Debug.LogWarning($"[Enemy] FloorMemoryManager.Instance 为 null，无法记录击败：{enemyName} (楼层{floorNumber}, 坐标{gridPosition})");
+        // 普通敌人：记录到楼层记忆（脚本敌人不记录，由 NpcBattler 等处理NPC记忆）
+        if (!isScriptedEnemy)
+        {
+            if (FloorMemoryManager.Instance != null)
+                FloorMemoryManager.Instance.GetOrCreateState(floorNumber).MarkEnemyDefeated(gridPosition);
+            else
+                Debug.LogWarning($"[Enemy] FloorMemoryManager.Instance 为 null，无法记录击败：{enemyName} (楼层{floorNumber}, 坐标{gridPosition})");
+        }
 
-        // 通知 DropManager 处理掉落物
+        // 生成掉落物（脚本敌人若在预制体上配置了 ItemDrop，同样会掉落，与正常战斗一致）
         DropManager.Instance?.OnEnemyDefeated(this);
 
         // 通知订阅者（如战斗门等）

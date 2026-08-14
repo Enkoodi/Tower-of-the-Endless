@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4815914822436662981}
   - component: {fileID: 5882550691374339954}
   - component: {fileID: 2498189835003485949}
+  - component: {fileID: 6505251222250293058}
   m_Layer: 7
   m_Name: Priest
   m_TagString: Untagged
@@ -144,3 +145,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 9e2920d9d2dfcfc40a275420a0529f8e, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &6505251222250293058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9036696253941795631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d2d7312c4353c4481e4230496db29a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damagePercent: 100

@@ -63,6 +63,14 @@ public class PlayerMove : MonoBehaviour
         };
         DialogueUI.OnPanelClose += () => isInDialogue = false;
 
+        // 战斗事件（覆盖对话触发的战斗，正常战斗 TryMove 也会自行设置 isInBattle）
+        BattleManager.OnBattleOpen += () =>
+        {
+            isInBattle = true;
+            keyStack.Clear();
+        };
+        BattleManager.OnBattleClose += () => isInBattle = false;
+
         MonsterManualUI.OnPanelOpen += () =>
         {
             isViewingManual = true;
@@ -74,7 +82,7 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         // 怪物手册快捷键 — 始终可响应，不受面板打开状态影响
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             MonsterManualUI manual = FindAnyObjectByType<MonsterManualUI>();
             if (manual != null) manual.Toggle();
@@ -93,13 +101,23 @@ public class PlayerMove : MonoBehaviour
         TrackKeyRelease(KeyCode.D, KeyCode.RightArrow, Vector2.right);
 
         // 快速跳层：Q上楼梯，E下楼梯（需在楼梯9宫格内）
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             TryQuickFloorJump(true);
         }
-        else if (Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.Q))
         {
             TryQuickFloorJump(false);
+        }
+
+        // 传送器使用：X上楼，Z下楼（消耗数量，任意位置可用）
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            TryUseUpTeleporter();
+        }
+        else if (Input.GetKeyDown(KeyCode.Z))
+        {
+            TryUseDownTeleporter();
         }
 
         if (!isMoving && Time.time - lastMoveTime >= moveDelay && keyStack.Count > 0)
@@ -199,6 +217,30 @@ public class PlayerMove : MonoBehaviour
             isMoving = true;
             if (playerData != null)
                 downTeleporter.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 AegisAmuletPickup — 护身符装备，拾取后直接走到该格
+        AegisAmuletPickup amulet = hit.GetComponent<AegisAmuletPickup>();
+        if (amulet != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                amulet.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 MagicAmplifierPickup — 魔力增幅器装备，拾取后直接走到该格
+        MagicAmplifierPickup amplifier = hit.GetComponent<MagicAmplifierPickup>();
+        if (amplifier != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                amplifier.TryPickup(playerData);
             StartCoroutine(SmoothMove());
             return;
         }
@@ -376,6 +418,78 @@ public class PlayerMove : MonoBehaviour
         EntryDirection entryDir = goingUp ? EntryDirection.FromBelow : EntryDirection.FromAbove;
         Debug.Log($"[QuickJump] 快速跳层：第 {currentFloor} 层 → 第 {targetFloor} 层（{entryDir}）");
         mapGen.LoadFloor(targetFloor, entryDir);
+    }
+
+    /// <summary>使用上楼传送器：消耗一个，向上传送一层（出生在目标层下楼梯）。</summary>
+    private void TryUseUpTeleporter()
+    {
+        if (playerData == null || playerData.UpTeleporterCount <= 0)
+        {
+            Debug.Log("[PlayerMove] 没有上楼传送器可用");
+            return;
+        }
+
+        MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
+        if (mapGen == null)
+        {
+            Debug.LogError("[PlayerMove] 未找到 MapGenerator，无法使用上楼传送器");
+            return;
+        }
+
+        int targetFloor = mapGen.CurrentFloor + 1;
+
+        // 检查目标楼层是否存在
+        string path = $"floor_{targetFloor:D2}";
+        if (Resources.Load<TextAsset>(path) == null)
+        {
+            Debug.LogWarning("[PlayerMove] 已是最高层，无法再向上传送");
+            return;
+        }
+
+        playerData.UseUpTeleporter();
+
+        // FromBelow = 从下层进入 → 出生在目标层的下楼梯(9)
+        Debug.Log($"[PlayerMove] 使用上楼传送器：第 {mapGen.CurrentFloor} 层 → 第 {targetFloor} 层");
+        mapGen.LoadFloor(targetFloor, EntryDirection.FromBelow);
+    }
+
+    /// <summary>使用下楼传送器：消耗一个，向下传送一层（出生在目标层上楼梯）。</summary>
+    private void TryUseDownTeleporter()
+    {
+        if (playerData == null || playerData.DownTeleporterCount <= 0)
+        {
+            Debug.Log("[PlayerMove] 没有下楼传送器可用");
+            return;
+        }
+
+        MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
+        if (mapGen == null)
+        {
+            Debug.LogError("[PlayerMove] 未找到 MapGenerator，无法使用下楼传送器");
+            return;
+        }
+
+        int targetFloor = mapGen.CurrentFloor - 1;
+
+        if (targetFloor < 1)
+        {
+            Debug.LogWarning("[PlayerMove] 已经是第一层，无法再向下传送");
+            return;
+        }
+
+        // 检查目标楼层是否存在
+        string path = $"floor_{targetFloor:D2}";
+        if (Resources.Load<TextAsset>(path) == null)
+        {
+            Debug.LogWarning($"[PlayerMove] 目标楼层 {targetFloor} 不存在");
+            return;
+        }
+
+        playerData.UseDownTeleporter();
+
+        // FromAbove = 从上层进入 → 出生在目标层的上楼梯(8)
+        Debug.Log($"[PlayerMove] 使用下楼传送器：第 {mapGen.CurrentFloor} 层 → 第 {targetFloor} 层");
+        mapGen.LoadFloor(targetFloor, EntryDirection.FromAbove);
     }
 
     /// <summary>检测玩家周围9宫格内是否有楼梯</summary>

@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 2717138976867659459}
   - component: {fileID: 4385160166350302774}
   - component: {fileID: -8079505446018661887}
+  - component: {fileID: 3531502297363944772}
+  - component: {fileID: -1086902482788626427}
   m_Layer: 11
   m_Name: 12
   m_TagString: Untagged
@@ -144,13 +146,70 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - speakerName: "\u516C\u4E3B"
-    content: 12345
+  - speakerName: "\u4F60"
+    content: "\u516C\u4E3B\u5C45\u7136\u662F\u53EA\u53F2\u83B1\u59C6\uFF0C\u88AB\u9A97\u4E86\u5417"
     showChoices: 1
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
-  onActionTriggered:
+  choice1Text: "\u51FB\u8D25\u5E76\u68C0\u67E5"
+  choice2Text: "\u79BB\u5F00"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3531502297363944772}
+        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
+        m_MethodName: TryPurchase
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -1086902482788626427}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &3531502297363944772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56386739824309385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCost: 0
+  items:
+  - prefab: {fileID: 8867869485332829643, guid: c5f2ae4a6df6c31428eb124241ae8804, type: 3}
+    quantity: 1
+--- !u!114 &-1086902482788626427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56386739824309385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16044851492cf3142a1a14dbb6035942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0

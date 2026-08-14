@@ -61,22 +61,7 @@ public class BlessingManager : MonoBehaviour
             return;
         }
 
-        BlessingEffect effect = debugAddEffectId switch
-        {
-            BlessingID.BythosBlessing => new BythosBlessingEffect(),
-            BlessingID.AgapeBlessing => new AgapeBlessingEffect(),
-            BlessingID.AletheiaBlessing => new AletheiaBlessingEffect(),
-            BlessingID.Allotrioi => new AllotrioiEffect(),
-            BlessingID.CharisBlessing => new CharisBlessingEffect(),
-            BlessingID.DemiurgeBlessing => new DemiurgeBlessingEffect(),
-            BlessingID.GnosisBlessing => new GnosisBlessingEffect(),
-            BlessingID.KabbalahTree => new KabbalahTreeEffect(),
-            BlessingID.Longinus => new LonginusEffect(),
-            BlessingID.SigeBlessing => new SigeBlessingEffect(),
-            BlessingID.SophiaBlessing => new SophiaBlessingEffect(),
-            // TODO: 其他特殊祝福在此注册
-            _ => null,
-        };
+        BlessingEffect effect = BlessingEffect.Create(debugAddEffectId);
 
         if (effect != null)
         {
@@ -128,6 +113,49 @@ public class BlessingManager : MonoBehaviour
             Debug.Log($"[BlessingManager] 获得特殊祝福：{effectId}（Level 1）");
         }
         RefreshInspectorList();
+    }
+
+    /// <summary>
+    /// 获取所有特殊祝福的 ID 与层数，用于存档。
+    /// </summary>
+    public Dictionary<string, int> GetActiveEffectLevels()
+    {
+        var result = new Dictionary<string, int>();
+        foreach (var kv in activeEffects)
+            result[kv.Key] = kv.Value.Level;
+        return result;
+    }
+
+    /// <summary>
+    /// 根据存档数据恢复特殊祝福（清空现有并重建）。
+    /// </summary>
+    public void RestoreEffects(Dictionary<string, int> effects)
+    {
+        activeEffects.Clear();
+
+        if (effects == null) return;
+
+        foreach (var kv in effects)
+        {
+            if (!System.Enum.TryParse(kv.Key, out BlessingID id))
+            {
+                Debug.LogWarning($"[BlessingManager] 读档：无法解析特殊祝福 ID {kv.Key}，跳过");
+                continue;
+            }
+
+            BlessingEffect effect = BlessingEffect.Create(id);
+            if (effect == null)
+            {
+                Debug.LogWarning($"[BlessingManager] 读档：未注册的特殊祝福 {kv.Key}，跳过");
+                continue;
+            }
+
+            effect.SetLevel(kv.Value);
+            activeEffects[kv.Key] = effect;
+        }
+
+        RefreshInspectorList();
+        Debug.Log($"[BlessingManager] 读档恢复 {activeEffects.Count} 个特殊祝福");
     }
 
     // ============================================================

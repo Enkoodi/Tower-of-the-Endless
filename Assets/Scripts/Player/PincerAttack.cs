@@ -156,15 +156,16 @@ public class PincerAttack : MonoBehaviour
         // 中间免疫检查
         bool midIsA = pincerMap.TryGetValue(midPos, out PincerAttack midPincer);
         string pattern = midIsA ? "AAA" : "ABA";
-        if (midIsA && midPincer.IsImmune)
-        {
-            Debug.Log($"[夹击] {pattern} 形成但中间角色免疫夹击");
-            return;
-        }
 
         // 对中间角色造成伤害
         if (midPos == playerGridPos)
         {
+            // 玩家免疫：PincerAttack.isImmune 或护身符 PlayerImmunity
+            if ((midIsA && midPincer.IsImmune) || IsPlayerPincerImmune())
+            {
+                Debug.Log($"[夹击] {pattern} 形成但玩家免疫夹击");
+                return;
+            }
             // 玩家是受害者 — 可重复被夹击
             ApplyDamageToPlayer(pattern);
         }
@@ -212,8 +213,8 @@ public class PincerAttack : MonoBehaviour
         bool playerIsA = playerPincer != null;
         string pattern = playerIsA ? "AAA" : "ABA";
 
-        // 玩家免疫检查
-        if (playerIsA && playerPincer.IsImmune)
+        // 玩家免疫：PincerAttack.isImmune 或护身符 PlayerImmunity
+        if ((playerIsA && playerPincer.IsImmune) || IsPlayerPincerImmune())
         {
             Debug.Log($"[夹击] {pattern} 形成但玩家免疫夹击");
             return;
@@ -221,6 +222,17 @@ public class PincerAttack : MonoBehaviour
 
         // 玩家是受害者 — 可重复，不持久化
         ApplyDamageToPlayer(pattern);
+    }
+
+    // ============================================================
+    //  免疫检查
+    // ============================================================
+
+    /// <summary>检查玩家是否拥有护身符免疫（PlayerImmunity 组件）</summary>
+    private static bool IsPlayerPincerImmune()
+    {
+        PlayerData player = FindAnyObjectByType<PlayerData>();
+        return player != null && player.GetComponent<PlayerImmunity>() != null;
     }
 
     // ============================================================

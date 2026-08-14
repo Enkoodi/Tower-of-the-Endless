@@ -12,8 +12,10 @@ GameObject:
   - component: {fileID: 5129926343278377020}
   - component: {fileID: 3013410102031519395}
   - component: {fileID: -2069880403602973534}
+  - component: {fileID: 3221084027521959861}
+  - component: {fileID: 3366263962069831429}
   m_Layer: 11
-  m_Name: Shop
+  m_Name: 26F Shop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,11 +145,74 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c6e4c523e0264b44a4ed104c88dcb59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueLines: []
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
-  onActionTriggered:
+  dialogueLines:
+  - speakerName: "\u795E\u79D8\u5546\u4EBA"
+    content: ......
+    showChoices: 0
+  - speakerName: "\u795E\u79D8\u5546\u4EBA"
+    content: "\u6211\u6361\u5230\u4E86\u628A\u84DD\u94A5\u5319\uFF0C\u9001\u7ED9\u60A8\u4E86"
+    showChoices: 1
+  choice1Text: "\u63A5\u53D7"
+  choice2Text: "\u62D2\u7EDD"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3221084027521959861}
+        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
+        m_MethodName: TryPurchase
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3366263962069831429}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &3221084027521959861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCost: 0
+  items:
+  - prefab: {fileID: 860276125151747509, guid: 72208ada5be14b84f8d3d38a8fb00077, type: 3}
+    quantity: 1
+--- !u!114 &3366263962069831429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16044851492cf3142a1a14dbb6035942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0

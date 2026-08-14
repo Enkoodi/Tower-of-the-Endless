@@ -40,6 +40,11 @@ public class GameSaveData
     public int aeonKeys;
 
     // ============================================================
+    //  特殊祝福效果（BlessingID → 层数）
+    // ============================================================
+    public Dictionary<string, int> specialBlessings = new Dictionary<string, int>();
+
+    // ============================================================
     //  楼层状态（序列化格式）
     // ============================================================
     public List<FloorStateEntry> floorStates = new List<FloorStateEntry>();
@@ -75,6 +80,8 @@ public class FloorStateEntry
     public List<string> openedBattleDoors = new List<string>();
     public List<string> activeDropItems = new List<string>();
     public List<string> pinceredEnemies = new List<string>(); // 格式: "x,y,剩余HP"
+    public List<string> removedWalls = new List<string>(); // 格式: "x,y"
+    public List<string> removedNpcs = new List<string>(); // 格式: "x,y"
 
     /// <summary>将 Vector2Int 序列化为 "x,y" 字符串</summary>
     public static string PosToString(Vector2Int pos) => $"{pos.x},{pos.y}";

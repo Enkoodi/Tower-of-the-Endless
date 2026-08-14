@@ -28,6 +28,12 @@ public class FloorState
     /// <summary>已被夹击扣血的敌人，网格坐标 → 剩余HP</summary>
     public Dictionary<Vector2Int, int> pinceredEnemies = new Dictionary<Vector2Int, int>();
 
+    /// <summary>已被移除（消失）的墙网格坐标</summary>
+    public HashSet<Vector2Int> removedWalls = new HashSet<Vector2Int>();
+
+    /// <summary>已被移除（消失）的NPC网格坐标</summary>
+    public HashSet<Vector2Int> removedNpcs = new HashSet<Vector2Int>();
+
     public FloorState(int floor)
     {
         floorNumber = floor;
@@ -39,6 +45,8 @@ public class FloorState
     public bool IsBattleDoorOpened(Vector2Int pos) => openedBattleDoors.Contains(pos);
     public bool IsDropActive(Vector2Int pos) => activeDropItems.Contains(pos);
     public bool IsEnemyPincered(Vector2Int pos) => pinceredEnemies.ContainsKey(pos);
+    public bool IsWallRemoved(Vector2Int pos) => removedWalls.Contains(pos);
+    public bool IsNpcRemoved(Vector2Int pos) => removedNpcs.Contains(pos);
 
     public void MarkEnemyDefeated(Vector2Int pos) => defeatedEnemies.Add(pos);
     public void MarkItemPickedUp(Vector2Int pos) => pickedUpItems.Add(pos);
@@ -47,6 +55,8 @@ public class FloorState
     public void MarkDropActive(Vector2Int pos) => activeDropItems.Add(pos);
     public void MarkDropPickedUp(Vector2Int pos) => activeDropItems.Remove(pos);
     public void MarkEnemyPincered(Vector2Int pos, int remainingHp) => pinceredEnemies[pos] = remainingHp;
+    public void MarkWallRemoved(Vector2Int pos) => removedWalls.Add(pos);
+    public void MarkNpcRemoved(Vector2Int pos) => removedNpcs.Add(pos);
 
     public void Reset()
     {
@@ -56,5 +66,7 @@ public class FloorState
         openedBattleDoors.Clear();
         activeDropItems.Clear();
         pinceredEnemies.Clear();
+        removedWalls.Clear();
+        removedNpcs.Clear();
     }
 }

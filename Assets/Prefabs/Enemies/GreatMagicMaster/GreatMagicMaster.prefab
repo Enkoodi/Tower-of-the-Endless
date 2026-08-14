@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6898296316565704978}
   - component: {fileID: 8250301807622906115}
   - component: {fileID: -144056700419550264}
+  - component: {fileID: -5032102245763109053}
   m_Layer: 7
   m_Name: GreatMagicMaster
   m_TagString: Untagged
@@ -162,3 +163,20 @@ MonoBehaviour:
   drops:
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
     offset: {x: 0, y: 2}
+  - prefab: {fileID: 760130365827512129, guid: a424eeccb1556de4abe04cdb3157600d, type: 3}
+    offset: {x: -1, y: 2}
+  - prefab: {fileID: 6065402828552810863, guid: b82022b38ef97ee409f5c8352afe441d, type: 3}
+    offset: {x: 1, y: 2}
+--- !u!114 &-5032102245763109053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7672877958684205967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d2d7312c4353c4481e4230496db29a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damagePercent: 200

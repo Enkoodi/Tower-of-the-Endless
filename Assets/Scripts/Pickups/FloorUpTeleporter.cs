@@ -2,8 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// 上楼传送器 — 挂载在道具 Prefab 上。
-/// 玩家拾取后按 Z 键可向上传送一层，传送到目标层的"下楼梯"位置。
-/// 仅可使用一次，使用后销毁。
+/// 玩家走到该格子时拾取，上楼传送器数量 +1，随后由玩家按 X 键使用。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
 public class FloorUpTeleporter : MonoBehaviour
@@ -19,9 +18,6 @@ public class FloorUpTeleporter : MonoBehaviour
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
 
-    private bool isPickedUp = false;
-    private bool isUsed = false;
-
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -34,28 +30,18 @@ public class FloorUpTeleporter : MonoBehaviour
             sr.sprite = pickupSprite;
     }
 
-    void Update()
-    {
-        if (!isPickedUp || isUsed) return;
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            TryUse();
-        }
-    }
-
     /// <summary>
     /// 玩家走到该格子时由 PlayerMove 调用，拾取传送器。
     /// </summary>
     public bool TryPickup(PlayerData playerData)
     {
-        if (isPickedUp) return false;
+        if (playerData == null)
+        {
+            Debug.LogError($"[FloorUpTeleporter] playerData 为 null，无法拾取");
+            return false;
+        }
 
-        isPickedUp = true;
-
-        // 隐藏视觉并禁用碰撞，让玩家可以站在该格
-        if (sr != null) sr.enabled = false;
-        GetComponent<BoxCollider2D>().enabled = false;
+        playerData.AddUpTeleporter(1);
 
         // 记录到楼层记忆中，防止重返楼层时重复生成
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
@@ -63,41 +49,9 @@ public class FloorUpTeleporter : MonoBehaviour
         // 通知 DropManager 移除此位置的活跃掉落记录
         DropManager.Instance?.MarkDropPickedUp(floorNumber, gridPosition);
 
-        // 脱离地图挂载点并设为跨场景持久，确保楼层切换后不丢失
-        transform.SetParent(null);
-        DontDestroyOnLoad(gameObject);
-
-        Debug.Log($"[FloorUpTeleporter] 拾取上楼传送器！按 Z 键使用（第 {floorNumber} 层）");
-        return true;
-    }
-
-    private void TryUse()
-    {
-        MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
-        if (mapGen == null)
-        {
-            Debug.LogWarning("[FloorUpTeleporter] 未找到 MapGenerator，无法传送");
-            return;
-        }
-
-        int currentFloor = mapGen.CurrentFloor;
-        int targetFloor = currentFloor + 1;
-
-        // 检查目标楼层是否存在
-        string path = $"floor_{targetFloor:D2}";
-        if (Resources.Load<TextAsset>(path) == null)
-        {
-            Debug.LogWarning($"[FloorUpTeleporter] 已是最高层，无法再向上传送");
-            return;
-        }
-
-        Debug.Log($"[FloorUpTeleporter] 使用上楼传送器：第 {currentFloor} 层 → 第 {targetFloor} 层");
-        isUsed = true;
-
-        // FromBelow = 从下层进入 → 出生在目标层的下楼梯(9)
-        mapGen.LoadFloor(targetFloor, EntryDirection.FromBelow);
-
+        Debug.Log($"[FloorUpTeleporter] 拾取上楼传送器（第 {floorNumber} 层）");
         Destroy(gameObject);
+        return true;
     }
 
 #if UNITY_EDITOR

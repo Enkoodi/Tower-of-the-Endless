@@ -53,6 +53,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     [SerializeField] private int psycheKeys = 0;
     [SerializeField] private int aeonKeys = 0; 
 
+    [Header("传送器数量")]
+    [SerializeField] private int upTeleporterCount = 0;
+    [SerializeField] private int downTeleporterCount = 0;
+
     // ============================================================
     //  公开只读属性
     // ============================================================
@@ -68,6 +72,9 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     public int Speed         => speed;
     public int Gold          => gold;
     public bool IsDead       => hp <= 0;
+
+    public int UpTeleporterCount   => upTeleporterCount;
+    public int DownTeleporterCount => downTeleporterCount;
 
     // 系数
     public int GoldMultiplier    => goldMultiplier;
@@ -238,6 +245,40 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
             case KeyType.Aeon:    return aeonKeys;
             default:              return 0;
         }
+    }
+
+    // ============================================================
+    //  传送器
+    // ============================================================
+
+    public void AddUpTeleporter(int amount = 1)
+    {
+        upTeleporterCount += amount;
+        Debug.Log($"[PlayerData] 获得 {amount} 个上楼传送器（总计 {upTeleporterCount}）");
+    }
+
+    public void AddDownTeleporter(int amount = 1)
+    {
+        downTeleporterCount += amount;
+        Debug.Log($"[PlayerData] 获得 {amount} 个下楼传送器（总计 {downTeleporterCount}）");
+    }
+
+    /// <summary>使用一个上楼传送器，数量不足时返回 false。</summary>
+    public bool UseUpTeleporter()
+    {
+        if (upTeleporterCount <= 0) return false;
+        upTeleporterCount--;
+        Debug.Log($"[PlayerData] 使用上楼传送器（剩余 {upTeleporterCount}）");
+        return true;
+    }
+
+    /// <summary>使用一个下楼传送器，数量不足时返回 false。</summary>
+    public bool UseDownTeleporter()
+    {
+        if (downTeleporterCount <= 0) return false;
+        downTeleporterCount--;
+        Debug.Log($"[PlayerData] 使用下楼传送器（剩余 {downTeleporterCount}）");
+        return true;
     }
 
     // ============================================================
@@ -413,22 +454,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     private void ApplyConditional(BlessingData b)
     {
-        BlessingEffect effect = b.id switch
-        {
-            BlessingID.BythosBlessing => new BythosBlessingEffect(),
-            BlessingID.AgapeBlessing => new AgapeBlessingEffect(),
-            BlessingID.AletheiaBlessing => new AletheiaBlessingEffect(),
-            BlessingID.Allotrioi => new AllotrioiEffect(),
-            BlessingID.CharisBlessing => new CharisBlessingEffect(),
-            BlessingID.DemiurgeBlessing => new DemiurgeBlessingEffect(),
-            BlessingID.GnosisBlessing => new GnosisBlessingEffect(),
-            BlessingID.KabbalahTree => new KabbalahTreeEffect(),
-            BlessingID.Longinus => new LonginusEffect(),
-            BlessingID.SigeBlessing => new SigeBlessingEffect(),
-            BlessingID.SophiaBlessing => new SophiaBlessingEffect(),
-            // TODO: 其他特殊祝福在此注册
-            _ => null,
-        };
+        BlessingEffect effect = BlessingEffect.Create(b.id);
 
         if (effect != null)
         {

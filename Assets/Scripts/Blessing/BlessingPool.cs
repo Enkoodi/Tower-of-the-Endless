@@ -39,7 +39,19 @@ public class BlessingPool : ScriptableObject
             // 找出该稀有度的候选
             List<BlessingData> candidates = poolCopy.FindAll(b => b.rarity == targetRarity);
             if (candidates.Count == 0)
-                candidates = poolCopy; // 降级：该稀有度没有了，从剩余全池抽
+            {
+                // 降级：重新投骰子，直到抽到有候选的稀有度（避免退回权重为0的稀有度）
+                int safety = 0;
+                while (candidates.Count == 0 && safety < 100)
+                {
+                    targetRarity = RollRarity();
+                    candidates = poolCopy.FindAll(b => b.rarity == targetRarity);
+                    safety++;
+                }
+                // 最终还是为空时，才从剩余全池抽（但排除权重为0的稀有度）
+                if (candidates.Count == 0)
+                    candidates = GetFilteredPool(poolCopy);
+            }
 
             BlessingData picked = candidates[Random.Range(0, candidates.Count)];
             poolCopy.Remove(picked);
@@ -47,6 +59,23 @@ public class BlessingPool : ScriptableObject
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// 从池中筛掉权重为0的稀有度，作为最终降级兜底。
+    /// </summary>
+    private List<BlessingData> GetFilteredPool(List<BlessingData> source)
+    {
+        List<BlessingData> filtered = new List<BlessingData>();
+        foreach (var b in source)
+        {
+            if (b.rarity == BlessingRarity.Common    && commonWeight    <= 0) continue;
+            if (b.rarity == BlessingRarity.Rare      && rareWeight      <= 0) continue;
+            if (b.rarity == BlessingRarity.Epic      && epicWeight      <= 0) continue;
+            if (b.rarity == BlessingRarity.Legendary && legendaryWeight <= 0) continue;
+            filtered.Add(b);
+        }
+        return filtered;
     }
 
     private BlessingRarity RollRarity()
