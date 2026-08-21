@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1294859228642160260}
   - component: {fileID: -4134917891791818677}
   - component: {fileID: 8697663452727498261}
+  - component: {fileID: -1458443201839603547}
+  - component: {fileID: -7309191790382007140}
   m_Layer: 11
   m_Name: 3F
   m_TagString: Untagged
@@ -145,12 +147,78 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u76D7\u8D3C"
-    content: 
-    showChoices: 0
-  exitButtonText: "\u62D2\u7EDD"
-  actionButtonText: "\u63A5\u53D7"
-  onActionTriggered:
+    content: "\u8FD9\u662F\u6211\u4ECE26\u5C42\u5077\u5230\u7684\u5B9D\u7269\uFF0C\u5E26\u7740\u5B83\u53BB\u6253\u8D25\u9B54\u738B\u5427"
+    showChoices: 1
+    nextLineIndex: -2
+  - speakerName: "\u76D7\u8D3C"
+    content: "\u8FD9\u662F\u6211\u4ECE26\u5C42\u5077\u5230\u7684\u5B9D\u7269\uFF0C\u5E26\u7740\u5B83\u53BB\u6253\u8D25\u9B54\u738B\u5427\u3002\u4EC0\u4E48\uFF01\u4F60\u5DF2\u7ECF\u6253\u8D25\u9B54\u738B\u4E86\uFF01\uFF01\u4F46\u90A3\u4E2A\u771F\u7684\u662F\u9B54\u738B\u5417\uFF1F\u4F20\u8BF4\u9B54\u738B\u53EF\u662F\u4E0D\u6B7B\u4E4B\u8EAB"
+    showChoices: 1
+    nextLineIndex: -2
+  entryBranches:
+  - specialEnemyId: Zeno
+    requireDefeated: 1
+    startLineIndex: 1
+  choice1Text: "\u63A5\u53D7"
+  choice2Text: "\u62D2\u7EDD"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -1458443201839603547}
+        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
+        m_MethodName: TryPurchase
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -7309191790382007140}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!114 &-1458443201839603547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606647484800872793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCost: 0
+  items:
+  - prefab: {fileID: 1488421416097299947, guid: 2f2068123ebdc6a44985d01e023f5f22, type: 3}
+    quantity: 1
+--- !u!114 &-7309191790382007140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606647484800872793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16044851492cf3142a1a14dbb6035942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0

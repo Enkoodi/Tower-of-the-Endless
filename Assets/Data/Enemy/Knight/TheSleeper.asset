@@ -20,7 +20,8 @@ MonoBehaviour:
   attackCount: 2
   lifeSteal: 0
   reflectDamage: 10
+  damageReduction: 0
   manaCharge: 500
   manaMax: 100
   speed: 120
-  goldReward: 145
+  goldReward: 80

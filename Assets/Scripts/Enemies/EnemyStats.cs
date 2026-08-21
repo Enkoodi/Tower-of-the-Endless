@@ -23,4 +23,8 @@ public class EnemyStats : ScriptableObject
     public int manaMax = 100;
     public int speed = 5;
     public int goldReward = 0;
+
+    [Header("特殊敌人信号")]
+    [Tooltip("若为非空，该敌人被击败时会记录此 ID，供全局检测（如 \"SpecialEnemy1\"）。")]
+    public string specialEnemyId = "";
 }

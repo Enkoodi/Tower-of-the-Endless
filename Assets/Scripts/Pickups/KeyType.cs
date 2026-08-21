@@ -17,10 +17,11 @@ public interface IKeyInventory
 {
     bool HasKey(KeyType keyType);
     void UseKey(KeyType keyType);
+    int GetKeyCount(KeyType keyType);
 }
 
 /// <summary>
-/// 玩家生命值接口 — 供 DoorController（Psyche 生命之门）查询/扣除 HP。
+/// 玩家生命值接口 — 供 DoorController（魂之门）查询/扣除 HP。
 /// </summary>
 public interface IPlayerHealth
 {

@@ -61,6 +61,13 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        // 使用敌人减半道具后，本场敌人血量减半（普通敌人与NPC敌人都经此入口生效）
+        bool enemyHalved = playerData.ConsumeEnemyHalve();
+        if (enemyHalved)
+        {
+            enemy.SetHP(Mathf.Max(1, enemy.HP / 2));
+        }
+
         isFighting = true;
         turnCount = 1;
         lastDamageToEnemy = 0;
@@ -68,6 +75,8 @@ public class BattleManager : MonoBehaviour
         onBattleEnd = callback;
 
         battleUI.OpenBattle(playerData, enemy);
+        if (enemyHalved)
+            battleUI.AddLog($"<color=#FFCC66>敌人血量减半</color>：{enemy.EnemyName} 生命值减半");
         battleUI.UpdateTurn(turnCount);
         BlessingManager.Instance?.OnBattleStart(playerData, enemy, battleUI);
         OnBattleOpen?.Invoke();
@@ -174,10 +183,14 @@ public class BattleManager : MonoBehaviour
             {
                 battleUI.AddLog($"<color=#88CCFF>灵知的祝福</color>：本回合不消耗魔力充能");
             }
-            int steal = actualToEnemy * playerData.LifeSteal / 100;
+            int steal = playerPhysical * playerData.LifeSteal / 100;
             if (steal > 0) playerData.Heal(steal);
-            int reflect = playerPhysical * enemy.ReflectDamage / 100;
-            if (reflect > 0) playerData.SubtractHP(reflect);
+            // 反伤仅在敌人未因本次攻击死亡时触发（吸血已先结算）
+            if (enemy.HP > 0)
+            {
+                int reflect = playerPhysical * enemy.ReflectDamage / 100;
+                if (reflect > 0) playerData.SubtractHP(reflect);
+            }
             ComputeRoundDamage();
 
             battleUI.UpdatePlayerPanel(playerData);
@@ -200,10 +213,14 @@ public class BattleManager : MonoBehaviour
 
             // 消耗魔力 + 敌人吸血 + 玩家反伤
             enemy.ManaCharge -= EnemyManaCost;
-            int enemySteal = actualToPlayer * enemy.LifeSteal / 100;
+            int enemySteal = enemyPhysical * enemy.LifeSteal / 100;
             if (enemySteal > 0) enemy.Heal(enemySteal);
-            int playerReflect = enemyPhysical * playerData.ReflectDamage / 100;
-            if (playerReflect > 0) enemy.TakeRawDamage(playerReflect);
+            // 反伤仅在玩家未因本次伤害死亡时触发（吸血已先结算）
+            if (playerData.HP > 0)
+            {
+                int playerReflect = enemyPhysical * playerData.ReflectDamage / 100;
+                if (playerReflect > 0) enemy.TakeRawDamage(playerReflect);
+            }
             ComputeRoundDamage();
 
             battleUI.UpdateEnemyPanel(enemy);

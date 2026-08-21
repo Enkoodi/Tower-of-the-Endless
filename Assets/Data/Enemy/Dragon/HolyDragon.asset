@@ -10,18 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
-  m_Name: AngelDragon
+  m_Name: HolyDragon
   m_EditorClassIdentifier: 
   enemyName: "\u795E\u5723\u4E4B\u9F99"
   enemySprite: {fileID: 21300000, guid: 6c3e7e63d23d7d84a8a5187099a15d21, type: 3}
-  hp: 1000
-  attack: 500
-  defense: 350
+  hp: 10000
+  attack: 5000
+  defense: 3500
   attackCount: 1
   lifeSteal: 100
-  reflectDamage: 0
-  damageReduction: 85
-  manaCharge: 2000
-  manaMax: 200
-  speed: 150
-  goldReward: 1000
+  reflectDamage: 75
+  damageReduction: 95
+  manaCharge: 20000
+  manaMax: 2000
+  speed: 300
+  goldReward: 2000
+  specialEnemyId: HolyDragon

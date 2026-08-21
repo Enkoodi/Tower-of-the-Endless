@@ -33,8 +33,8 @@ public class MonsterManualEntryUI : MonoBehaviour
         if (statsText != null)
         {
             statsText.text = $"<b>{enemy.enemyName}</b>\n"
-                           + $"生命值: {enemy.hp}  攻击力: {enemy.attack}  防御力: {enemy.defense}  段数: {enemy.attackCount}  速度: {enemy.speed}\n"
-                           + $"魔力值: {enemy.manaCharge}  魔力输出: {enemy.manaMax}  吸血: {enemy.lifeSteal}%  减伤: {enemy.damageReduction}%  金币: {enemy.goldReward}";
+                           + $"生命值: {enemy.hp}  攻击力: {enemy.attack}  防御力: {enemy.defense}  段数: {enemy.attackCount}  减伤: {enemy.damageReduction}%  速度: {enemy.speed}\n"
+                           + $"魔力值: {enemy.manaCharge}  魔力输出: {enemy.manaMax}  吸血: {enemy.lifeSteal}%  反伤: {enemy.reflectDamage}%  金币: {enemy.goldReward}";
         }
 
         // 战斗所需生命值

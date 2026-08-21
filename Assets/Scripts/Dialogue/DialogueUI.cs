@@ -92,7 +92,7 @@ public class DialogueUI : MonoBehaviour
         }
 
         currentTrigger = trigger;
-        currentLineIndex = 0;
+        currentLineIndex = ResolveStartIndex(trigger);
 
         if (panelRoot != null)
             panelRoot.SetActive(true);
@@ -129,7 +129,7 @@ public class DialogueUI : MonoBehaviour
     /// 点击面板任意位置：
     ///   1. 正在打字 → 立即完成打字
     ///   2. 打字完成且有下一句 → 显示下一句
-    ///   3. 打字完成且是最后一句（无选项） → 关闭对话
+    ///   3. 打字完成且无下一句（无选项） → 关闭对话
     ///   4. 选项按钮已显示 → 不处理（由按钮自身处理点击）
     /// </summary>
     private void OnPanelClicked()
@@ -146,9 +146,11 @@ public class DialogueUI : MonoBehaviour
 
         // 打字已完成
         DialogueLine currentLine = lines[currentLineIndex];
+        int nextIndex = GetNextLineIndex(lines, currentLineIndex);
+        bool isLast = nextIndex < 0;
 
         // 如果是最后一句且选项按钮已显示，不拦截点击（让按钮响应）
-        if (currentLineIndex >= lines.Length - 1 && currentLine.showChoices)
+        if (isLast && currentLine.showChoices)
         {
             bool choicesVisible = (choice1Button != null && choice1Button.gameObject.activeSelf)
                                || (choice2Button != null && choice2Button.gameObject.activeSelf);
@@ -156,15 +158,85 @@ public class DialogueUI : MonoBehaviour
         }
 
         // 还有下一句 → 推进
-        if (currentLineIndex < lines.Length - 1)
+        if (!isLast)
         {
-            currentLineIndex++;
+            currentLineIndex = nextIndex;
             ShowLine(currentLineIndex);
             return;
         }
 
         // 最后一句且无选项 → 关闭
         CloseDialogue();
+    }
+
+    // ============================================================
+    //  分支解析
+    // ============================================================
+
+    /// <summary>根据开场分支决定对话从哪一句开始。</summary>
+    private int ResolveStartIndex(DialogueTrigger trigger)
+    {
+        DialogueLine[] lines = trigger.Lines;
+        if (lines == null || lines.Length == 0) return 0;
+
+        if (trigger.EntryBranches != null)
+        {
+            foreach (DialogueEntryBranch branch in trigger.EntryBranches)
+            {
+                if (branch == null) continue;
+
+                bool matched;
+                if (string.IsNullOrEmpty(branch.specialEnemyId))
+                {
+                    matched = true; // 无条件兜底分支
+                }
+                else
+                {
+                    bool defeated = SpecialEnemyManager.Instance != null
+                                 && SpecialEnemyManager.Instance.IsDefeated(branch.specialEnemyId);
+                    matched = defeated == branch.requireDefeated;
+                }
+
+                if (matched)
+                {
+                    return ClampLineIndex(branch.startLineIndex, lines.Length);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /// <summary>根据当前句的 nextLineIndex 计算下一句索引；返回 -1 表示没有下一句。</summary>
+    private int GetNextLineIndex(DialogueLine[] lines, int currentIndex)
+    {
+        if (lines == null || currentIndex < 0 || currentIndex >= lines.Length)
+            return -1;
+
+        int next = lines[currentIndex].nextLineIndex;
+
+        if (next == -1)
+        {
+            int linear = currentIndex + 1;
+            return linear < lines.Length ? linear : -1;
+        }
+
+        if (next == -2)
+            return -1; // 显式结束
+
+        if (next >= 0 && next < lines.Length)
+            return next;
+
+        Debug.LogWarning($"[DialogueUI] 第 {currentIndex} 句的 nextLineIndex({next}) 越界，按顺序处理");
+        int fallback = currentIndex + 1;
+        return fallback < lines.Length ? fallback : -1;
+    }
+
+    private int ClampLineIndex(int index, int length)
+    {
+        if (index < 0) return 0;
+        if (index >= length) return length - 1;
+        return index;
     }
 
     // ============================================================
@@ -225,13 +297,13 @@ public class DialogueUI : MonoBehaviour
         OnTypingComplete();
     }
 
-    /// <summary>打字完成后的处理：如果是最后一句且配置了showChoices，显示选项按钮</summary>
+    /// <summary>打字完成后的处理：如果无下一句且配置了showChoices，显示选项按钮</summary>
     private void OnTypingComplete()
     {
         DialogueLine[] lines = currentTrigger.Lines;
         DialogueLine currentLine = lines[currentLineIndex];
 
-        if (currentLineIndex >= lines.Length - 1 && currentLine.showChoices)
+        if (GetNextLineIndex(lines, currentLineIndex) < 0 && currentLine.showChoices)
         {
             ShowChoiceButtons();
         }

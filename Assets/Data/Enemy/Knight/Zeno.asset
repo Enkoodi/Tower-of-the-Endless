@@ -12,16 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
   m_Name: Zeno
   m_EditorClassIdentifier: 
-  enemyName: "\u9B54\u738B"
+  enemyName: "\u9B54\u5BFC\u5E08Zeno"
   enemySprite: {fileID: 21300000, guid: 21b42ef41f2af014ca6fd3cd230a2728, type: 3}
-  hp: 2000
-  attack: 800
-  defense: 350
+  hp: 10000
+  attack: 1000
+  defense: 500
   attackCount: 3
   lifeSteal: 30
   reflectDamage: 30
-  damageReduction: 0
-  manaCharge: 3000
-  manaMax: 300
+  damageReduction: 30
+  manaCharge: 5000
+  manaMax: 500
   speed: 200
   goldReward: 1000
+  specialEnemyId: Zeno

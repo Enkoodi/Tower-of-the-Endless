@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -53,11 +54,10 @@ public class SaveManager : MonoBehaviour
     /// <summary>保存全局存档</summary>
     public void SaveGlobal()
     {
+        // 先读取现有全局存档，避免覆盖神圣火花等其它全局字段
+        GlobalSaveData globalData = LoadGlobal();
         PlayerData player = FindAnyObjectByType<PlayerData>();
-        GlobalSaveData globalData = new GlobalSaveData
-        {
-            aeonKeys = player != null ? player.GetKeyCount(KeyType.Aeon) : 0
-        };
+        globalData.aeonKeys = player != null ? player.GetKeyCount(KeyType.Aeon) : 0;
 
         WriteJson(globalSavePath, globalData);
         Debug.Log($"[SaveManager] 全局存档已保存 → {globalSavePath}");
@@ -96,6 +96,10 @@ public class SaveManager : MonoBehaviour
             redKeys = player.GetKeyCount(KeyType.Red),
             psycheKeys = player.GetKeyCount(KeyType.Psyche),
             aeonKeys = player.GetKeyCount(KeyType.Aeon),
+            upTeleporterCount = player.UpTeleporterCount,
+            downTeleporterCount = player.DownTeleporterCount,
+            enemyHalveItemCount = player.EnemyHalveItemCount,
+            pendingEnemyHalveBattles = player.PendingEnemyHalveBattles,
             playerX = player.transform.position.x,
             playerY = player.transform.position.y,
             playerZ = player.transform.position.z
@@ -104,7 +108,12 @@ public class SaveManager : MonoBehaviour
         // 特殊祝福效果
         data.specialBlessings = BlessingManager.Instance != null
             ? BlessingManager.Instance.GetActiveEffectLevels()
-            : new System.Collections.Generic.Dictionary<string, int>();
+            : new Dictionary<string, int>();
+
+        // 特殊敌人击败信号
+        data.defeatedSpecialEnemies = SpecialEnemyManager.Instance != null
+            ? SpecialEnemyManager.Instance.GetDefeatedIds()
+            : new List<string>();
 
         // 楼层状态
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
@@ -154,6 +163,21 @@ public class SaveManager : MonoBehaviour
         player.SetAeonKeys(globalData.aeonKeys);
     }
 
+    /// <summary>神圣火花数量 +amount，并立即写入全局存档。</summary>
+    public void AddDivineSpark(int amount = 1)
+    {
+        GlobalSaveData globalData = LoadGlobal();
+        globalData.divineSpark += amount;
+        WriteJson(globalSavePath, globalData);
+        Debug.Log($"[SaveManager] 神圣火花 +{amount}（总计 {globalData.divineSpark}），已写入全局存档");
+    }
+
+    /// <summary>是否已拥有神圣火花（数量大于 0）。</summary>
+    public bool HasDivineSpark() => GetDivineSparkCount() > 0;
+
+    /// <summary>获取神圣火花数量。</summary>
+    public int GetDivineSparkCount() => LoadGlobal().divineSpark;
+
     /// <summary>读取游戏存档</summary>
     public void LoadGame()
     {
@@ -189,6 +213,10 @@ public class SaveManager : MonoBehaviour
             player.SetKeyCountDirect(KeyType.Blue, data.blueKeys);
             player.SetKeyCountDirect(KeyType.Red, data.redKeys);
             player.SetKeyCountDirect(KeyType.Psyche, data.psycheKeys);
+            player.SetUpTeleporterCount(data.upTeleporterCount);
+            player.SetDownTeleporterCount(data.downTeleporterCount);
+            player.SetEnemyHalveItemCount(data.enemyHalveItemCount);
+            player.SetPendingEnemyHalveBattles(data.pendingEnemyHalveBattles);
             // aeonKeys 从全局存档覆盖
         }
         else
@@ -204,6 +232,9 @@ public class SaveManager : MonoBehaviour
         {
             BlessingManager.Instance.RestoreEffects(data.specialBlessings);
         }
+
+        // 2.6. 恢复特殊敌人击败信号
+        SpecialEnemyManager.Instance?.RestoreDefeated(data.defeatedSpecialEnemies);
 
         // 3. 恢复楼层记忆
         if (FloorMemoryManager.Instance != null && data.floorStates != null)

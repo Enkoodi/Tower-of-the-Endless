@@ -153,9 +153,12 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u795D\u4F60\u597D\u8FD0"
     showChoices: 0
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
-  onActionTriggered:
+  choice1Text: "\u9009\u98791"
+  choice2Text: "\u9009\u98792"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls: []
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
   gridPosition: {x: 0, y: 0}

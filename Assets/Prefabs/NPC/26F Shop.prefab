@@ -149,9 +149,16 @@ MonoBehaviour:
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
     content: ......
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u6211\u6361\u5230\u4E86\u628A\u84DD\u94A5\u5319\uFF0C\u9001\u7ED9\u60A8\u4E86"
+    content: "\u8FD9\u5C42\u539F\u672C\u6709\u4EF6\u5B9D\u7269\u7684\uFF0C\u6211\u662F\u4E3A\u4E86\u8FD9\u4E2A\u5B9D\u7269\u800C\u6765\uFF0C\u4F46\u88AB\u522B\u4EBA\u62A2\u5148\u4E00\u6B65\u4E86"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u795E\u79D8\u5546\u4EBA"
+    content: "\u8FD9\u628A\u84DD\u94A5\u5319\u4E5F\u7528\u4E0D\u4E0A\u4E86\uFF0C\u9001\u7ED9\u60A8\u4E86"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:

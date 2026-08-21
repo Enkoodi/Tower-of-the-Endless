@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 战斗门控制器 — 挂载在战斗门 Prefab 上。
 /// 不需要钥匙，通过击败指定位置的敌人后自动打开。
+/// 支持追踪普通敌人（EnemyController）和 NPC 敌人（NpcBattler）。
 /// 支持两种使用方式：
 ///   1. 预放置：在 JSON 地图 objects 层直接放置，一开始就可见
 ///   2. 动态生成：由 BattleTrigger 在触发时生成到指定坐标
@@ -13,7 +14,7 @@ using UnityEngine;
 public class BattleDoorController : MonoBehaviour
 {
     [Header("敌人追踪")]
-    [Tooltip("需要击败的敌人所在的网格坐标列表")]
+    [Tooltip("需要击败的敌人所在的网格坐标列表（普通敌人或NPC敌人都可）")]
     public Vector2Int[] requiredEnemyPositions;
 
     [Header("外观")]
@@ -71,12 +72,12 @@ public class BattleDoorController : MonoBehaviour
             return;
         }
 
-        // 检查已击败的敌人（从楼层记忆）
+        // 检查已击败的敌人（普通敌人或 NPC 敌人，从楼层记忆）
         if (state != null && requiredEnemyPositions != null)
         {
             foreach (var pos in requiredEnemyPositions)
             {
-                if (state.IsEnemyDefeated(pos))
+                if (state.IsEnemyDefeated(pos) || state.IsNpcRemoved(pos))
                     remainingEnemies--;
             }
         }
@@ -96,9 +97,11 @@ public class BattleDoorController : MonoBehaviour
     {
         if (requiredEnemyPositions == null) return;
 
+        // 订阅普通敌人
         EnemyController[] allEnemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
         foreach (var enemy in allEnemies)
         {
+            if (enemy.isScriptedEnemy) continue; // 脚本敌人（NPC战斗）由 NpcBattler 处理，避免重复计数
             if (enemy.floorNumber != floorNumber) continue;
 
             foreach (var pos in requiredEnemyPositions)
@@ -106,6 +109,22 @@ public class BattleDoorController : MonoBehaviour
                 if (enemy.gridPosition == pos)
                 {
                     enemy.OnDefeated += OnEnemyDefeated;
+                    break;
+                }
+            }
+        }
+
+        // 订阅 NPC 敌人（挂载 NpcBattler 的对话战斗 NPC）
+        NpcBattler[] allNpcs = FindObjectsByType<NpcBattler>(FindObjectsSortMode.None);
+        foreach (var npc in allNpcs)
+        {
+            if (npc.floorNumber != floorNumber) continue;
+
+            foreach (var pos in requiredEnemyPositions)
+            {
+                if (npc.gridPosition == pos)
+                {
+                    npc.OnDefeated += OnNpcDefeated;
                     break;
                 }
             }
@@ -118,6 +137,20 @@ public class BattleDoorController : MonoBehaviour
         remainingEnemies--;
 
         Debug.Log($"[BattleDoor] 敌人 {enemy.EnemyName}({enemy.gridPosition}) 被击败，" +
+                  $"剩余 {remainingEnemies} 个敌人 (门位置: {gridPosition})");
+
+        if (remainingEnemies <= 0)
+        {
+            Open();
+        }
+    }
+
+    private void OnNpcDefeated(NpcBattler npc)
+    {
+        npc.OnDefeated -= OnNpcDefeated;
+        remainingEnemies--;
+
+        Debug.Log($"[BattleDoor] NPC {npc.name}({npc.gridPosition}) 被击败，" +
                   $"剩余 {remainingEnemies} 个敌人 (门位置: {gridPosition})");
 
         if (remainingEnemies <= 0)

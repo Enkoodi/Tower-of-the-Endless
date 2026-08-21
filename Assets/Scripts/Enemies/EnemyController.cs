@@ -144,6 +144,12 @@ public class EnemyController : MonoBehaviour
         if (isDefeated) return;
         isDefeated = true;
 
+        // 特殊敌人信号：若该敌人配置了 specialEnemyId，则记录到全局信号系统
+        if (stats != null && !string.IsNullOrEmpty(stats.specialEnemyId))
+        {
+            SpecialEnemyManager.Instance?.MarkDefeated(stats.specialEnemyId);
+        }
+
         // 普通敌人：记录到楼层记忆（脚本敌人不记录，由 NpcBattler 等处理NPC记忆）
         if (!isScriptedEnemy)
         {

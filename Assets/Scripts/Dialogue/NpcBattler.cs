@@ -11,11 +11,17 @@ public class NpcBattler : MonoBehaviour
     [Header("敌人数据（与正常敌人Prefab配置方式一致，右键 Create → MagicTower → Enemy Stats）")]
     [SerializeField] private EnemyStats enemyStats;
 
+    /// <summary>敌人数据资产（供怪物手册读取）</summary>
+    public EnemyStats Stats => enemyStats;
+
     /// <summary>在地图网格中的坐标（由MapGenerator生成时设置，或运行时从DialogueTrigger同步）</summary>
     [HideInInspector] public Vector2Int gridPosition;
 
     /// <summary>所属楼层编号</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>NPC被击败时触发，参数为被击败的NPC自身</summary>
+    public event System.Action<NpcBattler> OnDefeated;
 
     /// <summary>供 UnityEvent 绑定的无参入口：触发与NPC的战斗</summary>
     public void StartBattleWithPlayer()
@@ -64,6 +70,9 @@ public class NpcBattler : MonoBehaviour
 
         FloorState state = FloorMemoryManager.Instance?.GetOrCreateState(floorNumber);
         state?.MarkNpcRemoved(gridPosition);
+
+        // 通知订阅者（如战斗门）
+        OnDefeated?.Invoke(this);
 
         Debug.Log($"[NpcBattler] 战斗胜利，NPC消失（第 {floorNumber} 层，坐标 ({gridPosition.x}, {gridPosition.y})）");
         Destroy(gameObject);

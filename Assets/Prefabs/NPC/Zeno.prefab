@@ -179,10 +179,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - speakerName: "\u9B54\u738B"
+  - speakerName: "\u9B54\u5BFC\u5E08Zeno"
     content: "\u4F60\u662F...144\u53F7"
     showChoices: 0
-  - speakerName: "\u9B54\u738B"
+  - speakerName: "\u9B54\u5BFC\u5E08Zeno"
     content: "\u65E2\u7136\u4F60\u6765\u5230\u4E86\u8FD9\u91CC\uFF0C\u90A3\u4E48\u5F00\u59CB\u5427"
     showChoices: 1
   choice1Text: "\u6218\u6597"

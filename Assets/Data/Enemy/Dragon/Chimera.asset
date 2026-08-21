@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: "\u5947\u7F8E\u62C9"
   enemySprite: {fileID: 21300000, guid: 0d8bc90e4732ea8459528e080df055c5, type: 3}
   hp: 375
-  attack: 500
+  attack: 550
   defense: 200
   attackCount: 3
   lifeSteal: 0

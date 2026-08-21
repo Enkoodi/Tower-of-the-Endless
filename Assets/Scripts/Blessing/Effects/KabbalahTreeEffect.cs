@@ -1,11 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// 卡巴拉生命之树 — 抵达 40 层时触发：HP×2、攻击段数 +1、减伤 +10%。最多触发 Level 次。
+/// 卡巴拉生命之树 — 抵达 30 层时触发：HP×2、攻击段数 +1、减伤 +10%。最多触发 Level 次。
 /// </summary>
 public class KabbalahTreeEffect : BlessingEffect
 {
-    private const int TriggerFloor = 40;
+    private const int TriggerFloor = 30;
     private const int DamageReductionBonus = 10;
 
     private int remainingTriggers;

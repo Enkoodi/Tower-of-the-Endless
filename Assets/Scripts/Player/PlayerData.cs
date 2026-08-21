@@ -4,7 +4,7 @@ using UnityEngine;
 /// 玩家数据 — 挂载在玩家 GameObject 上。
 /// 持有钥匙、战斗属性、金币，并提供战斗逻辑。
 /// 实现 IKeyInventory 供门系统查询钥匙。
-/// 实现 IPlayerHealth 供 Psyche 生命之门扣除 HP。
+/// 实现 IPlayerHealth 供魂之门扣除 HP。
 /// </summary>
 public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 {
@@ -57,6 +57,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     [SerializeField] private int upTeleporterCount = 0;
     [SerializeField] private int downTeleporterCount = 0;
 
+    [Header("圣水数量")]
+    [SerializeField] private int enemyHalveItemCount = 0;
+    [SerializeField] private int pendingEnemyHalveBattles = 0;
+
     // ============================================================
     //  公开只读属性
     // ============================================================
@@ -75,6 +79,9 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     public int UpTeleporterCount   => upTeleporterCount;
     public int DownTeleporterCount => downTeleporterCount;
+
+    public int EnemyHalveItemCount => enemyHalveItemCount;
+    public int PendingEnemyHalveBattles => pendingEnemyHalveBattles;
 
     // 系数
     public int GoldMultiplier    => goldMultiplier;
@@ -282,6 +289,35 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     }
 
     // ============================================================
+    //  敌人减半道具
+    // ============================================================
+
+    public void AddEnemyHalveItem(int amount = 1)
+    {
+        enemyHalveItemCount += amount;
+        Debug.Log($"[PlayerData] 获得 {amount} 个圣水（总计 {enemyHalveItemCount}）");
+    }
+
+    /// <summary>使用一个敌人减半道具：下一场战斗敌人血量减半。数量不足时返回 false。</summary>
+    public bool UseEnemyHalveItem()
+    {
+        if (enemyHalveItemCount <= 0) return false;
+        enemyHalveItemCount--;
+        pendingEnemyHalveBattles++;
+        Debug.Log($"[PlayerData] 使用圣水（剩余 {enemyHalveItemCount}，待生效 {pendingEnemyHalveBattles} 场）");
+        return true;
+    }
+
+    /// <summary>战斗开始时消耗一次减半效果。返回 true 表示本场敌人血量应减半。</summary>
+    public bool ConsumeEnemyHalve()
+    {
+        if (pendingEnemyHalveBattles <= 0) return false;
+        pendingEnemyHalveBattles--;
+        Debug.Log($"[PlayerData] 敌人减半效果生效（剩余 {pendingEnemyHalveBattles} 场）");
+        return true;
+    }
+
+    // ============================================================
     //  属性修改
     // ============================================================
 
@@ -315,6 +351,18 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         int actual = Mathf.Min(amount, hp);
         hp -= amount;
         if (hp < 0) hp = 0;
+        return actual;
+    }
+
+    /// <summary>
+    /// 直接扣血但不低于 1 点生命值，且无视减伤系数（用于夹击等不会致命的伤害）。
+    /// 返回实际扣除的HP。
+    /// </summary>
+    public int SubtractRawHPKeepAlive(int amount)
+    {
+        int maxLoss = Mathf.Max(0, hp - 1);
+        int actual = Mathf.Min(amount, maxLoss);
+        hp -= actual;
         return actual;
     }
 
@@ -476,7 +524,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         manaMax       += b.manaMaxBonus;
         manaCharge    += b.manaChargeBonus;
         speed         += b.speedBonus;
-        hp            += b.hpBonus * hpMultiplier / 100;
+        int hpChange = b.hpBonus * hpMultiplier / 100;
+        hp += hpChange;
+        // 祝福扣血最低只会扣到 1 点生命值，不会致命
+        if (hpChange < 0 && hp < 1) hp = 1;
         attackCount   += b.attackCountBonus;
         lifeSteal     += b.lifeStealBonus;
         reflectDamage += b.reflectDamageBonus;
@@ -527,6 +578,18 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     /// <summary>直接设置 Aeon 钥匙数量（供全局存档覆盖）</summary>
     public void SetAeonKeys(int v) => aeonKeys = v;
+
+    /// <summary>直接设置上楼传送器数量（供读档恢复）</summary>
+    public void SetUpTeleporterCount(int v) => upTeleporterCount = v;
+
+    /// <summary>直接设置下楼传送器数量（供读档恢复）</summary>
+    public void SetDownTeleporterCount(int v) => downTeleporterCount = v;
+
+    /// <summary>直接设置敌人减半道具数量（供读档恢复）</summary>
+    public void SetEnemyHalveItemCount(int v) => enemyHalveItemCount = v;
+
+    /// <summary>直接设置待生效的敌人减半场次（供读档恢复）</summary>
+    public void SetPendingEnemyHalveBattles(int v) => pendingEnemyHalveBattles = v;
 
     /// <summary>直接设置指定类型钥匙数量（供读档恢复）</summary>
     public void SetKeyCountDirect(KeyType keyType, int count)

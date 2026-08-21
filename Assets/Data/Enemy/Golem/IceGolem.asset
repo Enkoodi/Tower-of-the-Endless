@@ -24,4 +24,4 @@ MonoBehaviour:
   manaCharge: 200
   manaMax: 100
   speed: 5
-  goldReward: 100
+  goldReward: 75

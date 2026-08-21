@@ -2,10 +2,11 @@ using UnityEngine;
 
 /// <summary>
 /// 门控制器 — 挂载在门 Prefab 上。
-/// 支持三种开门方式：
-///   1. 钥匙门（healthCost == 0）：检测 IKeyInventory
+/// 支持四种开门方式：
+///   1. 钥匙门（healthCost == 0 && requiredKeyCount == 0）：检测 IKeyInventory 是否拥有钥匙
 ///   2. HP 门（healthCost  > 0）：检测 IPlayerHealth
-///   3. 数量检测门（healthCost == 0 && consumeKey == false）：检测钥匙数量不消耗
+///   3. 数量检测门（healthCost == 0 && requiredKeyCount > 0）：检测钥匙数量 ≥ requiredKeyCount，不消耗
+///   4. 数量消耗门（healthCost == 0 && requiredKeyCount > 0 && consumeKey）：检测并消耗指定数量钥匙
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
 public class DoorController : MonoBehaviour
@@ -57,7 +58,7 @@ public class DoorController : MonoBehaviour
                 return false;
             }
 
-            if (playerHealth.HP < doorData.healthCost)
+            if (playerHealth.HP <= doorData.healthCost)
             {
                 Debug.Log($"[Door] {name} 生命值不足（需要 {doorData.healthCost}，当前 {playerHealth.HP}），无法打开");
                 return false;
@@ -73,6 +74,28 @@ public class DoorController : MonoBehaviour
         if (playerInventory == null)
         {
             Debug.LogError($"[Door] {name} 传入的 playerInventory 为 null！");
+            return false;
+        }
+
+        // --- 数量检测门（requiredKeyCount > 0）：钥匙数量 ≥ requiredKeyCount 才开门 ---
+        if (doorData.requiredKeyCount > 0)
+        {
+            int count = playerInventory.GetKeyCount(doorData.requiredKeyType);
+            if (count >= doorData.requiredKeyCount)
+            {
+                if (doorData.consumeKey)
+                {
+                    // 数量消耗门：一次性扣除所需数量
+                    for (int i = 0; i < doorData.requiredKeyCount; i++)
+                        playerInventory.UseKey(doorData.requiredKeyType);
+                }
+
+                Open();
+                Debug.Log($"[Door] {name} 钥匙数量满足（需要 {doorData.requiredKeyCount}，当前 {count}），已打开！");
+                return true;
+            }
+
+            Debug.Log($"[Door] {name} 需要 {doorData.requiredKeyCount} 把 {doorData.requiredKeyType} 钥匙（当前 {count}），无法打开");
             return false;
         }
 

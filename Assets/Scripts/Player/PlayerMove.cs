@@ -120,6 +120,12 @@ public class PlayerMove : MonoBehaviour
             TryUseDownTeleporter();
         }
 
+        // 敌人减半道具：V键使用（消耗数量，下一场战斗敌人血量减半）
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            TryUseEnemyHalveItem();
+        }
+
         if (!isMoving && Time.time - lastMoveTime >= moveDelay && keyStack.Count > 0)
         {
             Vector2 direction = keyStack[keyStack.Count - 1];
@@ -151,7 +157,26 @@ public class PlayerMove : MonoBehaviour
 
         // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC，按组件类型分流
         LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer | npcLayer;
-        Collider2D hit = Physics2D.OverlapCircle(target, checkRadius, obstacleMask);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(target, checkRadius, obstacleMask);
+
+        // 门优先：门未打开时会遮挡身后的道具，必须先处理门，避免隔门直接捡起道具
+        DoorController blockingDoor = null;
+        foreach (Collider2D c in hits)
+        {
+            blockingDoor = c.GetComponent<DoorController>();
+            if (blockingDoor != null) break;
+        }
+
+        if (blockingDoor != null)
+        {
+            if (playerData != null)
+                blockingDoor.TryOpen(playerData, playerData);
+            else
+                Debug.LogError("[PlayerMove] playerData 为 null，无法开门");
+            return;
+        }
+
+        Collider2D hit = hits.Length > 0 ? hits[0] : null;
 
         if (hit == null)
         {
@@ -245,14 +270,27 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        // 先检查 DoorController
-        DoorController door = hit.GetComponent<DoorController>();
-        if (door != null)
+        // 检查 EnemyHalveItemPickup — 敌人减半道具，拾取后直接走到该格
+        EnemyHalveItemPickup halveItem = hit.GetComponent<EnemyHalveItemPickup>();
+        if (halveItem != null)
         {
+            targetPosition = target;
+            isMoving = true;
             if (playerData != null)
-                door.TryOpen(playerData, playerData);
-            else
-                Debug.LogError("[PlayerMove] playerData 为 null，无法开门");
+                halveItem.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
+            return;
+        }
+
+        // 检查 DivineSparkPickup — 神圣火花，拾取后 +1 并触发片尾 ED
+        DivineSparkPickup divineSpark = hit.GetComponent<DivineSparkPickup>();
+        if (divineSpark != null)
+        {
+            targetPosition = target;
+            isMoving = true;
+            if (playerData != null)
+                divineSpark.TryPickup(playerData);
+            StartCoroutine(SmoothMove());
             return;
         }
 
@@ -471,13 +509,7 @@ public class PlayerMove : MonoBehaviour
 
         int targetFloor = mapGen.CurrentFloor - 1;
 
-        if (targetFloor < 1)
-        {
-            Debug.LogWarning("[PlayerMove] 已经是第一层，无法再向下传送");
-            return;
-        }
-
-        // 检查目标楼层是否存在
+        // 检查目标楼层是否存在（第0层及负楼层同样按文件是否存在判断）
         string path = $"floor_{targetFloor:D2}";
         if (Resources.Load<TextAsset>(path) == null)
         {
@@ -490,6 +522,21 @@ public class PlayerMove : MonoBehaviour
         // FromAbove = 从上层进入 → 出生在目标层的上楼梯(8)
         Debug.Log($"[PlayerMove] 使用下楼传送器：第 {mapGen.CurrentFloor} 层 → 第 {targetFloor} 层");
         mapGen.LoadFloor(targetFloor, EntryDirection.FromAbove);
+    }
+
+    /// <summary>使用敌人减半道具：消耗一个，下一场战斗敌人血量减半。</summary>
+    private void TryUseEnemyHalveItem()
+    {
+        if (playerData == null)
+        {
+            Debug.LogError("[PlayerMove] 未找到 PlayerData，无法使用敌人减半道具");
+            return;
+        }
+
+        if (!playerData.UseEnemyHalveItem())
+        {
+            Debug.Log("[PlayerMove] 没有敌人减半道具可用");
+        }
     }
 
     /// <summary>检测玩家周围9宫格内是否有楼梯</summary>

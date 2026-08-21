@@ -83,9 +83,21 @@ public class MonsterManualUI : MonoBehaviour
             floorTitleText.text = $"{floorName} — 怪物手册";
         }
 
-        // 获取当前楼层所有唯一敌人
-        List<int> enemyIDs = mapGen.GetCurrentFloorUniqueEnemyIDs();
-        if (enemyIDs.Count == 0)
+        // 收集当前楼层所有敌人（普通敌人 + 带NpcBattler的NPC敌人），按 EnemyStats 去重
+        HashSet<EnemyStats> uniqueStats = new HashSet<EnemyStats>();
+
+        foreach (int id in mapGen.GetCurrentFloorUniqueEnemyIDs())
+        {
+            EnemyStats stats = mapGen.GetEnemyStatsByID(id);
+            if (stats != null) uniqueStats.Add(stats);
+        }
+
+        foreach (EnemyStats stats in mapGen.GetCurrentFloorNpcBattleStats())
+        {
+            if (stats != null) uniqueStats.Add(stats);
+        }
+
+        if (uniqueStats.Count == 0)
         {
             Debug.Log("[MonsterManual] 当前楼层没有敌人");
             return;
@@ -93,10 +105,8 @@ public class MonsterManualUI : MonoBehaviour
 
         // 收集敌人并按预计损失HP排序（低→高，无法战胜的排在最后）
         List<(EnemyStats stats, int hpLoss)> enemies = new List<(EnemyStats, int)>();
-        foreach (int id in enemyIDs)
+        foreach (EnemyStats stats in uniqueStats)
         {
-            EnemyStats stats = mapGen.GetEnemyStatsByID(id);
-            if (stats == null) continue;
             enemies.Add((stats, MonsterManualEntryUI.SimulateBattle(player, stats)));
         }
         enemies.Sort((a, b) =>

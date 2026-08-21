@@ -485,6 +485,12 @@ public class MapGenerator : MonoBehaviour
 
         MagicAmplifierPickup amplifier = obj.GetComponent<MagicAmplifierPickup>();
         if (amplifier != null) { amplifier.gridPosition = gridPos; amplifier.floorNumber = floor; }
+
+        EnemyHalveItemPickup halveItem = obj.GetComponent<EnemyHalveItemPickup>();
+        if (halveItem != null) { halveItem.gridPosition = gridPos; halveItem.floorNumber = floor; }
+
+        DivineSparkPickup divineSpark = obj.GetComponent<DivineSparkPickup>();
+        if (divineSpark != null) { divineSpark.gridPosition = gridPos; divineSpark.floorNumber = floor; }
     }
 
     private void SpawnNpc(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -689,26 +695,70 @@ public class MapGenerator : MonoBehaviour
         return ec != null ? ec.Stats : null;
     }
 
-    /// <summary>获取当前楼层中所有唯一敌人ID列表（去重、排除0）</summary>
+    /// <summary>获取当前楼层中所有仍存活的唯一敌人ID列表（去重、排除0、排除已击败）</summary>
     public List<int> GetCurrentFloorUniqueEnemyIDs()
     {
         List<int> ids = new List<int>();
         if (CurrentMap?.enemies == null) return ids;
 
+        FloorState state = FloorMemoryManager.Instance?.GetState(CurrentMap.floor);
         HashSet<int> seen = new HashSet<int>();
-        foreach (var row in CurrentMap.enemies)
+
+        for (int y = 0; y < CurrentMap.enemies.Count; y++)
         {
+            var row = CurrentMap.enemies[y];
             if (row == null) continue;
-            foreach (int id in row)
+            for (int x = 0; x < row.Count; x++)
             {
-                if (id != 0 && !seen.Contains(id))
-                {
-                    seen.Add(id);
-                    ids.Add(id);
-                }
+                int id = row[x];
+                if (id == 0 || seen.Contains(id)) continue;
+
+                // 该格子的敌人已被击败则跳过；同一类型其它格子可能仍存活
+                Vector2Int pos = new Vector2Int(x, y);
+                if (state != null && state.IsEnemyDefeated(pos)) continue;
+
+                seen.Add(id);
+                ids.Add(id);
             }
         }
         return ids;
+    }
+
+    /// <summary>
+    /// 获取当前楼层所有仍存活的、带 NpcBattler 脚本的 NPC 敌人数据资产（去重）。
+    /// 用于怪物手册显示对话战斗类敌人。
+    /// </summary>
+    public List<EnemyStats> GetCurrentFloorNpcBattleStats()
+    {
+        List<EnemyStats> result = new List<EnemyStats>();
+        if (CurrentMap?.npcs == null) return result;
+
+        FloorState state = FloorMemoryManager.Instance?.GetState(CurrentMap.floor);
+        HashSet<EnemyStats> seen = new HashSet<EnemyStats>();
+
+        for (int y = 0; y < CurrentMap.npcs.Count; y++)
+        {
+            var row = CurrentMap.npcs[y];
+            if (row == null) continue;
+            for (int x = 0; x < row.Count; x++)
+            {
+                int id = row[x];
+                if (id == 0) continue;
+                if (npcMap == null || !npcMap.TryGetValue(id, out PrefabEntry entry) || entry.prefab == null)
+                    continue;
+
+                NpcBattler battler = entry.prefab.GetComponentInChildren<NpcBattler>();
+                if (battler == null || battler.Stats == null || seen.Contains(battler.Stats)) continue;
+
+                // 该格子的NPC已被移除（战斗胜利后消失）则跳过
+                Vector2Int pos = new Vector2Int(x, y);
+                if (state != null && state.IsNpcRemoved(pos)) continue;
+
+                seen.Add(battler.Stats);
+                result.Add(battler.Stats);
+            }
+        }
+        return result;
     }
 
     /// <summary>销毁挂载点下的所有子物体</summary>

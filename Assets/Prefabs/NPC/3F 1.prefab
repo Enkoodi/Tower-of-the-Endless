@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
   - component: {fileID: 4547991480576706202}
+  - component: {fileID: -8644303237562284906}
   m_Layer: 11
   m_Name: 3F 1
   m_TagString: Untagged
@@ -168,6 +169,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: -8644303237562284906}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
@@ -189,3 +202,17 @@ MonoBehaviour:
   items:
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
     quantity: 1
+--- !u!114 &-8644303237562284906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16044851492cf3142a1a14dbb6035942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0

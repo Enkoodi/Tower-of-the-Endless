@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8894624330043867590}
   - component: {fileID: 6838105574328859002}
   - component: {fileID: 3411625461598610501}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ColorSlime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,5 +144,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 0787ac03051b8f944abc9c1a72507dcd, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0

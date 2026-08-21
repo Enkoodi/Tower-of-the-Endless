@@ -166,10 +166,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u5927\u9B54\u5BFC\u5E08"
-    content: "\u65E9\u5C31\u544A\u8BC9\u90A3\u5BB6\u4F19\u4E0D\u8981\u8FDB\u884C\u65E0\u7528\u5730\u6323\u624E\u4E86"
+    content: "\u65E9\u5C31\u544A\u8BC9\u90A3\u5BB6\u4F19\u4E0D\u8981\u8FDB\u884C\u65E0\u7528\u5730\u6323\u624E\u4E86\uFF0C\u53D7\u6B7B\u5427\uFF01"
     showChoices: 1
   choice1Text: "\u6218\u6597"
-  choice2Text: "\u79BB\u5F00"
+  choice2Text: "\u6218\u6597"
   onChoice1:
     m_PersistentCalls:
       m_Calls:
@@ -187,7 +187,19 @@ MonoBehaviour:
         m_CallState: 2
   onChoice2:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -2701142454957467793}
+        m_TargetAssemblyTypeName: NpcBattler, Assembly-CSharp
+        m_MethodName: StartBattleWithPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-2701142454957467793

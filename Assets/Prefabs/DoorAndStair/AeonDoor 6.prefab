@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7716289591218450742}
   - component: {fileID: 6134811151396993889}
   m_Layer: 10
-  m_Name: AeonDoor
+  m_Name: AeonDoor 6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,4 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9361eb7cf3fb1f41842ef5f4917c38b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorData: {fileID: 11400000, guid: 9af74df8e28597a4e94278b7876b7161, type: 2}
+  doorData: {fileID: 11400000, guid: e4b501411a53ecc459be436101a33790, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0

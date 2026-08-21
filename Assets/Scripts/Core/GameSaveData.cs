@@ -40,9 +40,26 @@ public class GameSaveData
     public int aeonKeys;
 
     // ============================================================
+    //  传送器数量
+    // ============================================================
+    public int upTeleporterCount;
+    public int downTeleporterCount;
+
+    // ============================================================
+    //  敌人减半道具
+    // ============================================================
+    public int enemyHalveItemCount;
+    public int pendingEnemyHalveBattles;
+
+    // ============================================================
     //  特殊祝福效果（BlessingID → 层数）
     // ============================================================
     public Dictionary<string, int> specialBlessings = new Dictionary<string, int>();
+
+    // ============================================================
+    //  特殊敌人击败信号（specialEnemyId 列表）
+    // ============================================================
+    public List<string> defeatedSpecialEnemies = new List<string>();
 
     // ============================================================
     //  楼层状态（序列化格式）

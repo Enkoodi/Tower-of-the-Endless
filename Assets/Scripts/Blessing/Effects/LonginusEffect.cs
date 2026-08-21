@@ -1,11 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// 朗基努斯之枪 — 奇数回合攻击段数 +1×Level，偶数回合攻击力 +50×Level。当回合有效，回合结束移除。
+/// 朗基努斯之枪 — 奇数回合攻击段数 +1×Level，偶数回合攻击力 +100×Level。当回合有效，回合结束移除。
 /// </summary>
 public class LonginusEffect : BlessingEffect
 {
-    private const int AttackPerLevel = 50;
+    private const int AttackPerLevel = 100;
 
     private int turnCount = 0;
     private bool buffApplied = false;

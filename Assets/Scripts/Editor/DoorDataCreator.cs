@@ -8,6 +8,9 @@ public static class DoorDataCreator
 {
     private const string Path = "Assets/Data/Doors/";
 
+    /// <summary>移涌之门所需的 Aeon 钥匙数量（修改此处后重新生成即可）</summary>
+    private const int AeonDoorRequiredKeys = 3;
+
     [MenuItem("MagicTower/Create All Door Data")]
     public static void CreateAll()
     {
@@ -16,8 +19,8 @@ public static class DoorDataCreator
         CreateDoor("YellowDoor",  "黄之门", KeyType.Yellow, true);
         CreateDoor("BlueDoor",    "蓝之门", KeyType.Blue,   true);
         CreateDoor("RedDoor",     "红之门", KeyType.Red,    true);
-        CreateDoor("PsycheDoor",  "紫晶门", KeyType.Psyche, false, 100);
-        CreateDoor("AeonDoor",    "永劫门", KeyType.Aeon,   false);
+        CreateDoor("PsycheDoor",  "魂之门", KeyType.Psyche, false, 100);
+        CreateDoor("AeonDoor",    "移涌之门", KeyType.Aeon,   false, requiredKeyCount: AeonDoorRequiredKeys);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -25,7 +28,7 @@ public static class DoorDataCreator
         Debug.Log("[DoorDataCreator] 五扇门数据资产已创建，路径：Data/Doors/");
     }
 
-    private static void CreateDoor(string name, string doorName, KeyType keyType, bool consume, int healthCost = 0)
+    private static void CreateDoor(string name, string doorName, KeyType keyType, bool consume, int healthCost = 0, int requiredKeyCount = 0)
     {
         string fullPath = Path + name + ".asset";
 
@@ -41,6 +44,7 @@ public static class DoorDataCreator
         data.requiredKeyType = keyType;
         data.consumeKey = consume;
         data.healthCost = healthCost;
+        data.requiredKeyCount = requiredKeyCount;
 
         AssetDatabase.CreateAsset(data, fullPath);
     }

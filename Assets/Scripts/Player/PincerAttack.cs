@@ -245,9 +245,9 @@ public class PincerAttack : MonoBehaviour
         if (player == null) return;
 
         int hpBefore = player.HP;
-        int damage = Mathf.CeilToInt(hpBefore * 0.5f);
-        player.SubtractHP(damage);
-        Debug.Log($"[夹击] {pattern} 形成！玩家生命值减少50%（-{damage}，HP {hpBefore} → {player.HP}）");
+        int damage = Mathf.FloorToInt(hpBefore * 0.5f);
+        int actual = player.SubtractRawHPKeepAlive(damage);
+        Debug.Log($"[夹击] {pattern} 形成！玩家生命值减少50%（-{actual}，HP {hpBefore} → {player.HP}）");
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public class PincerAttack : MonoBehaviour
         if (enemy.IsDefeated) return;
 
         int hpBefore = enemy.HP;
-        int damage = Mathf.CeilToInt(hpBefore * 0.5f);
+        int damage = Mathf.FloorToInt(hpBefore * 0.5f);
         enemy.SubtractHP(damage);
         Debug.Log($"[夹击] {pattern} 形成！{enemy.EnemyName} 生命值减少50%（伤害 {damage}，HP {hpBefore} → {enemy.HP}）");
 
