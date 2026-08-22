@@ -73,3 +73,26 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Runtime generated save files
+/save/
+
+# === AI Coding Tools ===
+.codegraph/
+.reasonix/
+reasonix.toml
+.cursor/
+.cursorrules
+.aider*
+.ai/
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
