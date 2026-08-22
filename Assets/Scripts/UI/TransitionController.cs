@@ -17,6 +17,28 @@ using UnityEngine;
 /// </summary>
 public class TransitionController : MonoBehaviour
 {
+    /// <summary>
+    /// 是否在下一次加载 Opening 场景时播放开场过场动画。
+    /// 默认 false：直接启动游戏进入 Opening 时不播放；
+    /// 从其他场景（如 Credits / Ending）返回 Opening 时，在跳转前设为 true。
+    /// 静态字段跨场景常驻，但应用重启后会自动复位为 false。
+    /// </summary>
+    public static bool ShouldPlayOnLoad { get; set; }
+
+    /// <summary>
+    /// 应用启动时统一锁定帧率：
+    /// 关闭垂直同步（避免无边框全屏下驱动 vsync 间歇生效），
+    /// 用 targetFrameRate 硬性固定 60 帧，保证帧间隔均匀稳定，
+    /// 避免无锁帧时画面节奏不稳（表现为转场动画明显掉帧 / 卡顿）。
+    /// 如需跟随显示器刷新率，可自行调整该数值。
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void LockFrameRate()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+    }
+
     [Header("References")]
 
     /// <summary>
@@ -111,9 +133,23 @@ public class TransitionController : MonoBehaviour
 
     /// <summary>
     /// 对象激活时初始化并自动播放过渡动画。
+    /// 仅当 ShouldPlayOnLoad 为 true（从其他场景返回 Opening）时才自动播放；
+    /// 直接启动游戏进入 Opening 时跳过动画，直接隐藏本物体。
     /// </summary>
     private void Awake()
     {
+        // 直接启动游戏（首次进入 Opening）：不播放过场，隐藏黑屏遮罩
+        if (!ShouldPlayOnLoad)
+        {
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+            gameObject.SetActive(false);
+            return;
+        }
+
+        // 本次播放已消费标记，恢复默认
+        ShouldPlayOnLoad = false;
+
         // 初始化：黑屏
         canvasGroup.alpha = 1f;
 

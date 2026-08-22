@@ -17,9 +17,27 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private BattleUI battleUI;
 
     [Header("动画参数")]
-    [SerializeField] private float logDelay = 1.6f;
+    [SerializeField] private float logDelay = 1f;
+
+    /// <summary>跨场景缓存的战斗日志间隔（供设置界面在 BattleManager 尚未创建时也能记录）。</summary>
+    private static float logDelayOverride = -1f;
+
+    /// <summary>战斗日志逐行间隔（秒）。设置界面据此调整战斗速度。</summary>
+    public float LogDelay
+    {
+        get => logDelay;
+        set
+        {
+            logDelay = value;
+            logDelayOverride = value;
+        }
+    }
 
     private bool isFighting = false;
+
+    /// <summary>战斗是否正在进行（战斗窗口打开时为 true），供按键输入锁定使用。</summary>
+    public bool IsFighting => isFighting;
+
     private int turnCount = 1;
     private int lastDamageToEnemy;   // 本回合敌人受到的实际伤害（减伤后）
     private int lastDamageToPlayer;  // 本回合玩家受到的实际伤害（减伤后）
@@ -34,6 +52,13 @@ public class BattleManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // 进入游戏时从全局存档读取战斗速度；跨场景缓存作为回退
+        float saved = SaveManager.LoadBattleSpeed();
+        if (saved > 0f)
+            logDelay = saved;
+        else if (logDelayOverride > 0f)
+            logDelay = logDelayOverride;
     }
 
     /// <summary>
@@ -46,6 +71,12 @@ public class BattleManager : MonoBehaviour
             Debug.LogWarning("[BattleManager] 当前已有战斗在进行中");
             callback?.Invoke(false);
             return;
+        }
+
+        // 从设置场景返回后，序列化的 battleUI 引用会因原场景对象销毁而变空，这里重新查找
+        if (battleUI == null)
+        {
+            battleUI = FindFirstObjectByType<BattleUI>(FindObjectsInactive.Include);
         }
 
         if (battleUI == null)

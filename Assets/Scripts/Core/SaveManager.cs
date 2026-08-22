@@ -15,6 +15,13 @@ public class SaveManager : MonoBehaviour
     private string saveDir;
     private string globalSavePath;
     private string gameSavePath;
+    private string autoSavePath;
+
+    /// <summary>
+    /// 进入 Game 场景时是否读取自动存档（true=继续，false=新游戏）。
+    /// 新游戏流程会先设为 false，MapGenerator 消费后复位为 true。
+    /// </summary>
+    public static bool LoadAutoSaveOnStart { get; set; } = true;
 
     void Awake()
     {
@@ -30,12 +37,16 @@ public class SaveManager : MonoBehaviour
         saveDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "save");
         globalSavePath = Path.Combine(saveDir, "global.json");
         gameSavePath = Path.Combine(saveDir, "game_save.json");
+        autoSavePath = Path.Combine(saveDir, "auto_save.json");
 
         EnsureSaveDirectory();
     }
 
     void Update()
     {
+        // 战斗窗口打开时禁用存档/读档按键
+        if (BattleManager.Instance != null && BattleManager.Instance.IsFighting) return;
+
         // 暂定：P 存档，O 读档。未来改为 UI 按钮
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -63,8 +74,20 @@ public class SaveManager : MonoBehaviour
         Debug.Log($"[SaveManager] 全局存档已保存 → {globalSavePath}");
     }
 
-    /// <summary>保存当前游戏存档</summary>
+    /// <summary>保存主动存档（P 键 / 未来 UI 按钮），写入 game_save.json。</summary>
     public void SaveGame()
+    {
+        SaveGameTo(gameSavePath);
+    }
+
+    /// <summary>保存自动存档，写入 auto_save.json（不覆盖主动存档）。</summary>
+    public void SaveAutoGame()
+    {
+        SaveGameTo(autoSavePath);
+    }
+
+    /// <summary>将当前游戏状态写入指定存档文件。</summary>
+    private void SaveGameTo(string path)
     {
         PlayerData player = FindAnyObjectByType<PlayerData>();
         if (player == null)
@@ -125,12 +148,12 @@ public class SaveManager : MonoBehaviour
             ? FloorMemoryManager.Instance.GetVisitedFloors()
             : null;
 
-        WriteJson(gameSavePath, data);
+        WriteJson(path, data);
 
         // 同时保存全局存档
         SaveGlobal();
 
-        Debug.Log($"[SaveManager] 游戏存档已保存 → {gameSavePath}");
+        Debug.Log($"[SaveManager] 存档已保存 → {path}");
     }
 
     // ============================================================
@@ -178,17 +201,29 @@ public class SaveManager : MonoBehaviour
     /// <summary>获取神圣火花数量。</summary>
     public int GetDivineSparkCount() => LoadGlobal().divineSpark;
 
-    /// <summary>读取游戏存档</summary>
+    /// <summary>读取主动存档（O 键），从 game_save.json。</summary>
     public void LoadGame()
     {
-        GameSaveData data = ReadJson<GameSaveData>(gameSavePath);
+        LoadGameFrom(gameSavePath);
+    }
+
+    /// <summary>读取自动存档，从 auto_save.json。返回是否成功读取。</summary>
+    public bool LoadAutoGame()
+    {
+        return LoadGameFrom(autoSavePath);
+    }
+
+    /// <summary>从指定存档文件读取游戏状态。返回是否成功读取。</summary>
+    private bool LoadGameFrom(string path)
+    {
+        GameSaveData data = ReadJson<GameSaveData>(path);
         if (data == null)
         {
-            Debug.LogWarning("[SaveManager] 游戏存档不存在，无法读档");
-            return;
+            Debug.LogWarning($"[SaveManager] 存档不存在，无法读档：{path}");
+            return false;
         }
 
-        Debug.Log($"[SaveManager] 游戏存档已读取 ← {gameSavePath}");
+        Debug.Log($"[SaveManager] 存档已读取 ← {path}");
 
         // 1. 恢复玩家属性
         PlayerData player = FindAnyObjectByType<PlayerData>();
@@ -259,6 +294,88 @@ public class SaveManager : MonoBehaviour
         if (player != null)
         {
             player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+        }
+
+        return true;
+    }
+
+    /// <summary>清除自动存档（auto_save.json），不影响主动存档。静态方法，无需实例。</summary>
+    public static void ClearAutoSave()
+    {
+        string saveDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "save");
+        string autoSavePath = Path.Combine(saveDir, "auto_save.json");
+
+        if (File.Exists(autoSavePath))
+        {
+            File.Delete(autoSavePath);
+            Debug.Log($"[SaveManager] 已清除自动存档 → {autoSavePath}");
+        }
+        else
+        {
+            Debug.Log("[SaveManager] 自动存档不存在，无需清除");
+        }
+    }
+
+    // ============================================================
+    //  战斗速度（全局存档，静态读写，供 Setting / Game 场景使用）
+    // ============================================================
+
+    private static string GetGlobalSavePath()
+    {
+        string saveDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "save");
+        return Path.Combine(saveDir, "global.json");
+    }
+
+    /// <summary>读取全局存档中的战斗速度（无存档或读取失败时返回默认 1f）。</summary>
+    public static float LoadBattleSpeed()
+    {
+        string path = GetGlobalSavePath();
+        if (!File.Exists(path)) return 1f;
+
+        try
+        {
+            string json = File.ReadAllText(path);
+            GlobalSaveData data = JsonConvert.DeserializeObject<GlobalSaveData>(json);
+            if (data == null) return 1f;
+            return data.battleSpeed > 0f ? data.battleSpeed : 1f;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SaveManager] 读取战斗速度失败：{path}\n{e}");
+            return 1f;
+        }
+    }
+
+    /// <summary>将战斗速度写入全局存档（合并现有全局数据后写回，不覆盖其它字段）。</summary>
+    public static void SaveBattleSpeed(float speed)
+    {
+        string path = GetGlobalSavePath();
+
+        GlobalSaveData data = null;
+        if (File.Exists(path))
+        {
+            try
+            {
+                data = JsonConvert.DeserializeObject<GlobalSaveData>(File.ReadAllText(path));
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[SaveManager] 读取全局存档失败，将新建：{e.Message}");
+            }
+        }
+        if (data == null) data = new GlobalSaveData();
+
+        data.battleSpeed = speed;
+
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            File.WriteAllText(path, JsonConvert.SerializeObject(data, Formatting.Indented));
+            Debug.Log($"[SaveManager] 战斗速度已保存 → {speed}（{path}）");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SaveManager] 保存战斗速度失败：{path}\n{e}");
         }
     }
 

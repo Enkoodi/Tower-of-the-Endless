@@ -42,6 +42,9 @@ public class StairController : MonoBehaviour
 
         Debug.Log($"[Stair] 使用{(stairType == StairType.Up ? "上" : "下")}楼梯：第 {currentFloor} 层 → 第 {targetFloor} 层（{entryDir}）");
         mapGen.LoadFloor(targetFloor, entryDir);
+
+        // 上下楼梯后自动存档
+        SaveManager.Instance?.SaveAutoGame();
     }
 }
 

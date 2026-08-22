@@ -3,10 +3,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 开场菜单按钮的交互效果：
+/// 菜单按钮的交互效果：
 /// - 默认状态：无任何外框/底色，直接透出背景；
 /// - 悬停或选中（键盘/手柄导航）时：显示外框；
-/// - 按下时：外框变色并轻微缩放，作为点击反馈。
+/// - 按下时：外框变色并轻微缩放，作为点击反馈；
+/// - 通过 SetLocked(true) 可锁定为常驻选中（外框一直显示），用于设置页等互斥选择按钮。
 /// 外框由 4 条纯色细条（上/下/左/右）拼成，不依赖任何图片资源和九宫格切片，渲染稳定。
 /// </summary>
 [RequireComponent(typeof(Button))]
@@ -36,6 +37,7 @@ public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private bool isHovered;
     private bool isSelected;
     private bool isPressed;
+    private bool isLocked;
     private Color targetColor = Color.clear;
     private Vector3 targetScale;
 
@@ -72,9 +74,19 @@ public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     // ---------------- 状态计算 ----------------
     private void RefreshState()
     {
-        bool showFrame = isHovered || isSelected;
+        bool showFrame = isHovered || isSelected || isLocked;
         targetColor = showFrame ? (isPressed ? pressedFrameColor : frameColor) : Color.clear;
         targetScale = isPressed ? originalScale * pressedScale : originalScale;
+    }
+
+    /// <summary>
+    /// 锁定/解锁选中状态：锁定时外框常驻显示（即使未悬停/未选中）。
+    /// 用于战斗速度等互斥选择按钮，由外部控制器在点击时切换。
+    /// </summary>
+    public void SetLocked(bool locked)
+    {
+        isLocked = locked;
+        RefreshState();
     }
 
     // ---------------- 指针 / 选择事件 ----------------

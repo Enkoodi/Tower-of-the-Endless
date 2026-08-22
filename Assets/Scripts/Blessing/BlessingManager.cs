@@ -258,6 +258,12 @@ public class BlessingManager : MonoBehaviour
             return;
         }
 
+        // 从设置场景返回后，序列化的 blessingPanel 引用会因原场景对象销毁而变空，这里重新查找
+        if (blessingPanel == null)
+        {
+            blessingPanel = FindFirstObjectByType<BlessingPanel>(FindObjectsInactive.Include);
+        }
+
         if (blessingPanel == null)
         {
             Debug.LogError("[BlessingManager] BlessingPanel 未设置！");

@@ -70,6 +70,15 @@ public class MapGenerator : MonoBehaviour
 
     private void Start()
     {
+        // 优先读取自动存档（继续游戏）；无自动存档时加载测试/初始楼层
+        bool loadAuto = SaveManager.LoadAutoSaveOnStart;
+        SaveManager.LoadAutoSaveOnStart = true; // 消费标记并复位
+
+        if (loadAuto && SaveManager.Instance != null && SaveManager.Instance.LoadAutoGame())
+        {
+            return;
+        }
+
         if (testMap != null)
         {
             LoadFloor(testMap);

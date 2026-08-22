@@ -81,14 +81,17 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        // 怪物手册快捷键 — 始终可响应，不受面板打开状态影响
-        if (Input.GetKeyDown(KeyCode.Tab))
+        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isViewingManual;
+
+        // 怪物手册快捷键 — 战斗/祝福/NPC/对话时禁用；手册打开时仍允许再次按 Tab 关闭
+        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue;
+        if (!manualShortcutLocked && Input.GetKeyDown(KeyCode.Tab))
         {
             MonsterManualUI manual = FindAnyObjectByType<MonsterManualUI>();
             if (manual != null) manual.Toggle();
         }
 
-        if (isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isViewingManual) return;
+        if (inputLocked) return;
 
         TrackKeyPress(KeyCode.W, KeyCode.UpArrow, Vector2.up);
         TrackKeyPress(KeyCode.S, KeyCode.DownArrow, Vector2.down);
@@ -456,6 +459,9 @@ public class PlayerMove : MonoBehaviour
         EntryDirection entryDir = goingUp ? EntryDirection.FromBelow : EntryDirection.FromAbove;
         Debug.Log($"[QuickJump] 快速跳层：第 {currentFloor} 层 → 第 {targetFloor} 层（{entryDir}）");
         mapGen.LoadFloor(targetFloor, entryDir);
+
+        // 快速跳层后自动存档
+        SaveManager.Instance?.SaveAutoGame();
     }
 
     /// <summary>使用上楼传送器：消耗一个，向上传送一层（出生在目标层下楼梯）。</summary>
@@ -489,6 +495,9 @@ public class PlayerMove : MonoBehaviour
         // FromBelow = 从下层进入 → 出生在目标层的下楼梯(9)
         Debug.Log($"[PlayerMove] 使用上楼传送器：第 {mapGen.CurrentFloor} 层 → 第 {targetFloor} 层");
         mapGen.LoadFloor(targetFloor, EntryDirection.FromBelow);
+
+        // 上楼后自动存档
+        SaveManager.Instance?.SaveAutoGame();
     }
 
     /// <summary>使用下楼传送器：消耗一个，向下传送一层（出生在目标层上楼梯）。</summary>
@@ -522,6 +531,9 @@ public class PlayerMove : MonoBehaviour
         // FromAbove = 从上层进入 → 出生在目标层的上楼梯(8)
         Debug.Log($"[PlayerMove] 使用下楼传送器：第 {mapGen.CurrentFloor} 层 → 第 {targetFloor} 层");
         mapGen.LoadFloor(targetFloor, EntryDirection.FromAbove);
+
+        // 下楼后自动存档
+        SaveManager.Instance?.SaveAutoGame();
     }
 
     /// <summary>使用敌人减半道具：消耗一个，下一场战斗敌人血量减半。</summary>

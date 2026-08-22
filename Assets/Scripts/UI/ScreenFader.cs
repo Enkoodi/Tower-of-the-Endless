@@ -34,6 +34,12 @@ public class ScreenFader : MonoBehaviour
         GetOrCreate().FadeTo(sceneName);
     }
 
+    /// <summary>带淡入淡出地跳转场景，可自定义淡入淡出时长（秒，传 0 使用默认值）。</summary>
+    public static void FadeToScene(string sceneName, float duration)
+    {
+        GetOrCreate().FadeTo(sceneName, duration);
+    }
+
     private static ScreenFader GetOrCreate()
     {
         if (Instance == null)
@@ -86,13 +92,20 @@ public class ScreenFader : MonoBehaviour
 
     public void FadeTo(string sceneName)
     {
-        if (fadeRoutine != null) StopCoroutine(fadeRoutine);
-        fadeRoutine = StartCoroutine(FadeToRoutine(sceneName));
+        FadeTo(sceneName, 0f);
     }
 
-    private IEnumerator FadeToRoutine(string sceneName)
+    /// <summary>淡入淡出跳转场景；duration 传 0 表示使用 fadeDuration。</summary>
+    public void FadeTo(string sceneName, float duration)
     {
-        yield return FadeRoutine(1f); // 淡出至全黑
+        if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+        fadeRoutine = StartCoroutine(FadeToRoutine(sceneName, duration));
+    }
+
+    private IEnumerator FadeToRoutine(string sceneName, float duration)
+    {
+        float fadeDur = duration > 0f ? duration : fadeDuration;
+        yield return FadeRoutine(1f, fadeDur); // 淡出至全黑
 
         if (Application.CanStreamedLevelBeLoaded(sceneName))
         {
@@ -105,17 +118,17 @@ public class ScreenFader : MonoBehaviour
 
         yield return null;            // 等待新场景完成加载
         yield return new WaitForSecondsRealtime(blackHoldDuration); // 黑屏停顿，等新场景初始化完毕
-        yield return FadeRoutine(0f); // 淡入恢复画面
+        yield return FadeRoutine(0f, fadeDur); // 淡入恢复画面
         fadeRoutine = null;
     }
 
-    private IEnumerator FadeRoutine(float targetAlpha)
+    private IEnumerator FadeRoutine(float targetAlpha, float fadeDur)
     {
         float from = overlay.color.a;
         float t = 0f;
         while (t < 1f)
         {
-            t += Time.unscaledDeltaTime / fadeDuration;
+            t += Time.unscaledDeltaTime / fadeDur;
             SetAlpha(Mathf.Lerp(from, targetAlpha, Mathf.Clamp01(t)));
             yield return null;
         }
