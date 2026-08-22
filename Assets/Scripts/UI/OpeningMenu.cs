@@ -22,13 +22,28 @@ public class OpeningMenu : MonoBehaviour
             return;
         }
 
+        // 读取全局道具数量，用于决定挑战/无尽模式是否可选
+        GlobalSaveData globalData = SaveManager.LoadGlobalData();
+        int aeonKeys = globalData != null ? globalData.aeonKeys : 0;
+        int divineSpark = globalData != null ? globalData.divineSpark : 0;
+
         foreach (Button button in buttons)
         {
             switch (button.name)
             {
                 case "Story":
+                    button.onClick.AddListener(StartGame);
+                    break;
+
                 case "Challenge":
+                    // 挑战模式：拥有 Aeon 钥匙（aeonKeys > 0）时才可选
+                    button.interactable = aeonKeys > 0;
+                    button.onClick.AddListener(StartGame);
+                    break;
+
                 case "Endless":
+                    // 无尽模式：拥有神圣火花（divineSpark > 0）时才可选
+                    button.interactable = divineSpark > 0;
                     button.onClick.AddListener(StartGame);
                     break;
 

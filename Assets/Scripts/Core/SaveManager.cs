@@ -326,6 +326,24 @@ public class SaveManager : MonoBehaviour
         return Path.Combine(saveDir, "global.json");
     }
 
+    /// <summary>从磁盘读取全局存档（无需 SaveManager 实例，供 Opening 等场景使用）。失败时返回默认数据。</summary>
+    public static GlobalSaveData LoadGlobalData()
+    {
+        string path = GetGlobalSavePath();
+        if (!File.Exists(path)) return new GlobalSaveData();
+
+        try
+        {
+            GlobalSaveData data = JsonConvert.DeserializeObject<GlobalSaveData>(File.ReadAllText(path));
+            return data ?? new GlobalSaveData();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SaveManager] 读取全局存档失败：{path}\n{e}");
+            return new GlobalSaveData();
+        }
+    }
+
     /// <summary>读取全局存档中的战斗速度（无存档或读取失败时返回默认 1f）。</summary>
     public static float LoadBattleSpeed()
     {
