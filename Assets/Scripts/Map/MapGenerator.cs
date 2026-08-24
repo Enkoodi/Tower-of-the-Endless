@@ -234,7 +234,7 @@ public class MapGenerator : MonoBehaviour
         // 自动适配相机
         if (autoFitCamera)
         {
-            SetupCamera(data.height, data.width);
+            SetupCamera();
         }
 
         Debug.Log($"[MapGenerator] 地图加载完成：{data.name}（{data.width}×{data.height}，楼层 {data.floor}）");
@@ -322,7 +322,7 @@ public class MapGenerator : MonoBehaviour
         Debug.LogWarning($"[MapGenerator] 未找到目标楼梯(ID={targetId})，回退到 JSON 出生点：({data.player_spawn?.x}, {data.player_spawn?.y})");
     }
 
-    private void SetupCamera(int mapRows, int mapCols)
+    private void SetupCamera()
     {
         Camera cam = Camera.main;
         if (cam == null)
@@ -331,17 +331,8 @@ public class MapGenerator : MonoBehaviour
             return;
         }
 
-        // 以地图高度为准
-        cam.orthographicSize = mapRows / 2f;
-
-        // 若宽度不足，以宽度为准（左右预留边距）
-        float camWidth      = cam.aspect * cam.orthographicSize * 2f;
-        float requiredWidth = mapCols + 2f * marginCells;
-
-        if (camWidth < requiredWidth)
-        {
-            cam.orthographicSize = requiredWidth / (cam.aspect * 2f);
-        }
+        // 固定相机大小（与 Main Camera 编辑器中设置保持一致）
+        cam.orthographicSize = 6.5f;
 
         // 居中
         Vector3 pos = cam.transform.position;
