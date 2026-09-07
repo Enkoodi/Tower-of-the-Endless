@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7044218878809389436}
   - component: {fileID: 5435102426122704787}
   - component: {fileID: 4892810931974165447}
+  - component: {fileID: 4321975421762623310}
   m_Layer: 7
   m_Name: ZombieKnight
   m_TagString: Untagged
@@ -144,3 +145,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 02726b23417325341ab2fafa3ce1c0c2, type: 2}
+  isScriptedEnemy: 0
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!95 &4321975421762623310
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9180302855071545061}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c5731c1348836ad4c93f73472f13eabf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

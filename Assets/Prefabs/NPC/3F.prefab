@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8697663452727498261}
   - component: {fileID: -1458443201839603547}
   - component: {fileID: -7309191790382007140}
+  - component: {fileID: 4253030719672511154}
   m_Layer: 11
   m_Name: 3F
   m_TagString: Untagged
@@ -222,3 +223,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &4253030719672511154
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606647484800872793}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 08777c418b4900f4aa3aa0460b36757a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

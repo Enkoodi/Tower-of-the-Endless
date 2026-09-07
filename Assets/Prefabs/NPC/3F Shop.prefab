@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3013410102031519395}
   - component: {fileID: -2069880403602973534}
   - component: {fileID: 1268248325942084111}
+  - component: {fileID: 3377912295460275577}
   m_Layer: 11
   m_Name: 3F Shop
   m_TagString: Untagged
@@ -148,6 +149,8 @@ MonoBehaviour:
   - speakerName: "\u201C\u795E\u79D8\u201D\u5546\u4EBA"
     content: "1\u628A\u7EA2\u94A5\u5319\u30011\u628A\u84DD\u94A5\u5319\u548C1\u628A\u9EC4\u94A5\u5319\uFF0C\u4E00\u5171\u6536\u4F6011100\uFF0C\u4F60\u9700\u8981\u5417\uFF1F"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u8D2D\u4E70"
   choice2Text: "\u79BB\u5F00"
   onChoice1:
@@ -190,3 +193,24 @@ MonoBehaviour:
     quantity: 1
   - prefab: {fileID: 9082593690080390034, guid: 1c26c32e61e1f1a47b7ee9d1b3192dfe, type: 3}
     quantity: 1
+--- !u!95 &3377912295460275577
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 35dcc807b7cc02b46889723dd4d7b7ff, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

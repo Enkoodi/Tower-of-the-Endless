@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8250301807622906115}
   - component: {fileID: -144056700419550264}
   - component: {fileID: -5032102245763109053}
+  - component: {fileID: 4443321920103098897}
   m_Layer: 7
   m_Name: GreatMagicMaster
   m_TagString: Untagged
@@ -77,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: 80faa479d15bdba449e278cf6af7cd7e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08779dc00dae3ed4dbcf73d19e620c7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -146,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: b047ec05d2dd4bc4eaedc82511c609c4, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-144056700419550264
@@ -180,3 +182,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damagePercent: 200
+--- !u!95 &4443321920103098897
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7672877958684205967}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a284f34c1e3419f429702cc821d4e9da, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

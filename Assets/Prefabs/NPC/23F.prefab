@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
+  - component: {fileID: 1055950936336161820}
   m_Layer: 11
   m_Name: 23F
   m_TagString: Untagged
@@ -147,10 +148,36 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u9F99\u662F\u4E00\u4E2A\u975E\u5E38\u9AD8\u8D35\u7684\u79CD\u65CF\uFF0C\u6BCF\u79CD\u9F99\u53EA\u4F1A\u5B58\u5728\u4E00\u53EA\uFF0C\u4F20\u8BF4\u5728\u8FD9\u5EA7\u5854\u4E2D\u6816\u606F\u7740\u4E00\u53EA\u9EC4\u91D1\u9F99\uFF0C\u5B83\u6536\u96C6\u4E86\u5927\u91CF\u7684\u5B9D\u85CF"
     showChoices: 0
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
-  onActionTriggered:
+    nextLineIndex: -1
+  entryBranches: []
+  choice1Text: "\u9009\u98791"
+  choice2Text: "\u9009\u98792"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls: []
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &1055950936336161820
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

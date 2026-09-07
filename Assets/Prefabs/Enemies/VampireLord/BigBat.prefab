@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2244636505138394478}
   - component: {fileID: 2693301953203815694}
   - component: {fileID: 8859034166303528982}
+  - component: {fileID: 5985082318559512526}
   m_Layer: 7
   m_Name: BigBat
   m_TagString: Untagged
@@ -144,3 +145,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 0465bf72e67765844b6a5353c18fbc47, type: 2}
+  isScriptedEnemy: 0
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!95 &5985082318559512526
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 34003216953232685}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bfd00c0b1359de94a98418a4a553f977, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

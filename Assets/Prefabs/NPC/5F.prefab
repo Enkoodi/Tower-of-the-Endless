@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
+  - component: {fileID: 5037631351240949896}
   m_Layer: 11
   m_Name: 5F
   m_TagString: Untagged
@@ -147,10 +148,36 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u6CD5\u672F\u653B\u51FB\u662F\u4E00\u79CD\u5F88\u96BE\u5904\u7406\u7684\u653B\u51FB\u65B9\u5F0F\uFF0C\u5B83\u80FD\u65E0\u89C6\u4F60\u7684\u62A4\u7532\u9632\u5FA1\uFF0C\u4F46\u9700\u8981\u6D88\u8017\u9B54\u529B\u5E76\u4E14\u6BCF\u4E2A\u4EBA\u90FD\u62E5\u6709\u9B54\u529B\u4E0A\u9650\u548C\u5355\u6B21\u7684\u9B54\u529B\u8F93\u51FA\u4E0A\u9650"
     showChoices: 0
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
-  onActionTriggered:
+    nextLineIndex: -1
+  entryBranches: []
+  choice1Text: "\u9009\u98791"
+  choice2Text: "\u9009\u98792"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls: []
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &5037631351240949896
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

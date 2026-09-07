@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3013410102031519395}
   - component: {fileID: -2069880403602973534}
   - component: {fileID: 3086429035218338403}
+  - component: {fileID: -778101899729320852}
   m_Layer: 11
   m_Name: 7F Shop 2
   m_TagString: Untagged
@@ -148,6 +149,8 @@ MonoBehaviour:
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
     content: "\u6211300\u91D1\u5E01\u5356\u4F601\u628A\u84DD\u94A5\u5319\uFF0C\u4F60\u9700\u8981\u5417"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u8D2D\u4E70"
   choice2Text: "\u79BB\u5F00"
   onChoice1:
@@ -186,3 +189,24 @@ MonoBehaviour:
   items:
   - prefab: {fileID: 860276125151747509, guid: 72208ada5be14b84f8d3d38a8fb00077, type: 3}
     quantity: 1
+--- !u!95 &-778101899729320852
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 35dcc807b7cc02b46889723dd4d7b7ff, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

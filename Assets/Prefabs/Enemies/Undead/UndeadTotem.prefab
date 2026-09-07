@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2838237945660585813}
   - component: {fileID: 598433164514488403}
   - component: {fileID: -8815414498494216242}
+  - component: {fileID: 3443314383285831271}
   m_Layer: 7
   m_Name: UndeadTotem
   m_TagString: Untagged
@@ -145,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: fe060439a2c5a5f49821a0458dbecc0a, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-8815414498494216242
@@ -194,3 +196,24 @@ MonoBehaviour:
     offset: {x: 7, y: -6}
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
     offset: {x: 0, y: 1}
+--- !u!95 &3443314383285831271
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3847965785534278910}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 16087a66fce68e046aac2bcf21e268af, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

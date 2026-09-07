@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1877635231508465652}
   - component: {fileID: 8210749500790872990}
   - component: {fileID: 5269318170046509954}
+  - component: {fileID: 4853332352935502412}
   m_Layer: 7
   m_Name: GateKeeperYellow
   m_TagString: Untagged
@@ -144,3 +145,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: dfebea23eb6b7a04abe989650fd551a4, type: 2}
+  isScriptedEnemy: 0
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!95 &4853332352935502412
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7817722285733355104}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 359f90dee337c0247b9ab21e2dd98dfd, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

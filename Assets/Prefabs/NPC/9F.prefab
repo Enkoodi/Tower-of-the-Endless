@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
+  - component: {fileID: 1245346782203046143}
   m_Layer: 11
   m_Name: 9F
   m_TagString: Untagged
@@ -147,12 +148,16 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u5927\u9B54\u5BFC\u5E08\u662F\u8FD9\u5EA7\u9B54\u5854\u7684\u4E3B\u4EBA\uFF0C\u4ED6\u4E5F\u638C\u7BA1\u7740\u8FD9\u7247\u533A\u57DF"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u8001\u8005"
     content: "\u800C\u8FD9\u7247\u533A\u57DF\u66FE\u53D1\u751F\u8FC7\u4E00\u6B21\u5DE8\u5927\u7684\u9B54\u529B\u707E\u5BB3\uFF0C\u4F46\u4ED6\u5374\u7F6E\u4E4B\u4E0D\u7406\uFF0C\u53EF\u80FD\u707E\u5BB3\u672C\u8EAB\u5C31\u662F\u4ED6\u5F15\u8D77\u7684\uFF0C\u8FD9\u6B63\u662F\u4ED6\u610F\u56FE"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u8001\u8005"
     content: "\u9B54\u529B\u707E\u5BB3\u4E4B\u540E\u5404\u5BB6\u5404\u6237\u7684\u5B9D\u7269\u6563\u843D\u5730\u5230\u5904\u90FD\u662F\uFF0C\u6709\u53EA\u53F2\u83B1\u59C6\u4E58\u673A\u541E\u4E0B\u4E86\u8BB8\u591A\u5B9D\u7269\uFF0C\u53D8\u5F97\u975E\u5E38\u5F3A\u5927\uFF0C\u5176\u4ED6\u4EBA\u5BF9\u5B83\u975E\u5E38\u4E0D\u6EE1\uFF0C\u4F46\u4E5F\u675F\u624B\u65E0\u7B56"
     showChoices: 0
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u9009\u98791"
   choice2Text: "\u9009\u98792"
   onChoice1:
@@ -163,3 +168,24 @@ MonoBehaviour:
       m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &1245346782203046143
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

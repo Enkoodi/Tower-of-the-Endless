@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4851131179987850505}
   - component: {fileID: 4547991480576706202}
   - component: {fileID: -8644303237562284906}
+  - component: {fileID: 6790749259840730083}
   m_Layer: 11
   m_Name: 3F 1
   m_TagString: Untagged
@@ -149,9 +150,12 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u9B54\u738B\u4F3C\u4E4E\u5728\u8FDB\u884C\u8FD9\u67D0\u9879\u5F88\u5371\u9669\u7684\u7814\u7A76\uFF0C\u6211\u5C31\u662F\u8BD5\u56FE\u8C03\u67E5\u771F\u76F8\u624D\u88AB\u6293\u8FDB\u6765\u7684"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u8001\u8005"
     content: "\u8C22\u8C22\u4F60\u6551\u4E86\u6211\uFF0C\u8FD9\u662F\u6211\u6361\u5230\u7684\u5B9D\u7269\uFF0C\u53EF\u80FD\u5BF9\u4F60\u6709\u5E2E\u52A9"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:
@@ -216,3 +220,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &6790749259840730083
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

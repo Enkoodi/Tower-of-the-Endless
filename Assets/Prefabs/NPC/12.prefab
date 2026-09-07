@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -8079505446018661887}
   - component: {fileID: 3531502297363944772}
   - component: {fileID: -1086902482788626427}
+  - component: {fileID: 2030018945036610306}
   m_Layer: 11
   m_Name: 12
   m_TagString: Untagged
@@ -149,6 +150,8 @@ MonoBehaviour:
   - speakerName: "\u4F60"
     content: "\u516C\u4E3B\u5C45\u7136\u662F\u53EA\u53F2\u83B1\u59C6\uFF0C\u88AB\u9A97\u4E86\u5417"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u51FB\u8D25\u5E76\u68C0\u67E5"
   choice2Text: "\u79BB\u5F00"
   onChoice1:
@@ -213,3 +216,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &2030018945036610306
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56386739824309385}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f5e30462fc82dfe408282582d5f6db47, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

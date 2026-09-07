@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4121420570761394245}
   - component: {fileID: 6178319180853011673}
   - component: {fileID: 1312256222450469698}
+  - component: {fileID: 8768266327466372320}
   m_Layer: 7
   m_Name: SlimeLord
   m_TagString: Untagged
@@ -145,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 446a2ea7f2c783049a165112e8000b2a, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &1312256222450469698
@@ -194,3 +196,24 @@ MonoBehaviour:
     offset: {x: 6, y: 1}
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
     offset: {x: 0, y: 1}
+--- !u!95 &8768266327466372320
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7058372525764753895}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cfbb80e6e62aa3d419c1042ca48c8154, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

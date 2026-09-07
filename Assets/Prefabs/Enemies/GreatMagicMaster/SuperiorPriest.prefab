@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5925550197385245959}
   - component: {fileID: 8623729420752986311}
   - component: {fileID: -6616120570828224995}
+  - component: {fileID: 8601984598673385541}
   m_Layer: 7
   m_Name: SuperiorPriest
   m_TagString: Untagged
@@ -145,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: c952eb19a1bec574b98f79f475df67e2, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-6616120570828224995
@@ -160,3 +162,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damagePercent: 100
+--- !u!95 &8601984598673385541
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8364676037460296561}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8480dc04a598bbb43ad3e27e6165d67b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2993655955564844109}
   - component: {fileID: 6557943615926373356}
   - component: {fileID: 5871030487024218049}
+  - component: {fileID: 9104654926949746567}
   m_Layer: 7
   m_Name: ScarletKnight
   m_TagString: Untagged
@@ -144,3 +145,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: bbcb433db279aa841a88f6f3aa9db811, type: 2}
+  isScriptedEnemy: 0
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!95 &9104654926949746567
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7489332523113762433}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1faa3720ecc886f44a16038c8d0da6a2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

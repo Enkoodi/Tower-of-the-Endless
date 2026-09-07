@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2281771255990607905}
   - component: {fileID: 683627157404604892}
   - component: {fileID: 6870713977669409623}
+  - component: {fileID: 3987121096771393169}
   m_Layer: 7
   m_Name: Skeleton
   m_TagString: Untagged
@@ -144,3 +145,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: c876abbb9134d5b4bb35946466a95edb, type: 2}
+  isScriptedEnemy: 0
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!95 &3987121096771393169
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8734229741401619462}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: eb6120b14d08d1341b99686e13257710, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

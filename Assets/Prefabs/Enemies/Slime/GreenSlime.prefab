@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2707658281134914208}
   - component: {fileID: 8891403813182246503}
   - component: {fileID: 6456273304338865141}
+  - component: {fileID: 8863390704213114399}
   m_Layer: 7
   m_Name: GreenSlime
   m_TagString: Untagged
@@ -144,5 +145,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 5f155d4a51fca8948b917aa0961a2741, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &8863390704213114399
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6609138336521278666}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cfc72d54335e5c748a632f9ea0222a3a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

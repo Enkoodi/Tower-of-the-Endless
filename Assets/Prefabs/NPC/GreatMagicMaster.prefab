@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -144056700419550264}
   - component: {fileID: -5102391127086654217}
   - component: {fileID: -2701142454957467793}
+  - component: {fileID: 9160050750054247679}
   m_Layer: 11
   m_Name: GreatMagicMaster
   m_TagString: Untagged
@@ -168,6 +169,8 @@ MonoBehaviour:
   - speakerName: "\u5927\u9B54\u5BFC\u5E08"
     content: "\u65E9\u5C31\u544A\u8BC9\u90A3\u5BB6\u4F19\u4E0D\u8981\u8FDB\u884C\u65E0\u7528\u5730\u6323\u624E\u4E86\uFF0C\u53D7\u6B7B\u5427\uFF01"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u6218\u6597"
   choice2Text: "\u6218\u6597"
   onChoice1:
@@ -217,3 +220,24 @@ MonoBehaviour:
   enemyStats: {fileID: 11400000, guid: b047ec05d2dd4bc4eaedc82511c609c4, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &9160050750054247679
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7672877958684205967}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a284f34c1e3419f429702cc821d4e9da, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
+  - component: {fileID: 3668379296940248497}
   m_Layer: 11
   m_Name: 22F
   m_TagString: Untagged
@@ -147,10 +148,36 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u8FD9\u4E2A\u533A\u57DF\u7684\u9996\u9886\u662F\u4E2A\u975E\u5E38\u68D8\u624B\u7684\u654C\u4EBA\uFF0C\u4F60\u6700\u597D\u80FD\u591F\u505A\u5230\u4E00\u51FB\u5FC5\u6740\u518D\u53BB\u6311\u6218\u5B83"
     showChoices: 0
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u786E\u8BA4"
-  onActionTriggered:
+    nextLineIndex: -1
+  entryBranches: []
+  choice1Text: "\u9009\u98791"
+  choice2Text: "\u9009\u98792"
+  onChoice1:
+    m_PersistentCalls:
+      m_Calls: []
+  onChoice2:
     m_PersistentCalls:
       m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &3668379296940248497
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

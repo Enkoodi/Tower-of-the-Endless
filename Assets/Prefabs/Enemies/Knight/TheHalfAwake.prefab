@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8333352042672528820}
   - component: {fileID: 5391715418075233952}
   - component: {fileID: 890985133146413084}
+  - component: {fileID: 7843743741327132985}
   m_Layer: 7
   m_Name: TheHalfAwake
   m_TagString: Untagged
@@ -145,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: d2a4eaf4880248e4d8ebe36f1f937874, type: 2}
+  isScriptedEnemy: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &890985133146413084
@@ -160,4 +162,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmune: 0
-  hasTriggered: 0
+--- !u!95 &7843743741327132985
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8632870374114801279}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ffc8e4996e4243544a022b06a2238a43, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

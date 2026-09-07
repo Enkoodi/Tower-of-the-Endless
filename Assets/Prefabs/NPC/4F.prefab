@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
+  - component: {fileID: -3168660306762134238}
   m_Layer: 11
   m_Name: 4F
   m_TagString: Untagged
@@ -147,6 +148,8 @@ MonoBehaviour:
   - speakerName: "\u8001\u8005"
     content: "\u4E0D\u77E5\u4F55\u65F6\u8D77\u8FD9\u5EA7\u5854\u4E2D\u5230\u5904\u90FD\u6563\u843D\u7740\u4E00\u79CD\u788E\u7247\uFF0C\u636E\u8BF4\u88AB\u9009\u4E2D\u7684\u4EBA\u6361\u8D77\u65F6\u53EF\u4EE5\u53D7\u5230\u795E\u660E\u7684\u795D\u798F"
     showChoices: 0
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: 
   choice2Text: 
   onChoice1:
@@ -157,3 +160,24 @@ MonoBehaviour:
       m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &-3168660306762134238
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

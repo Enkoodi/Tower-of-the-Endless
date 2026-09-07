@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -2069880403602973534}
   - component: {fileID: 3221084027521959861}
   - component: {fileID: 3366263962069831429}
+  - component: {fileID: 5482384330647898346}
   m_Layer: 11
   m_Name: 26F Shop 1
   m_TagString: Untagged
@@ -149,6 +150,8 @@ MonoBehaviour:
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
     content: "\u56DE\u6536\u9EC4\u94A5\u531950\u91D1\u5E01\u4E00\u628A"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:
@@ -201,3 +204,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &5482384330647898346
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 35dcc807b7cc02b46889723dd4d7b7ff, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

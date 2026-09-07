@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -4972692971317779685}
   - component: {fileID: -2454841182457994963}
   - component: {fileID: -3616625670769001871}
+  - component: {fileID: 8796609127174635864}
   m_Layer: 11
   m_Name: VampireLord
   m_TagString: Untagged
@@ -166,32 +167,28 @@ MonoBehaviour:
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
     content: "......\u8FD9\u662F\u7B2C\u51E0\u6B21\u4E86"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
     content: "\u4F60\u7684\u4EFB\u52A1\u662F\u6740\u6B7B\u9B54\u738B\uFF0C\u7136\u540E\u8FDB\u5165\u79FB\u6D8C\u4E4B\u95E8\uFF0C\u8FD9\u5F88\u7B80\u5355\u5BF9\u5427"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
     content: ...
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
     content: "\u4F60\u600E\u4E48\u8FD8\u5728\uFF0C\u662F\u60F3\u8981\u6311\u6218\u6211\u5417\uFF1F"
     showChoices: 1
-  exitButtonText: "\u79BB\u5F00"
-  actionButtonText: "\u6218\u6597"
-  onActionTriggered:
+    nextLineIndex: -1
+  entryBranches: []
+  choice1Text: "\u9009\u98791"
+  choice2Text: "\u9009\u98792"
+  onChoice1:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -3616625670769001871}
-        m_TargetAssemblyTypeName: NpcBattler, Assembly-CSharp
-        m_MethodName: StartBattleWithPlayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+  onChoice2:
+    m_PersistentCalls:
+      m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-3616625670769001871
@@ -209,3 +206,24 @@ MonoBehaviour:
   enemyStats: {fileID: 11400000, guid: fbc6fbca86ab0064ca4b0e988cedb114, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &8796609127174635864
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3729011368856514771}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 30a062ea241880e44941ee224a569746, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

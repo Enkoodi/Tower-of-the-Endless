@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2135354807365400324}
   - component: {fileID: 6972837415945842963}
   - component: {fileID: -5487906984667632092}
+  - component: {fileID: 4578045056775268721}
   m_Layer: 7
   m_Name: Zeno
   m_TagString: Untagged
@@ -182,9 +183,12 @@ MonoBehaviour:
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"
     content: "\u4F60\u662F...144\u53F7"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"
     content: "\u65E2\u7136\u4F60\u6765\u5230\u4E86\u8FD9\u91CC\uFF0C\u90A3\u4E48\u5F00\u59CB\u5427"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u6218\u6597"
   choice2Text: "\u6218\u6597"
   onChoice1:
@@ -234,3 +238,24 @@ MonoBehaviour:
   enemyStats: {fileID: 11400000, guid: f722f6a93b6cd9840a9056ed168a7771, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &4578045056775268721
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8035690681855433399}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ce7203db726097344af6cffeb04e8d49, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8697663452727498261}
   - component: {fileID: -6612769980229159066}
   - component: {fileID: -410012860953756329}
+  - component: {fileID: 4998140528940154985}
   m_Layer: 11
   m_Name: 15F
   m_TagString: Untagged
@@ -149,12 +150,16 @@ MonoBehaviour:
   - speakerName: "\u76D7\u8D3C"
     content: "\u8FD9\u9644\u8FD1\u672C\u6765\u662F\u5C45\u6C11\u5C45\u4F4F\u7684\u5730\u5E26\uFF0C\u4F46\u5F88\u4E45\u4EE5\u524D\u906D\u53D7\u4E86\u5DE8\u5927\u9B54\u529B\u707E\u5BB3\uFF0C\u5316\u4E3A\u4E86\u4E00\u5EA7\u5E9F\u589F"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u76D7\u8D3C"
     content: "\u76F4\u5230\u73B0\u5728\u9B54\u529B\u7684\u5F71\u54CD\u8FD8\u672A\u6563\u53BB\uFF0C\u8FD9\u662F\u4E00\u7247\u5F88\u5371\u9669\u7684\u5730\u533A"
     showChoices: 0
+    nextLineIndex: -1
   - speakerName: "\u76D7\u8D3C"
     content: "\u6211\u5728\u7A7F\u68AD\u8FD9\u7247\u5730\u5E26\u65F6\u53D1\u73B0\u4E86\u8FD9\u4E2A\uFF0C\u6216\u8BB8\u5BF9\u4F60\u6709\u7528"
     showChoices: 1
+    nextLineIndex: -1
+  entryBranches: []
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:
@@ -218,3 +223,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &4998140528940154985
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606647484800872793}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 08777c418b4900f4aa3aa0460b36757a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

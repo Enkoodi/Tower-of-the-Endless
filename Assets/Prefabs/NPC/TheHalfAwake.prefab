@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8333352042672528820}
   - component: {fileID: 890985133146413084}
   - component: {fileID: -3509350677855073068}
+  - component: {fileID: 2256017475449188588}
   m_Layer: 11
   m_Name: TheHalfAwake
   m_TagString: Untagged
@@ -173,3 +174,24 @@ MonoBehaviour:
       m_Calls: []
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &2256017475449188588
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8632870374114801279}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9a64867b2ccbe6549875ce3af033407c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
