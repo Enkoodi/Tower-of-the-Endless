@@ -185,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleWindow: {fileID: 604470273157767451}
   enemyNameText: {fileID: 4256958327482362795}
+  turnText: {fileID: 0}
   playerImage: {fileID: 2896988870867861487}
   playerStatsText: {fileID: 4264479384591064602}
   battleLogText: {fileID: 2835080198001629404}
@@ -1058,6 +1059,7 @@ GameObject:
   - component: {fileID: 9199026810018236996}
   - component: {fileID: 218745023452098031}
   - component: {fileID: 2896988870867861487}
+  - component: {fileID: 44991108899303238}
   m_Layer: 5
   m_Name: PlayerImage
   m_TagString: Untagged
@@ -1122,6 +1124,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &44991108899303238
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6637947527430160590}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4c2d9cf8c91867b4bafffbb894fc6141, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6832075011559505301
 GameObject:
   m_ObjectHideFlags: 0
