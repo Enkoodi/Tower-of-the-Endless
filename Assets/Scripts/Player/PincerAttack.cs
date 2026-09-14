@@ -247,6 +247,9 @@ public class PincerAttack : MonoBehaviour
         int hpBefore = player.HP;
         int damage = Mathf.FloorToInt(hpBefore * 0.5f);
         int actual = player.SubtractRawHPKeepAlive(damage);
+        // 夹击扣血算受伤
+        if (actual > 0)
+            player.PlayHurtAnimation();
         Debug.Log($"[夹击] {pattern} 形成！玩家生命值减少50%（-{actual}，HP {hpBefore} → {player.HP}）");
     }
 

@@ -116,7 +116,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         if (enemy.Speed > speed)
         {
             Debug.Log($"[战斗] {enemy.EnemyName} 速度更快，先手攻击！");
-            TakeDamage(enemy.Attack);
+            if (TakeDamage(enemy.Attack) > 0) PlayHurtAnimation();
         }
 
         // 玩家攻击：物理伤害 = (攻-防) * 段数，魔力加成 = min(魔力充能, 魔力上限)
@@ -148,7 +148,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
             int rawPhysical = Mathf.Max(0, physicalDamage);
             int steal = rawPhysical * lifeSteal / 100;
             if (steal > 0) Heal(steal);
-            // 反伤：物理伤害 * 敌人反伤系数 / 100
+            // 反伤：物理伤害 * 敌人反伤系数 / 100（玩家自己攻击的代价，不算受伤，不播动画）
             int reflect = rawPhysical * enemy.ReflectDamage / 100;
             if (reflect > 0) SubtractHP(reflect);
 
@@ -159,7 +159,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
             }
 
             // 敌人反击
-            SubtractHP(enemyDamageToPlayer);
+            if (SubtractHP(enemyDamageToPlayer) > 0) PlayHurtAnimation();
 
             // 敌人吸血：敌人物理伤害 * 敌人吸血系数 / 100
             int enemySteal = enemyPhysicalDamage * enemy.LifeSteal / 100;
@@ -196,6 +196,59 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
             enemy.Defeat();
         }
         return won;
+    }
+
+    // ============================================================
+    //  动画（受伤 / 攻击）
+    //
+    //  参数说明：Player.controller 与 PlayerUI.controller 的 isHurt / isAttack
+    //  都是 Trigger 型（m_Type: 9），只能用 SetTrigger 触发，触发一次即被状态机消费，
+    //  不需要手动复位；用 SetBool 会直接失效并打警告。
+    //
+    //  受伤动画的触发规则（与策划约定）：
+    //    算受伤 —— 战斗中被偷袭、战斗中被反击、夹击扣血、魔力光环
+    //    不算  —— 玩家攻击后被反伤（那是自己攻击的代价）
+    // ============================================================
+
+    private static readonly int IsHurtHash = Animator.StringToHash("isHurt");
+
+    private Animator bodyAnimator;   // 玩家本体的 Animator（与本脚本同对象，懒解析）
+
+    /// <summary>玩家本体的 Animator（Player.controller：PlayerIdle / Player_Hurt）。</summary>
+    private Animator BodyAnimator
+    {
+        get
+        {
+            if (bodyAnimator == null) bodyAnimator = GetComponent<Animator>();
+            return bodyAnimator;
+        }
+    }
+
+    /// <summary>
+    /// 玩家受伤：战斗界面头像白闪（PlayerUI.controller 的 isHurt）。
+    /// 只在玩家「被攻击」掉血时调用 —— 战斗中被偷袭 / 被反击、夹击扣血、魔力光环。
+    /// 玩家攻击后受到的反伤不算受伤，不要调用本方法。
+    ///
+    /// 游戏场景里的角色本体不闪：Player.controller 的 Player_Hurt 状态目前没有入口，
+    /// 所以下面这句 SetTrigger 是空触发，不会产生任何画面变化。
+    /// 以后想恢复本体白闪，只要在 Animator 里给 PlayerIdle → Player_Hurt 连一条
+    /// isHurt 条件的转移即可，代码这里不用改。
+    /// </summary>
+    public void PlayHurtAnimation()
+    {
+        if (BodyAnimator != null)
+            BodyAnimator.SetTrigger(IsHurtHash);
+
+        BattleUI.Instance?.PlayPlayerHurt();
+    }
+
+    /// <summary>
+    /// 玩家攻击。目前只有战斗界面头像有攻击动作（Player.controller 里没有 isAttack 参数，
+    /// 世界精灵也没有对应的攻击片段），所以这里只驱动头像。
+    /// </summary>
+    public void PlayAttackAnimation()
+    {
+        BattleUI.Instance?.PlayPlayerAttack();
     }
 
     // ============================================================

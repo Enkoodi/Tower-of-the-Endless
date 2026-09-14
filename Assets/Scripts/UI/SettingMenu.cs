@@ -123,6 +123,7 @@ public class SettingMenu : MonoBehaviour
     /// <summary>
     /// 将选中的战斗速度同步到 BattleManager.logDelay 并写入全局存档：
     /// 正常=1、两倍=0.5、四倍=0.25、跳过=0.01。
+    /// 注意：0.01 会被 BattleManager.IsSkipMode 判定为「跳过档」——战斗只结算，不打开战斗界面。
     /// </summary>
     private void ApplyBattleSpeed(int selectedIndex)
     {

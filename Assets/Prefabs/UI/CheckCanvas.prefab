@@ -51,9 +51,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 50
-    m_Right: 50
-    m_Top: 0
-    m_Bottom: 0
+    m_Right: 0
+    m_Top: 50
+    m_Bottom: 25
   m_ChildAlignment: 0
   m_Spacing: 50
   m_ChildForceExpandWidth: 1
@@ -138,7 +138,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 200
+  m_SortingOrder: 300
   m_TargetDisplay: 0
 --- !u!114 &5846175770014811226
 MonoBehaviour:
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb02698ead85d1c42811f2cb20ea4806, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelRoot: {fileID: 812003971177835379}
+  panelRoot: {fileID: 1362368446647401017}
   contentTransform: {fileID: 8192867382210042075}
   entryPrefab: {fileID: 3699412180253632943, guid: a7fe61f4f166782408957d5aa4fe67b6, type: 3}
   floorTitleText: {fileID: 0}
@@ -234,7 +234,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1500, y: 1000}
+  m_SizeDelta: {x: 1900, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3188433182161665818
 CanvasRenderer:
@@ -264,7 +264,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f864d50da6c4e754e95b2d5614f9af82, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 70eefb2136b2a6d43952267bdcc0bb5b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -413,10 +413,10 @@ RectTransform:
   - {fileID: 4533372976162531787}
   m_Father: {fileID: 6332898356315204900}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 500}
+  m_SizeDelta: {x: -1880, y: 1003}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &2209563058475686713
 CanvasRenderer:
