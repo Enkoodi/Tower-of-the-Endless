@@ -261,7 +261,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0
 --- !u!1 &97274943
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,7 +298,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1000, y: -625}
+  m_AnchoredPosition: {x: 200, y: -625}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &97274945
@@ -401,7 +400,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0
 --- !u!1 &301168208
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,7 +539,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0.25
 --- !u!1 &359501705
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,7 +812,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0
 --- !u!1 &798531792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1237,7 +1233,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0.5
 --- !u!1 &1020978579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1517,7 +1512,6 @@ GameObject:
   - component: {fileID: 1107696163}
   - component: {fileID: 1107696165}
   - component: {fileID: 1107696164}
-  - component: {fileID: 1542338969}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1994,7 +1988,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 1
 --- !u!1 &1286676302
 GameObject:
   m_ObjectHideFlags: 0
@@ -2124,7 +2117,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 200, y: -625}
+  m_AnchoredPosition: {x: 1000, y: -625}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1372815455
@@ -2226,7 +2219,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0
 --- !u!1 &1401272410
 GameObject:
   m_ObjectHideFlags: 0
@@ -2373,6 +2365,7 @@ GameObject:
   - component: {fileID: 1542338967}
   - component: {fileID: 1542338966}
   - component: {fileID: 1542338965}
+  - component: {fileID: 1542338969}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2469,7 +2462,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1107696162}
+  m_GameObject: {fileID: 1542338964}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0, type: 3}
@@ -2477,17 +2470,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   titleSceneName: Opening
   gameSceneName: Game
-  newGameButton: {fileID: 167860}
-  returnButton: {fileID: 97274945}
-  titleButton: {fileID: 374495495}
-  exitButton: {fileID: 1372815455}
-  battleSpeedRoot: {fileID: 798531793}
-  speedButtons:
-  - {fileID: 1243487078}
-  - {fileID: 968713657}
-  - {fileID: 301168213}
-  - {fileID: 2121272238}
-  - {fileID: 0}
 --- !u!1 &1810101858
 GameObject:
   m_ObjectHideFlags: 0
@@ -2895,7 +2877,6 @@ MonoBehaviour:
   frameThickness: 6
   pressedScale: 0.96
   transitionSpeed: 14
-  speedDelay: 0.01
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

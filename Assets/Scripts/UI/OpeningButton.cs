@@ -31,6 +31,17 @@ public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [Tooltip("状态切换的插值速度")]
     [SerializeField] private float transitionSpeed = 14f;
 
+    [Header("战斗速度档位（仅设置页的速度按钮使用）")]
+    [Tooltip("该按钮对应的战斗日志间隔：正常=1、两倍=0.5、四倍=0.25、跳过=0.01。\n" +
+             "留空或 ≤0 表示此按钮不是速度档按钮。")]
+    [SerializeField] private float speedDelay;
+
+    /// <summary>该按钮对应的战斗速度延迟；≤0 表示不是速度档按钮。</summary>
+    public float SpeedDelay => speedDelay;
+
+    /// <summary>是否为战斗速度档按钮。</summary>
+    public bool IsSpeedOption => speedDelay > 0f;
+
     private Button button;
     private Image[] frameBars;
     private Vector3 originalScale;
