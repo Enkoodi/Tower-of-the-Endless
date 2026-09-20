@@ -26,8 +26,9 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// 单场战斗的最大回合数。双方都打不动对方时（例如敌人减伤 100%、我方攻击被完全抵消，
     /// 而敌人也打不出伤害）循环永远不会退出 —— 正常档只是拖时间，跳过档会一帧跑完直接卡死编辑器。
+    /// 图鉴的模拟也引用这个值，保证两边对「打不完」的判定一致。
     /// </summary>
-    private const int MaxTurnCount = 200;
+    public const int MaxTurnCount = 200;
 
     /// <summary>
     /// 当前战斗表现倍速：由战斗日志间隔反推。
@@ -75,8 +76,6 @@ public class BattleManager : MonoBehaviour
     public bool IsFighting => isFighting;
 
     private int turnCount = 1;
-    private int lastDamageToEnemy;   // 本回合敌人受到的实际伤害（减伤后）
-    private int lastDamageToPlayer;  // 本回合玩家受到的实际伤害（减伤后）
     private System.Action<bool> onBattleEnd;
 
     void Awake()
@@ -138,9 +137,18 @@ public class BattleManager : MonoBehaviour
         isFighting = true;
         silentBattle = IsSkipMode;   // 跳过档：只结算，不打开界面、不播动画
         turnCount = 1;
-        lastDamageToEnemy = 0;
-        lastDamageToPlayer = 0;
         onBattleEnd = callback;
+
+        // 快照战斗前魔力，战斗中消耗，战斗结束后恢复。
+        // ⚠️ 必须在 BeginBattleStats / BlessingManager.OnBattleStart 之前取：
+        //    真理的祝福会在 OnBattleStart 里把魔力 ×1.25，如果快照放在那之后，
+        //    取到的就是加成后的值，战斗结束"恢复"会把加成固化成新的基准 → 每打一场滚一次雪球。
+        int playerManaSnapshot = playerData.ManaCharge;
+        int enemyManaSnapshot = enemy.ManaCharge;
+
+        // 冻结战斗前数值：此后战斗中一切属性改动只写修正层，伤害和面板读的都是实时值。
+        // 必须在 BlessingManager.OnBattleStart 之前 —— 战斗开始触发的祝福（如异乡人）也要写进修正层。
+        playerData.BeginBattleStats();
 
         // 动画/特效倍速与日志节奏保持一致（正常=1、两倍=2、四倍=4）
         battleUI.PlaybackSpeed = PlaybackSpeed;
@@ -154,26 +162,28 @@ public class BattleManager : MonoBehaviour
         battleUI.UpdateTurn(turnCount);
         BlessingManager.Instance?.OnBattleStart(playerData, enemy, battleUI);
         OnBattleOpen?.Invoke();
-        StartCoroutine(BattleCoroutine(playerData, enemy));
+        StartCoroutine(BattleCoroutine(playerData, enemy, playerManaSnapshot, enemyManaSnapshot));
     }
 
-    private IEnumerator BattleCoroutine(PlayerData playerData, EnemyController enemy)
+    private IEnumerator BattleCoroutine(PlayerData playerData, EnemyController enemy,
+                                        int playerManaSnapshot, int enemyManaSnapshot)
     {
-        // 快照战斗前魔力，战斗中消耗，战斗结束后恢复。直接操作真实属性以同步 UI
-        int playerManaSnapshot = playerData.ManaCharge;
-        int enemyManaSnapshot = enemy.ManaCharge;
-
-        // 物理伤害（仅依赖攻击/防御/段数，每轮不变）
-        int playerPhysical = Mathf.Max(0, (playerData.Attack - enemy.Defense) * playerData.AttackCount);
-        int enemyPhysical = Mathf.Max(0, (enemy.Attack - playerData.Defense) * enemy.AttackCount);
+        // 物理伤害也在 ComputeRoundDamage 里重算（战斗中的加攻/加段/降防要即时体现）
+        int playerPhysical = 0, enemyPhysical = 0;
 
         // 每轮生成的临时变量
         int ManaCost, damageToEnemy, EnemyManaCost, enemyDamageToPlayer;
         string playerDmgStr, enemyDmgStr;
 
-        // 根据真实魔力（可读写属性）计算一轮伤害
+        // 根据实时属性计算一轮伤害。
+        // 物理部分每轮重取 —— Attack / AttackCount / Defense 读的是 PlayerData 的战斗时实时值，
+        // 战斗内修正层（爱的祝福加攻、朗基努斯加段等）都在这里被动生效。
+        // 魔力部分本来就要重算，因为魔力充能每回合会被消耗。
         void ComputeRoundDamage()
         {
+            playerPhysical = Mathf.Max(0, (playerData.Attack - enemy.Defense) * playerData.AttackCount);
+            enemyPhysical  = Mathf.Max(0, (enemy.Attack - playerData.Defense) * enemy.AttackCount);
+
             ManaCost = playerData.ManaCharge < playerData.ManaMax ? playerData.ManaCharge : playerData.ManaMax;
 
             // 魔力增幅（拾取魔力增幅器后生效）
@@ -199,7 +209,6 @@ public class BattleManager : MonoBehaviour
             if (!silentBattle) yield return new WaitForSeconds(logDelay);
 
             int actualSneak = playerData.SubtractHP(sneakDamage);
-            lastDamageToPlayer = actualSneak;
             // 被偷袭算受伤
             if (!silentBattle && actualSneak > 0)
                 playerData.PlayHurtAnimation();
@@ -235,6 +244,9 @@ public class BattleManager : MonoBehaviour
             // —— 特殊祝福生命周期：回合开始 ——
             BlessingManager.Instance?.OnTurnStart(playerData, enemy, battleUI);
 
+            // 回合开始时生效的加攻/加段/减伤已写进修正层，本回合伤害立刻按最新实时数值重算
+            ComputeRoundDamage();
+
             // 检查深渊等 Effect 是否提前杀死敌人
             if (enemy.HP <= 0)
             {
@@ -246,7 +258,6 @@ public class BattleManager : MonoBehaviour
 
             // 玩家攻击
             int actualToEnemy = enemy.TakeRawDamage(damageToEnemy);
-            lastDamageToEnemy = actualToEnemy;
             playerData.PlayAttackAnimation();
             // 敌人受击表现：等头像冲到敌人面前才抖一下并叠出斩击（时序在 BattleUI 内控制）
             if (actualToEnemy > 0)
@@ -265,8 +276,9 @@ public class BattleManager : MonoBehaviour
             {
                 battleUI.AddLog($"<color=#88CCFF>灵知的祝福</color>：本回合不消耗魔力充能");
             }
+            // 吸血 = 真实物理伤害 × 吸血系数，精确回血（不乘 hpMultiplier）
             int steal = playerPhysical * playerData.LifeSteal / 100;
-            if (steal > 0) playerData.Heal(steal);
+            if (steal > 0) playerData.HealRaw(steal);
             // 反伤仅在敌人未因本次攻击死亡时触发（吸血已先结算）
             // 反伤是玩家自己攻击的代价，不算「被攻击」，不播受伤动画
             if (enemy.HP > 0)
@@ -279,6 +291,14 @@ public class BattleManager : MonoBehaviour
             battleUI.UpdatePlayerPanel(playerData);
             if (!silentBattle) yield return new WaitForSeconds(logDelay);
 
+            // 反伤也可能把玩家打死：这里必须立刻收场，否则敌人会对着一具 0 血的身体再补一刀
+            // （日志会出现「敌人反击，造成 X 点伤害」，还要多播一次受伤动画）
+            if (playerData.IsDead)
+            {
+                EndBattle(false, playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
+                yield break;
+            }
+
             if (enemy.HP <= 0)
             {
                 battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 被击败！");
@@ -289,11 +309,15 @@ public class BattleManager : MonoBehaviour
 
             // 敌人反击
             int actualToPlayer = playerData.SubtractHP(enemyDamageToPlayer);
-            lastDamageToPlayer = actualToPlayer;
             // 被反击算受伤
             if (!silentBattle && actualToPlayer > 0)
                 playerData.PlayHurtAnimation();
-            battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 反击，造成 <color=#FF4444>{actualToPlayer}</color> 点伤害");
+            // 敌人完全破不了防（伤害为 0）时用 enemyDmgStr 显示伤害构成，
+            // 与玩家侧「无法破防」那条日志对称 —— 否则只报一个 0，看不出是物理是 0 还是魔力是 0
+            if (enemyDamageToPlayer <= 0)
+                battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 反击，未能破防（{enemyDmgStr}）");
+            else
+                battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 反击，造成 <color=#FF4444>{actualToPlayer}</color> 点伤害");
             BlessingManager.Instance?.OnEnemyDealDamage(playerData, enemy, battleUI, actualToPlayer);
             BlessingManager.Instance?.OnPlayerTakeDamage(playerData, enemy, battleUI, actualToPlayer);
 
@@ -341,8 +365,6 @@ public class BattleManager : MonoBehaviour
     private void EndBattle(bool won, PlayerData playerData, EnemyController enemy, int playerManaSnapshot, int enemyManaSnapshot)
     {
         isFighting = false;
-        lastDamageToEnemy = 0;
-        lastDamageToPlayer = 0;
 
         // 特殊祝福生命周期：战斗结束（恢复加攻等）
         BlessingManager.Instance?.OnBattleEnd(playerData, enemy, battleUI, won);
@@ -351,6 +373,10 @@ public class BattleManager : MonoBehaviour
         playerData.ManaCharge = playerManaSnapshot;
         if (enemy != null)
             enemy.ManaCharge = enemyManaSnapshot;
+
+        // 清空战斗内属性修正层：攻/防/段数/减伤回到战斗前的数值。
+        // 放在 OnBattleEnd 之后 —— 祝福的战终回调里还能读到带加成的实时值用于播日志。
+        playerData.EndBattleStats();
 
         if (won && enemy != null)
         {

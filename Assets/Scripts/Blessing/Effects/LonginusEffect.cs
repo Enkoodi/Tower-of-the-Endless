@@ -42,14 +42,14 @@ public class LonginusEffect : BlessingEffect
         {
             // 奇数回合：段数临时 +Level
             appliedAttackCountBonus = Level;
-            player.AddAttackCount(appliedAttackCountBonus);
+            player.AddBattleAttackCountFlat(appliedAttackCountBonus);
             ui?.AddLog($"<color=#FF6666>朗基努斯之枪</color>：奇数回合，攻击段数 +{appliedAttackCountBonus}");
         }
         else
         {
-            // 偶数回合：攻击力临时 +50×Level
+            // 偶数回合：攻击力临时 +100×Level
             appliedAttackBonus = AttackPerLevel * Level;
-            player.AddAttack(appliedAttackBonus);
+            player.AddBattleAttackFlat(appliedAttackBonus);
             ui?.AddLog($"<color=#FF6666>朗基努斯之枪</color>：偶数回合，攻击力 +{appliedAttackBonus}");
         }
 
@@ -60,14 +60,15 @@ public class LonginusEffect : BlessingEffect
     {
         if (!buffApplied || player == null) return;
 
+        // 修正层是加法归集，减掉同值即可精确还原，不需要记账
         if (appliedAttackCountBonus > 0)
         {
-            player.AddAttackCount(-appliedAttackCountBonus);
+            player.AddBattleAttackCountFlat(-appliedAttackCountBonus);
             appliedAttackCountBonus = 0;
         }
         if (appliedAttackBonus > 0)
         {
-            player.AddAttack(-appliedAttackBonus);
+            player.AddBattleAttackFlat(-appliedAttackBonus);
             appliedAttackBonus = 0;
         }
 

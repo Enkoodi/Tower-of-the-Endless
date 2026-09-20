@@ -110,6 +110,15 @@ public class EnemyController : MonoBehaviour
     //  战斗接口
     // ============================================================
 
+    public int TakeDamage(int rawAtk)
+    {
+        int damage = Mathf.Max(0, rawAtk - defense);
+        int reduced = damage * (100 - damageReduction) / 100;
+        hp -= reduced;
+        if (hp < 0) hp = 0;
+        return reduced;
+    }
+
     public int TakeRawDamage(int amount)
     {
         int reduced = amount * (100 - damageReduction) / 100;

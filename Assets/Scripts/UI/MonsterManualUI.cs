@@ -103,29 +103,32 @@ public class MonsterManualUI : MonoBehaviour
             return;
         }
 
-        // 收集敌人并按预计损失HP排序（低→高，无法战胜的排在最后）
-        List<(EnemyStats stats, int hpLoss)> enemies = new List<(EnemyStats, int)>();
+        // 收集敌人并按预计损失HP排序（低→高）。
+        // 净回血是负数，会自然排在最前面；无法战胜的（CanWin=false）排在最后。
+        List<(EnemyStats stats, MonsterManualEntryUI.BattleSimResult sim)> enemies
+            = new List<(EnemyStats, MonsterManualEntryUI.BattleSimResult)>();
+
         foreach (EnemyStats stats in uniqueStats)
         {
             enemies.Add((stats, MonsterManualEntryUI.SimulateBattle(player, stats)));
         }
+
         enemies.Sort((a, b) =>
         {
-            // 无法战胜(-1)排在最后，其余按损失HP升序
-            if (a.hpLoss < 0 && b.hpLoss < 0) return 0;
-            if (a.hpLoss < 0) return 1;
-            if (b.hpLoss < 0) return -1;
-            return a.hpLoss.CompareTo(b.hpLoss);
+            // 无法战胜的排在最后
+            if (a.sim.CanWin != b.sim.CanWin) return a.sim.CanWin ? -1 : 1;
+            // 其余按净损失升序（负数 = 回血，排最前）
+            return a.sim.HpDelta.CompareTo(b.sim.HpDelta);
         });
 
-        // 生成条目
+        // 生成条目（把算好的模拟结果透传下去，避免重复模拟、也保证排序与显示一致）
         foreach (var entry in enemies)
         {
             GameObject entryGO = Instantiate(entryPrefab, contentTransform);
             MonsterManualEntryUI entryUI = entryGO.GetComponent<MonsterManualEntryUI>();
             if (entryUI != null)
             {
-                entryUI.Setup(entry.stats, player);
+                entryUI.Setup(entry.stats, entry.sim);
             }
         }
 

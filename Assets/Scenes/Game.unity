@@ -805,6 +805,7 @@ MonoBehaviour:
   battleUI: {fileID: 1998023880}
   logDelay: 1
   maxPlaybackSpeed: 4
+  skipDelayThreshold: 0.05
 --- !u!4 &518878532
 Transform:
   m_ObjectHideFlags: 0
@@ -1766,6 +1767,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1126042997038814547, guid: 0f7952e3e47acf5479877672e7f315c1, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2414450256691575785, guid: 0f7952e3e47acf5479877672e7f315c1, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2033,9 +2038,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 263697025791980541, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1695285063570732304, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
       propertyPath: m_Name
       value: DialogueCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1935439235577057033, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2508946329959139215, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379990514137838905, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7133706067755293021, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
       propertyPath: m_Pivot.x
@@ -2307,9 +2328,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 259965122229264217, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1550318001454384641, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2558328118425655040, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4090038953558448644, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
       propertyPath: m_Name
       value: DataCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4530208386120432305, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4868583155890665400, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
       propertyPath: m_Pivot.x
@@ -2389,6 +2426,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4868583155890665400, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835376735631404576, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6907066977110340461, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7828832231266977747, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8890920126896257900, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8898140908249077762, guid: e4474b89046a2c041b94f7e4667e9a53, type: 3}
+      propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

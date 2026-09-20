@@ -155,15 +155,13 @@ public class NPCInteractionUI : MonoBehaviour
         int cost = NPCController.GetCurrentCost();
         if (!currentPlayer.SpendGold(cost)) return;
 
-        // 购买量 = 当前生命值 × 购买百分比（向上取整，偏向玩家）。
-        // 直接交给 AddHP，内部那次 × hpMultiplier 会把它放大 ——
-        // 与属性道具、祝福两条路径口径一致（它们的 HP/攻/防获取同样会被系数放大）。
-        // 别再写「先乘系数再除回去」的逆推：那个反解会被整数截断吃掉，最坏情况是花钱白买。
-        int rawGain = Mathf.CeilToInt(currentPlayer.HP * currentNPC.HpPercent / 100f);
-        int actualGain = currentPlayer.AddHP(rawGain);
+        int rawGain = currentPlayer.HP * currentNPC.HpPercent / 100;
+        // 逆推换算后通过 AddHP（内部会乘以 hpMultiplier / 100，正好抵消）
+        int inversed = rawGain * 100 / Mathf.Max(1, currentPlayer.HPMultiplier);
+        currentPlayer.AddHP(inversed);
         NPCController.IncrementPurchaseCount();
 
-        Debug.Log($"[商店] 生命值 +{currentNPC.HpPercent}%（=+{actualGain}，含生命系数 {currentPlayer.HPMultiplier}%），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
+        Debug.Log($"[商店] 生命值 +{currentNPC.HpPercent}%（=+{rawGain}），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
         RefreshShopUI();
     }
 
@@ -174,12 +172,12 @@ public class NPCInteractionUI : MonoBehaviour
         int cost = NPCController.GetCurrentCost();
         if (!currentPlayer.SpendGold(cost)) return;
 
-        // 同上：不再逆推，直接加，让攻击系数正常生效（与属性道具/祝福一致）
-        int rawGain = Mathf.CeilToInt(currentPlayer.Attack * currentNPC.AtkPercent / 100f);
-        int actualGain = currentPlayer.AddAttack(rawGain);
+        int rawGain = currentPlayer.Attack * currentNPC.AtkPercent / 100;
+        int inversed = rawGain * 100 / Mathf.Max(1, currentPlayer.AttackMultiplier);
+        currentPlayer.AddAttack(inversed);
         NPCController.IncrementPurchaseCount();
 
-        Debug.Log($"[商店] 攻击力 +{currentNPC.AtkPercent}%（=+{actualGain}，含攻击系数 {currentPlayer.AttackMultiplier}%），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
+        Debug.Log($"[商店] 攻击力 +{currentNPC.AtkPercent}%（=+{rawGain}），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
         RefreshShopUI();
     }
 
@@ -190,12 +188,12 @@ public class NPCInteractionUI : MonoBehaviour
         int cost = NPCController.GetCurrentCost();
         if (!currentPlayer.SpendGold(cost)) return;
 
-        // 同上：不再逆推，直接加，让防御系数正常生效（与属性道具/祝福一致）
-        int rawGain = Mathf.CeilToInt(currentPlayer.Defense * currentNPC.DefPercent / 100f);
-        int actualGain = currentPlayer.AddDefense(rawGain);
+        int rawGain = currentPlayer.Defense * currentNPC.DefPercent / 100;
+        int inversed = rawGain * 100 / Mathf.Max(1, currentPlayer.DefenseMultiplier);
+        currentPlayer.AddDefense(inversed);
         NPCController.IncrementPurchaseCount();
 
-        Debug.Log($"[商店] 防御力 +{currentNPC.DefPercent}%（=+{actualGain}，含防御系数 {currentPlayer.DefenseMultiplier}%），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
+        Debug.Log($"[商店] 防御力 +{currentNPC.DefPercent}%（=+{rawGain}），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
         RefreshShopUI();
     }
 

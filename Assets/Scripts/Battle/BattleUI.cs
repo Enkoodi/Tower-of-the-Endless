@@ -162,6 +162,9 @@ public class BattleUI : MonoBehaviour
             $"反伤系数：{playerData.ReflectDamage}\n" +
             $"减伤系数：{playerData.DamageReduction}%\n" +
             $"魔力充能：{playerData.ManaCharge}\n" +
+            // 注意：这里显示的是 min(魔力充能, 魔力输出上限)，也就是「这一击的魔力输出」。
+            // 但面板是在魔力消耗之后才刷新的（BattleManager 的攻击段：消费魔力 → ComputeRoundDamage → UpdatePlayerPanel），
+            // 所以除了开局那一次，玩家看到的其实是「下一击」的输出值。
             $"魔力输出：{Mathf.Min(playerData.ManaCharge, playerData.ManaMax)}\n" +
             $"速度：{playerData.Speed}";
     }

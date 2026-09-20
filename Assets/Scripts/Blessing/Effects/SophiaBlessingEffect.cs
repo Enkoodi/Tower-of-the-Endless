@@ -25,6 +25,7 @@ public class SophiaBlessingEffect : BlessingEffect
 
     public override void OnAcquired(PlayerData player)
     {
+        // 获得祝福时的永久成长，属「战前数值加成」，走 Heal（会乘生命系数）
         player.Heal(HPPerLevel);
     }
 
@@ -41,7 +42,8 @@ public class SophiaBlessingEffect : BlessingEffect
             int healAmount = damageTakenThisTurn * healPercent / 100;
             if (healAmount > 0)
             {
-                player.Heal(healAmount);
+                // 战斗中按实际受伤量回复 —— 属「战斗时数值」，不走生命系数，用 HealRaw
+                player.HealRaw(healAmount);
                 ui.AddLog($"<color=#9999CC>智慧的祝福</color>：恢复 <color=#44FF44>{healAmount}</color> 点生命");
             }
             damageTakenThisTurn = 0;

@@ -245,8 +245,8 @@ public class PincerAttack : MonoBehaviour
         if (player == null) return;
 
         int hpBefore = player.HP;
-        int damage = Mathf.FloorToInt(hpBefore * 0.5f);
-        int actual = player.SubtractRawHPKeepAlive(damage);
+        int damage = Mathf.FloorToInt(hpBefore * 0.5f);   // 刻意 floor：夹击不致死
+        int actual = player.SubtractRawHPKeepAlive(damage);   // 再兜一道「最低保留 1 点」
         // 夹击扣血算受伤
         if (actual > 0)
             player.PlayHurtAnimation();
@@ -254,18 +254,25 @@ public class PincerAttack : MonoBehaviour
     }
 
     /// <summary>
-    /// 对敌人应用夹击伤害（50%当前生命值）。若HP归零则触发击败。
+    /// 对敌人应用夹击伤害（50%当前生命值，向下取整）。
+    ///
+    /// ⚠️ 这里的 FloorToInt 是**刻意的**，不要套用「取整偏向玩家」那条规则改成 CeilToInt：
+    /// 夹击的设计口径是「减少 50% 生命值，但**不应该打死人**」。
+    /// floor 正好保证了这一点 —— HP 为 1 时伤害为 0、为 2 时扣 1 剩 1，永远扣不到 0；
+    /// 换成 ceil 的话 HP 为 1 时 ceil(0.5) = 1 会直接把人夹死。
+    /// 玩家侧同理（除了 floor 还会再走一道 SubtractRawHPKeepAlive 兜底）。
     /// </summary>
     private static void ApplyPincerDamage(EnemyController enemy, string pattern)
     {
         if (enemy.IsDefeated) return;
 
         int hpBefore = enemy.HP;
-        int damage = Mathf.FloorToInt(hpBefore * 0.5f);
+        int damage = Mathf.FloorToInt(hpBefore * 0.5f);   // 刻意 floor：保证不致死
         enemy.SubtractHP(damage);
         Debug.Log($"[夹击] {pattern} 形成！{enemy.EnemyName} 生命值减少50%（伤害 {damage}，HP {hpBefore} → {enemy.HP}）");
 
-        // HP 归零则击败
+        // 兜底：在 floor 之下这里其实永远到不了，留着是防止以后有人改动上面的取整方式
+        // 或把夹击改成固定伤害 —— 那时这条分支就是最后一道保险。
         if (enemy.HP <= 0 && !enemy.IsDefeated)
         {
             enemy.Defeat();

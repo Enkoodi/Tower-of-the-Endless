@@ -97,15 +97,17 @@ public class SaveManager : MonoBehaviour
         }
 
         // 构建游戏存档
+        // 属性一律读 Base*（战斗前真实值）：Attack / Defense / AttackCount / DamageReduction
+        // 在战斗中会返回含战斗内加成的实时值，存进去会把临时 buff 永久烙进存档。
         GameSaveData data = new GameSaveData
         {
             hp = player.HP,
-            attack = player.Attack,
-            defense = player.Defense,
-            attackCount = player.AttackCount,
+            attack = player.BaseAttack,
+            defense = player.BaseDefense,
+            attackCount = player.BaseAttackCount,
             lifeSteal = player.LifeSteal,
             reflectDamage = player.ReflectDamage,
-            damageReduction = player.DamageReduction,
+            damageReduction = player.BaseDamageReduction,
             manaCharge = player.ManaCharge,
             manaMax = player.ManaMax,
             speed = player.Speed,

@@ -31,7 +31,7 @@ public class AllotrioiEffect : BlessingEffect
 
         turnCount = 0;
         bonusActive = true;
-        player.AddDamageReduction(Percent);
+        player.AddBattleDamageReductionFlat(Percent);
         ui?.AddLog($"<color=#CC88FF>异乡人</color>：前 {ProtectedTurns} 回合减伤 +{Percent}%");
     }
 
@@ -42,7 +42,7 @@ public class AllotrioiEffect : BlessingEffect
         turnCount++;
         if (turnCount > ProtectedTurns)
         {
-            player.AddDamageReduction(-Percent);
+            player.AddBattleDamageReductionFlat(-Percent);
             bonusActive = false;
             ui?.AddLog($"<color=#CC88FF>异乡人</color>：减伤效果消失");
         }
@@ -50,9 +50,7 @@ public class AllotrioiEffect : BlessingEffect
 
     public override void OnBattleEnd(PlayerData player, EnemyController enemy, BattleUI ui, bool won)
     {
-        if (player == null || !bonusActive) return;
-
-        player.AddDamageReduction(-Percent);
+        // 数值由 PlayerData.EndBattleStats 在战斗结束时整体清零，这里只复位自身状态
         bonusActive = false;
     }
 }

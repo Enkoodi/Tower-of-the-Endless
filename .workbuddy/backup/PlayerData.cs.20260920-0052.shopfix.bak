@@ -447,12 +447,6 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     // ============================================================
     //  属性修改
-    //
-    //  取整口径（2026-09-20 定稿，与战斗内修正层同一规则）：**取整方向一律偏向玩家**。
-    //  带系数的加成一律 Mathf.CeilToInt(amount * xxxMultiplier / 100f)，不要用整数除法 ——
-    //  那是向下截断，等于少给，基础值小的时候还会把加成整个抹掉。
-    //  AddAttack / AddDefense / AddHP / AddGold 都返回「实际增量」，调用方要显示数字就用它，
-    //  不要自己再抄一遍公式（抄了就会和真实值漂移）。
     // ============================================================
 
     /// <summary>
@@ -463,7 +457,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     /// </summary>
     public void Heal(int amount)
     {
-        int actualHeal = Mathf.CeilToInt(amount * hpMultiplier / 100f);
+        int actualHeal = amount * hpMultiplier / 100;
         hp += actualHeal;
         Debug.Log($"[PlayerData] 恢复 {amount}×{hpMultiplier}%={actualHeal} HP（当前 {hp}）");
     }
@@ -509,14 +503,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         return actual;
     }
 
-    /// <summary>加攻击力，返回实际增加量（已乘攻击系数）。</summary>
-    public int AddAttack(int amount)
+    public void AddAttack(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddAttack))) return 0;
-        int actualGain = Mathf.CeilToInt(amount * attackMultiplier / 100f);
+        if (!RequireOutOfBattle(nameof(AddAttack))) return;
+        int actualGain = amount * attackMultiplier / 100;
         attack += actualGain;
         Debug.Log($"[PlayerData] 攻击力 +{amount}×{attackMultiplier}%={actualGain}（当前 {attack}）");
-        return actualGain;
     }
 
     public void AddAttackCount(int amount)
@@ -526,26 +518,23 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         Debug.Log($"[PlayerData] 攻击段数 +{amount}（当前 {attackCount}）");
     }
 
-    /// <summary>加防御力，返回实际增加量（已乘防御系数）。</summary>
-    public int AddDefense(int amount)
+    public void AddDefense(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddDefense))) return 0;
-        int actualGain = Mathf.CeilToInt(amount * defenseMultiplier / 100f);
+        if (!RequireOutOfBattle(nameof(AddDefense))) return;
+        int actualGain = amount * defenseMultiplier / 100;
         defense += actualGain;
         Debug.Log($"[PlayerData] 防御力 +{amount}×{defenseMultiplier}%={actualGain}（当前 {defense}）");
-        return actualGain;
     }
 
     /// <summary>
     /// 加金币。刻意**不加** RequireOutOfBattle —— 它正好是战斗中要用的：
     /// 战斗奖励（BattleManager.EndBattle）和恩惠的祝福都在战斗结算时加金币。
     /// </summary>
-    public int AddGold(int amount)
+    public void AddGold(int amount)
     {
-        int actualGold = Mathf.CeilToInt(amount * goldMultiplier / 100f);
+        int actualGold = amount * goldMultiplier / 100;
         gold += actualGold;
         Debug.Log($"[PlayerData] 金币 +{amount}×{goldMultiplier}%={actualGold}（当前 {gold}）");
-        return actualGold;
     }
 
     /// <summary>
@@ -601,14 +590,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         Debug.Log($"[PlayerData] 防御系数 +{amount}%（当前 {defenseMultiplier}%）");
     }
 
-    /// <summary>加生命值，返回实际增加量（已乘生命系数）。</summary>
-    public int AddHP(int amount)
+    public void AddHP(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddHP))) return 0;
-        int actualGain = Mathf.CeilToInt(amount * hpMultiplier / 100f);
+        if (!RequireOutOfBattle(nameof(AddHP))) return;
+        int actualGain = amount * hpMultiplier / 100;
         hp += actualGain;
         Debug.Log($"[PlayerData] 生命值 +{amount}×{hpMultiplier}%={actualGain}（当前 {hp}）");
-        return actualGain;
     }
 
     public void AddHPMultiplier(int amount)
@@ -691,12 +678,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     private void ApplyStatBonus(BlessingData b)
     {
-        attack        += Mathf.CeilToInt(b.attackBonus * attackMultiplier / 100f);
-        defense       += Mathf.CeilToInt(b.defenseBonus * defenseMultiplier / 100f);
+        attack        += b.attackBonus * attackMultiplier / 100;
+        defense       += b.defenseBonus * defenseMultiplier / 100;
         manaMax       += b.manaMaxBonus;
         manaCharge    += b.manaChargeBonus;
         speed         += b.speedBonus;
-        int hpChange = Mathf.CeilToInt(b.hpBonus * hpMultiplier / 100f);
+        int hpChange = b.hpBonus * hpMultiplier / 100;
         hp += hpChange;
         // 祝福扣血最低只会扣到 1 点生命值，不会致命
         if (hpChange < 0 && hp < 1) hp = 1;

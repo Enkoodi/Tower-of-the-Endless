@@ -2,10 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// 玩家数据 — 挂载在玩家 GameObject 上。
-/// 持有钥匙、战斗属性、金币。
-/// 战斗结算本身在 BattleManager，本类只提供属性的读写接口：
-///   · 战斗外改属性：AddAttack / AddDefense / AddHP ...（会乘对应的 Multiplier）
-///   · 战斗中改属性：AddBattle* 系列（写「战斗内修正层」，基数恒为战斗前快照）
+/// 持有钥匙、战斗属性、金币，并提供战斗逻辑。
 /// 实现 IKeyInventory 供门系统查询钥匙。
 /// 实现 IPlayerHealth 供魂之门扣除 HP。
 /// </summary>
@@ -69,22 +66,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     //
     //  Attack / Defense / AttackCount / DamageReduction 在战斗中返回「战斗时实时值」
     //  （战斗前快照 + 战斗内修正层），战斗外返回真实字段。规则见下方「战斗内属性修正层」。
-    //
-    //  取整口径（2026-09-20 定稿）：**取整方向一律偏向玩家**。
-    //    · 加成（有符号增量，可能是正也可能为负）→ Mathf.CeilToInt：
-    //      向 +∞ 取整。正增量变大（+0.7 → +1），负增量变小（-0.7 → 0）。
-    //    · 以正数表示的「损失量」（如爱的祝福扣血）→ Mathf.FloorToInt：
-    //      向 0 取整，玩家少扣（1.5 → 1）。
-    //  别用整数除法 `/ 100` —— 那是向下截断，对正加成等于少给，
-    //  基础值小的时候会把加成整个抹掉（攻 7 的 +10% 会变成 0）。
     // ============================================================
     public int Attack        => inBattle
-        ? battleBaseAttack + battleFlatAttack
-          + Mathf.CeilToInt(battleBaseAttack * battlePercentAttack / 100f)
+        ? battleBaseAttack + battleFlatAttack + battleBaseAttack * battlePercentAttack / 100
         : attack;
     public int Defense       => inBattle
-        ? battleBaseDefense + battleFlatDefense
-          + Mathf.CeilToInt(battleBaseDefense * battlePercentDefense / 100f)
+        ? battleBaseDefense + battleFlatDefense + battleBaseDefense * battlePercentDefense / 100
         : defense;
     public int HP            => hp;
     public int AttackCount   => inBattle ? battleBaseAttackCount + battleFlatAttackCount : attackCount;
@@ -225,52 +212,131 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         battleFlatDamageReduction += amount;
     }
 
-    // ============================================================
-    //  属性写入口分成两族，各自有越界守卫（2026-09-20 定稿）
-    //
-    //  【战前接口】Add* / Apply* —— 写真实字段（= 战斗前数值）
-    //      守卫 RequireOutOfBattle：战斗中调用直接拦下并警告，一个字节都不写。
-    //      唯一例外是 AddGold —— 战斗奖励和恩惠的祝福都在战斗结算时加金币，必须能用。
-    //      另一例外是 Set* —— 那是读档恢复路径，静默失败比污染更糟，所以不拦（只在读档时调）。
-    //
-    //  【战斗时接口】AddBattle* —— 写战斗内修正层，基数恒为战斗前快照
-    //      守卫 RequireBattle：战斗外调用直接拦下并警告。
-    //
-    //  两族之外还能改玩家数据的只剩 Heal / HealRaw / SetHP / SubtractHP /
-    //  SubtractRawHPKeepAlive —— 它们改的是 hp，而 HP 是活资源、不做战斗快照，
-    //  战斗中本来就该能改。
-    //
-    //  新增任何「战斗中改属性」的效果时，一律加 AddBattle*；
-    //  不要新建绕过守卫的直写路径。
-    // ============================================================
-
     /// <summary>战斗内接口的越界保护：战斗外调用只报警告并忽略，避免污染真实字段。</summary>
     private bool RequireBattle(string caller)
     {
         if (inBattle) return true;
 
         Debug.LogWarning($"[PlayerData] {caller} 在战斗外被调用，已忽略。" +
-                         "战斗外改属性请用 AddAttack / AddDefense 等直接改真实字段。");
+                         $"战斗外改属性请用 AddAttack / AddDefense 等直接改真实字段。");
         return false;
     }
 
-    /// <summary>
-    /// 战斗外接口的越界保护：战斗中调用直接拦下，一个字节都不写。
-    /// 返回 true = 当前不在战斗中，可以继续。
-    ///
-    /// 为什么是拦截而不是只警告：这些方法写的是**真实字段**，也就是「战斗前数值」本身。
-    /// 在战斗中调用它们两头不讨好 ——
-    /// 本场战斗读的是 BeginBattleStats 的快照（所以当场不生效），
-    /// 而 EndBattleStats 只清修正层、不回滚真实字段（所以改动会永久留下，变成下一场的基准）。
-    /// 既然是注定错误的用法，就不该让它改到数据。
-    /// </summary>
-    private bool RequireOutOfBattle(string caller)
+    /// <summary>战斗中直接改真实字段是个坑，这里只警告不拦截。</summary>
+    private void WarnIfInBattle(string caller)
     {
-        if (!inBattle) return true;
+        if (inBattle)
+            Debug.LogWarning($"[PlayerData] {caller} 在战斗中被调用。" +
+                             "战斗中改属性请走 AddBattle* 接口，否则会污染战斗前数值。");
+    }
 
-        Debug.LogWarning($"[PlayerData] {caller} 在战斗中被调用，已拦截。" +
-                         "战斗中改属性请走 AddBattle* 接口（战斗内修正层）");
-        return false;
+    // ============================================================
+    //  战斗系统
+    // ============================================================
+
+    /// <summary>
+    /// 与敌人战斗。返回 true 表示胜利，false 表示失败/逃跑。
+    /// 魔塔规则：玩家攻击力 > 敌人防御力时，造成 (攻-防) 伤害，否则无法破防。
+    /// </summary>
+    public bool TryFight(EnemyController enemy)
+    {
+        if (enemy == null || enemy.IsDefeated)
+        {
+            Debug.Log("[PlayerData] 敌人无效或已击败");
+            return true;
+        }
+
+        int enemyAtk  = enemy.Attack;
+        int enemyHp   = enemy.HP;
+        
+        Debug.Log($"[战斗] 遭遇 {enemy.EnemyName}！");
+        Debug.Log($"[战斗] 我方 攻:{attack} 防:{defense} 血:{hp}");
+        Debug.Log($"[战斗] 敌方 攻:{enemyAtk} 防:{enemy.Defense} 血:{enemyHp}");
+
+        // 先手判定：敌人速度更高则先手
+        if (enemy.Speed > speed)
+        {
+            Debug.Log($"[战斗] {enemy.EnemyName} 速度更快，先手攻击！");
+            if (TakeDamage(enemy.Attack) > 0) PlayHurtAnimation();
+        }
+
+        // 玩家攻击：物理伤害 = (攻-防) * 段数，魔力加成 = min(魔力充能, 魔力上限)
+        int physicalDamage = (attack - enemy.Defense) * attackCount;
+        int manaBonus = manaCharge < manaMax ? manaCharge : manaMax;
+        int damageToEnemy = physicalDamage + manaBonus;
+        if (damageToEnemy <= 0)
+        {
+            Debug.Log($"[战斗] 无法破防！物理伤害({physicalDamage}) + 魔力加成({manaBonus}) <= 0");
+            return false;
+        }
+
+        // 敌人伤害：同公式
+        int enemyPhysicalDamage = (enemyAtk - defense) * enemy.AttackCount;
+        int enemyManaBonus = enemy.ManaCharge < enemy.ManaMax ? enemy.ManaCharge : enemy.ManaMax;
+        int enemyDamageToPlayer = enemyPhysicalDamage + enemyManaBonus;
+
+        // 计算需要几回合击杀敌人
+        int turnsToKill = Mathf.CeilToInt((float)enemyHp / damageToEnemy);
+
+        // 每回合玩家先攻，敌人反击
+        for (int turn = 0; turn < turnsToKill; turn++)
+        {
+            // 玩家攻击
+            enemyHp -= damageToEnemy;
+            Debug.Log($"[战斗] 第 {turn + 1} 回合：对 {enemy.EnemyName} 造成 {damageToEnemy} 伤害（剩余 {Mathf.Max(0, enemyHp)}）");
+
+            // 吸血：物理伤害 * 吸血系数 / 100
+            int rawPhysical = Mathf.Max(0, physicalDamage);
+            int steal = rawPhysical * lifeSteal / 100;
+            if (steal > 0) Heal(steal);
+            // 反伤：物理伤害 * 敌人反伤系数 / 100（玩家自己攻击的代价，不算受伤，不播动画）
+            int reflect = rawPhysical * enemy.ReflectDamage / 100;
+            if (reflect > 0) SubtractHP(reflect);
+
+            if (enemyHp <= 0)
+            {
+                Debug.Log($"[战斗] {enemy.EnemyName} 被击败！");
+                return FightResult(true, enemy);
+            }
+
+            // 敌人反击
+            if (SubtractHP(enemyDamageToPlayer) > 0) PlayHurtAnimation();
+
+            // 敌人吸血：敌人物理伤害 * 敌人吸血系数 / 100
+            int enemySteal = enemyPhysicalDamage * enemy.LifeSteal / 100;
+            if (enemySteal > 0) enemy.Heal(enemySteal);
+            // 玩家反伤：敌人物理伤害 * 玩家反伤系数 / 100
+            int playerReflect = enemyPhysicalDamage * reflectDamage / 100;
+            if (playerReflect > 0) enemy.TakeRawDamage(playerReflect);
+        }
+
+        return FightResult(true, enemy);
+    }
+
+    /// <summary>
+    /// 玩家受到伤害。返回实际受到的伤害值。
+    /// </summary>
+    public int TakeDamage(int rawAtk)
+    {
+        int damage = Mathf.Max(0, rawAtk - defense);
+        int reduced = damage * (100 - damageReduction) / 100;
+        hp -= reduced;
+        if (hp < 0) hp = 0;
+        return reduced;
+    }
+
+    /// <summary>
+    /// 战斗结算：金币、击败敌人
+    /// </summary>
+    private bool FightResult(bool won, EnemyController enemy)
+    {
+        if (won)
+        {
+            gold += enemy.GoldReward;
+            Debug.Log($"[战斗] 获得 {enemy.GoldReward} 金币（总计 {gold}）");
+            enemy.Defeat();
+        }
+        return won;
     }
 
     // ============================================================
@@ -447,12 +513,6 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     // ============================================================
     //  属性修改
-    //
-    //  取整口径（2026-09-20 定稿，与战斗内修正层同一规则）：**取整方向一律偏向玩家**。
-    //  带系数的加成一律 Mathf.CeilToInt(amount * xxxMultiplier / 100f)，不要用整数除法 ——
-    //  那是向下截断，等于少给，基础值小的时候还会把加成整个抹掉。
-    //  AddAttack / AddDefense / AddHP / AddGold 都返回「实际增量」，调用方要显示数字就用它，
-    //  不要自己再抄一遍公式（抄了就会和真实值漂移）。
     // ============================================================
 
     /// <summary>
@@ -463,7 +523,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     /// </summary>
     public void Heal(int amount)
     {
-        int actualHeal = Mathf.CeilToInt(amount * hpMultiplier / 100f);
+        int actualHeal = amount * hpMultiplier / 100;
         hp += actualHeal;
         Debug.Log($"[PlayerData] 恢复 {amount}×{hpMultiplier}%={actualHeal} HP（当前 {hp}）");
     }
@@ -509,43 +569,34 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         return actual;
     }
 
-    /// <summary>加攻击力，返回实际增加量（已乘攻击系数）。</summary>
-    public int AddAttack(int amount)
+    public void AddAttack(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddAttack))) return 0;
-        int actualGain = Mathf.CeilToInt(amount * attackMultiplier / 100f);
+        WarnIfInBattle(nameof(AddAttack));
+        int actualGain = amount * attackMultiplier / 100;
         attack += actualGain;
         Debug.Log($"[PlayerData] 攻击力 +{amount}×{attackMultiplier}%={actualGain}（当前 {attack}）");
-        return actualGain;
     }
 
     public void AddAttackCount(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddAttackCount))) return;
+        WarnIfInBattle(nameof(AddAttackCount));
         attackCount += amount;
         Debug.Log($"[PlayerData] 攻击段数 +{amount}（当前 {attackCount}）");
     }
 
-    /// <summary>加防御力，返回实际增加量（已乘防御系数）。</summary>
-    public int AddDefense(int amount)
+    public void AddDefense(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddDefense))) return 0;
-        int actualGain = Mathf.CeilToInt(amount * defenseMultiplier / 100f);
+        WarnIfInBattle(nameof(AddDefense));
+        int actualGain = amount * defenseMultiplier / 100;
         defense += actualGain;
         Debug.Log($"[PlayerData] 防御力 +{amount}×{defenseMultiplier}%={actualGain}（当前 {defense}）");
-        return actualGain;
     }
 
-    /// <summary>
-    /// 加金币。刻意**不加** RequireOutOfBattle —— 它正好是战斗中要用的：
-    /// 战斗奖励（BattleManager.EndBattle）和恩惠的祝福都在战斗结算时加金币。
-    /// </summary>
-    public int AddGold(int amount)
+    public void AddGold(int amount)
     {
-        int actualGold = Mathf.CeilToInt(amount * goldMultiplier / 100f);
+        int actualGold = amount * goldMultiplier / 100;
         gold += actualGold;
         Debug.Log($"[PlayerData] 金币 +{amount}×{goldMultiplier}%={actualGold}（当前 {gold}）");
-        return actualGold;
     }
 
     /// <summary>
@@ -561,78 +612,65 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     public void AddManaMax(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddManaMax))) return;
         manaMax += amount;
         Debug.Log($"[PlayerData] 魔力上限 +{amount}（当前 {manaMax}）");
     }
 
     public void AddManaCharge(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddManaCharge))) return;
         manaCharge += amount;
         Debug.Log($"[PlayerData] 魔力充能 +{amount}（当前 {manaCharge}）");
     }
 
     public void AddSpeed(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddSpeed))) return;
         speed += amount;
         Debug.Log($"[PlayerData] 速度 +{amount}（当前 {speed}）");
     }
 
     public void AddDamageReduction(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddDamageReduction))) return;
+        WarnIfInBattle(nameof(AddDamageReduction));
         damageReduction += amount;
         Debug.Log($"[PlayerData] 减伤系数 +{amount}%（当前 {damageReduction}%）");
     }
 
     public void AddAttackMultiplier(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddAttackMultiplier))) return;
         attackMultiplier += amount;
         Debug.Log($"[PlayerData] 攻击系数 +{amount}%（当前 {attackMultiplier}%）");
     }
 
     public void AddDefenseMultiplier(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddDefenseMultiplier))) return;
         defenseMultiplier += amount;
         Debug.Log($"[PlayerData] 防御系数 +{amount}%（当前 {defenseMultiplier}%）");
     }
 
-    /// <summary>加生命值，返回实际增加量（已乘生命系数）。</summary>
-    public int AddHP(int amount)
+    public void AddHP(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddHP))) return 0;
-        int actualGain = Mathf.CeilToInt(amount * hpMultiplier / 100f);
+        int actualGain = amount * hpMultiplier / 100;
         hp += actualGain;
         Debug.Log($"[PlayerData] 生命值 +{amount}×{hpMultiplier}%={actualGain}（当前 {hp}）");
-        return actualGain;
     }
 
     public void AddHPMultiplier(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddHPMultiplier))) return;
         hpMultiplier += amount;
         Debug.Log($"[PlayerData] 生命系数 +{amount}%（当前 {hpMultiplier}%）");
     }
 
     public void AddGoldMultiplier(int amount)
     {
-        if (!RequireOutOfBattle(nameof(AddGoldMultiplier))) return;
         goldMultiplier += amount;
         Debug.Log($"[PlayerData] 金币系数 +{amount}%（当前 {goldMultiplier}%）");
     }
 
     /// <summary>
-    /// 统一属性增益接口，供 StatBoostPickup / MerchantPurchase 调用。
-    /// 属【战前接口】：战斗中调用会被拦下。
+    /// 统一属性增益接口，供 StatBoostPickup 调用。
     /// </summary>
     public void ApplyStatBoost(StatBoostType type, int value)
     {
-        if (!RequireOutOfBattle(nameof(ApplyStatBoost))) return;
-
         switch (type)
         {
             case StatBoostType.HP:             AddHP(value);          break;
@@ -651,13 +689,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     /// <summary>
     /// 应用祝福加成，由 BlessingManager 在选择后调用。
-    /// 属【战前接口】：入口处就拦一道，这样 ApplyStatBonus / ApplyPercentBonus
-    /// 里那些直写字段的代码不会成为绕过守卫的第三条路径。
     /// </summary>
     public void ApplyBlessing(BlessingData blessing)
     {
         if (blessing == null) return;
-        if (!RequireOutOfBattle(nameof(ApplyBlessing))) return;
 
         switch (blessing.type)
         {
@@ -691,12 +726,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     private void ApplyStatBonus(BlessingData b)
     {
-        attack        += Mathf.CeilToInt(b.attackBonus * attackMultiplier / 100f);
-        defense       += Mathf.CeilToInt(b.defenseBonus * defenseMultiplier / 100f);
+        attack        += b.attackBonus * attackMultiplier / 100;
+        defense       += b.defenseBonus * defenseMultiplier / 100;
         manaMax       += b.manaMaxBonus;
         manaCharge    += b.manaChargeBonus;
         speed         += b.speedBonus;
-        int hpChange = Mathf.CeilToInt(b.hpBonus * hpMultiplier / 100f);
+        int hpChange = b.hpBonus * hpMultiplier / 100;
         hp += hpChange;
         // 祝福扣血最低只会扣到 1 点生命值，不会致命
         if (hpChange < 0 && hp < 1) hp = 1;
@@ -719,10 +754,9 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
 
     private void ApplyPercentBonus(BlessingData b)
     {
-        // 向上取整（偏向玩家）：基础值小的时候，向下截断会把加成整个抹掉
-        int hpGain      = Mathf.CeilToInt(hp * b.hpPercentBonus / 100f);
-        int atkGain     = Mathf.CeilToInt(attack * b.attackPercentBonus / 100f);
-        int defGain     = Mathf.CeilToInt(defense * b.defensePercentBonus / 100f);
+        int hpGain      = hp * b.hpPercentBonus / 100;
+        int atkGain     = attack * b.attackPercentBonus / 100;
+        int defGain     = defense * b.defensePercentBonus / 100;
 
         hp      += hpGain;
         attack  += atkGain;
