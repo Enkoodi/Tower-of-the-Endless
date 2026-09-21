@@ -58,6 +58,22 @@ public abstract class BlessingEffect
     public abstract float GetEffectValue();
     public abstract string GetEffectDescription();
 
+    /// <summary>
+    /// 按指定层数生成描述（不改变自身 Level），供卡片显示升级预览。
+    /// 复用子类的 GetEffectDescription()，因此文案永远跟公式一致，不需要在子类里重复公式。
+    /// </summary>
+    public string GetEffectDescriptionAtLevel(int level)
+    {
+        level = Mathf.Max(1, level);
+        if (level == Level) return GetEffectDescription();
+
+        int saved = Level;
+        Level = level;
+        string desc = GetEffectDescription();
+        Level = saved;
+        return desc;
+    }
+
     // ============================================================
     //  生命周期（子类按需重写）
     // ============================================================

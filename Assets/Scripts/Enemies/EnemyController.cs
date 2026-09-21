@@ -5,7 +5,7 @@ using UnityEngine;
 /// 拖入 EnemyStats 资产即可，所有数值从资产读取。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IBattleUnit
 {
     [Header("数据资产（右键 Create → MagicTower → Enemy Stats）")]
     [SerializeField] private EnemyStats stats;
@@ -128,7 +128,14 @@ public class EnemyController : MonoBehaviour
         return amount;
     }
 
-    public void Heal(int amount) { hp += amount; }
+    /// <summary>精确回血。敌人侧本来就没有生命系数，所以加多少就是多少。</summary>
+    public void HealRaw(int amount) { hp += amount; }
+
+    /// <summary>
+    /// IBattleUnit 实现：按减伤结算伤害。等价于 TakeRawDamage。
+    /// ⚠️ 注意**不要**映射到本类的 `SubtractHP` —— 那个是真实伤害、不过减伤。
+    /// </summary>
+    int IBattleUnit.ReceiveDamage(int amount) => TakeRawDamage(amount);
 
     public void Defeat()
     {

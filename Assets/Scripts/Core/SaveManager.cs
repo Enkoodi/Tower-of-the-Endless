@@ -135,6 +135,14 @@ public class SaveManager : MonoBehaviour
             ? BlessingManager.Instance.GetActiveEffectLevels()
             : new Dictionary<string, int>();
 
+        // 本局已获得的祝福记录（含 DirectBonus 型，specialBlessings 覆盖不到）
+        data.obtainedBlessings = BlessingManager.Instance != null
+            ? BlessingManager.Instance.GetObtainedBlessings()
+            : new Dictionary<string, int>();
+
+        // 商店购买次数（影响下一次购买价格）
+        data.shopPurchaseCount = NPCController.GetGlobalPurchaseCount();
+
         // 特殊敌人击败信号
         data.defeatedSpecialEnemies = SpecialEnemyManager.Instance != null
             ? SpecialEnemyManager.Instance.GetDefeatedIds()
@@ -269,6 +277,21 @@ public class SaveManager : MonoBehaviour
         {
             BlessingManager.Instance.RestoreEffects(data.specialBlessings);
         }
+
+        // 2.55. 恢复已获得祝福记录（必须在 RestoreEffects 之外单独恢复：
+        //       它记录的是「获得清单」，与当前生效的特殊祝福是两份数据）
+        //       旧存档没有这个字段 → 用特殊祝福层数兜底做种子，避免读档后记录看着是空的。
+        Dictionary<string, int> obtained = data.obtainedBlessings;
+        if ((obtained == null || obtained.Count == 0)
+            && data.specialBlessings != null && data.specialBlessings.Count > 0)
+        {
+            obtained = new Dictionary<string, int>(data.specialBlessings);
+            Debug.Log("[SaveManager] 旧存档兼容：以特殊祝福层数作为「已获得祝福」记录的初始值");
+        }
+        BlessingManager.Instance?.RestoreObtainedBlessings(obtained);
+
+        // 2.56. 恢复商店购买次数（影响购买价格，须在玩家进入商店前恢复）
+        NPCController.SetPurchaseCount(data.shopPurchaseCount);
 
         // 2.6. 恢复特殊敌人击败信号
         SpecialEnemyManager.Instance?.RestoreDefeated(data.defeatedSpecialEnemies);

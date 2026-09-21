@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8139279144819139175}
   - component: {fileID: 3243483968558890126}
   - component: {fileID: 4664084135981483557}
+  - component: {fileID: 483316000910036895}
   m_Layer: 10
   m_Name: YellowDoor
   m_TagString: Door
@@ -146,3 +147,24 @@ MonoBehaviour:
   doorData: {fileID: 11400000, guid: 27f93c35892950a47b631de34622c57e, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &483316000910036895
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8951086120799978766}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c78c4bb2d5f07ba4f82854b5f8922db3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// 怪物手册 — 查看当前楼层所有敌人的数据及战斗所需生命值。
-/// 按 M 键打开/关闭。
+/// 按 Tab 键打开/关闭（见 PlayerMove：战斗中/对话中/祝福中/NPC 交互中禁用）。
 /// </summary>
 public class MonsterManualUI : MonoBehaviour
 {

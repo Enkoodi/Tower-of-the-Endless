@@ -52,6 +52,19 @@ public class NPCController : MonoBehaviour
         purchaseCounts[GLOBAL_PURCHASE_KEY] = count + 1;
     }
 
+    /// <summary>读档：整体恢复全局购买次数（负数按 0 处理）。</summary>
+    public static void SetPurchaseCount(int count)
+    {
+        purchaseCounts[GLOBAL_PURCHASE_KEY] = Mathf.Max(0, count);
+        Debug.Log($"[NPCController] 读档恢复商店购买次数：{purchaseCounts[GLOBAL_PURCHASE_KEY]}（当前价格 {GetCurrentCost()}）");
+    }
+
+    /// <summary>新游戏：清零全局购买次数。</summary>
+    public static void ResetPurchaseCount()
+    {
+        purchaseCounts.Clear();
+    }
+
     // ============================================================
     //  运行时字段
     // ============================================================

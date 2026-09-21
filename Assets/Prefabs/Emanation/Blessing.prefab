@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1573363946465641528}
   - component: {fileID: 4971663962682339013}
   - component: {fileID: 5626705636445078280}
+  - component: {fileID: 6398042012985868445}
   m_Layer: 10
   m_Name: Blessing
   m_TagString: Untagged
@@ -147,3 +148,24 @@ MonoBehaviour:
   overridePool: {fileID: 11400000, guid: 575fdfd0202c19546a7cf5b007a2b351, type: 2}
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!95 &6398042012985868445
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7426012651065657000}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: adb872728a7bf5d4ca999ecf52bdd398, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

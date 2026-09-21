@@ -33,6 +33,13 @@ public class BlessingManager : MonoBehaviour
     /// </summary>
     private Dictionary<string, BlessingEffect> activeEffects = new Dictionary<string, BlessingEffect>();
 
+    /// <summary>
+    /// 本局已获得祝福的记录：BlessingID 名称 → 获得次数（存档用）。
+    /// specialBlessings 只覆盖 Conditional 型，这里含 DirectBonus 型，
+    /// 商店重复抽到同一个祝福会累加次数。
+    /// </summary>
+    private Dictionary<string, int> obtainedBlessings = new Dictionary<string, int>();
+
     // ============================================================
     //  调试（Inspector 可见）
     // ============================================================
@@ -65,7 +72,8 @@ public class BlessingManager : MonoBehaviour
 
         if (effect != null)
         {
-            AddEffect(debugAddEffectId.ToString(), effect);
+            // 传 player：叠加升级时 OnLevelUp(player) 需要玩家实例（否则『智慧』这类会 NRE）
+            AddEffect(debugAddEffectId.ToString(), effect, FindAnyObjectByType<PlayerData>());
             Debug.Log($"[BlessingManager] 手动添加了特殊祝福：{debugAddEffectId}");
         }
         else
@@ -156,6 +164,60 @@ public class BlessingManager : MonoBehaviour
 
         RefreshInspectorList();
         Debug.Log($"[BlessingManager] 读档恢复 {activeEffects.Count} 个特殊祝福");
+    }
+
+    // ============================================================
+    //  已获得祝福记录（存档用）
+    // ============================================================
+
+    /// <summary>
+    /// 登记一次祝福获得。由 PlayerData.ApplyBlessing 在守卫通过后调用
+    /// （玩家获得祝福的唯一出口：地图拾取 / 商店购买都经它）。
+    /// </summary>
+    public void RecordObtainedBlessing(BlessingID id)
+    {
+        if (id == BlessingID.None) return;
+
+        string key = id.ToString();
+        obtainedBlessings.TryGetValue(key, out int count);
+        obtainedBlessings[key] = count + 1;
+    }
+
+    /// <summary>获取已获得祝福记录（副本），用于存档。</summary>
+    public Dictionary<string, int> GetObtainedBlessings()
+    {
+        return new Dictionary<string, int>(obtainedBlessings);
+    }
+
+    /// <summary>本局该祝福的获得次数（未获得返回 0）。供祝福卡显示「已获得 N 次」。</summary>
+    public int GetObtainedCount(BlessingID id)
+    {
+        if (id == BlessingID.None) return 0;
+
+        obtainedBlessings.TryGetValue(id.ToString(), out int count);
+        return count;
+    }
+
+    /// <summary>根据存档恢复已获得祝福记录（整体替换）。</summary>
+    public void RestoreObtainedBlessings(Dictionary<string, int> data)
+    {
+        obtainedBlessings = data != null
+            ? new Dictionary<string, int>(data)
+            : new Dictionary<string, int>();
+
+        Debug.Log($"[BlessingManager] 读档恢复已获得祝福记录 {obtainedBlessings.Count} 项");
+    }
+
+    /// <summary>
+    /// 重置本局祝福状态（新游戏）：清空特殊祝福与获得记录。
+    /// BlessingManager 是 DontDestroyOnLoad 单例，不重置会把上一局的祝福带进新游戏。
+    /// </summary>
+    public void ResetAll()
+    {
+        activeEffects.Clear();
+        obtainedBlessings.Clear();
+        RefreshInspectorList();
+        Debug.Log("[BlessingManager] 已重置本局祝福状态（特殊祝福 + 获得记录）");
     }
 
     // ============================================================

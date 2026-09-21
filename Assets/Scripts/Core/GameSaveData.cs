@@ -57,6 +57,19 @@ public class GameSaveData
     public Dictionary<string, int> specialBlessings = new Dictionary<string, int>();
 
     // ============================================================
+    //  本局已获得的祝福记录（BlessingID → 获得次数）
+    //  覆盖 DirectBonus 与 Conditional 两类；含商店购买的重复获得。
+    //  与 specialBlessings 的区别：那份是「当前生效的特殊祝福状态」，
+    //  这份是「获得清单」，读档后不会因为祝福叠加而丢失历史。
+    // ============================================================
+    public Dictionary<string, int> obtainedBlessings = new Dictionary<string, int>();
+
+    // ============================================================
+    //  商店购买次数（所有商店共通的全局计数，决定下一次购买价格）
+    // ============================================================
+    public int shopPurchaseCount;
+
+    // ============================================================
     //  特殊敌人击败信号（specialEnemyId 列表）
     // ============================================================
     public List<string> defeatedSpecialEnemies = new List<string>();

@@ -262,6 +262,11 @@ public class SettingMenu : MonoBehaviour
         FloorMemoryManager.Instance?.ResetAll();
         SpecialEnemyManager.Instance?.ResetAll();
 
+        // 新游戏：清零商店购买次数、清空祝福状态与获得记录
+        // （都是静态/单例状态，不重置会把上一局的涨价和祝福带进新游戏）
+        NPCController.ResetPurchaseCount();
+        BlessingManager.Instance?.ResetAll();
+
         // 退出设置界面时淡入淡出
         ScreenFader.FadeToScene(gameSceneName);
     }

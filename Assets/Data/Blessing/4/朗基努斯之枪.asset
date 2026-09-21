@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 59
   blessingName: "\u6717\u57FA\u52AA\u65AF\u4E4B\u67AA"
-  description: "\u5947\u6570\u56DE\u5408\u65F6\u653B\u51FB\u6BB5\u6570+1\uFF0C\u5076\u6570\u56DE\u5408\u65F6\u653B\u51FB\u529B+50"
+  description: "\u5947\u6570\u56DE\u5408\u65F6\u653B\u51FB\u6BB5\u6570+1\uFF0C\u5076\u6570\u56DE\u5408\u65F6\u653B\u51FB\u529B+100"
   rarity: 3
   backgroundSprite: {fileID: 21300000, guid: f864d50da6c4e754e95b2d5614f9af82, type: 3}
   type: 1
@@ -40,4 +40,4 @@ MonoBehaviour:
   hpPercentBonus: 0
   attackPercentBonus: 0
   defensePercentBonus: 0
-  effectDescription: "\u5947\u6570\u56DE\u5408\u65F6\u653B\u51FB\u6BB5\u6570+1\uFF0C\u5076\u6570\u56DE\u5408\u65F6\u653B\u51FB\u529B+50"
+  effectDescription: "\u5947\u6570\u56DE\u5408\u65F6\u653B\u51FB\u6BB5\u6570+1\uFF0C\u5076\u6570\u56DE\u5408\u65F6\u653B\u51FB\u529B+100"

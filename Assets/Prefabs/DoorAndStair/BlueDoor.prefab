@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8155574643286294153}
   - component: {fileID: 6478289383023657277}
   - component: {fileID: 5853599495992046178}
+  - component: {fileID: 2156654002956053269}
   m_Layer: 10
   m_Name: BlueDoor
   m_TagString: Untagged
@@ -144,3 +145,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doorData: {fileID: 11400000, guid: 6eea1f6f87b3a504cb5127fa0f58644d, type: 2}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
+--- !u!95 &2156654002956053269
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2413960780957378454}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2a2a43592cba8024faeda8d24ed3e01f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

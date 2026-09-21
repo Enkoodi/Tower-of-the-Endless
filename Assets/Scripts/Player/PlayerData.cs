@@ -9,7 +9,7 @@ using UnityEngine;
 /// 实现 IKeyInventory 供门系统查询钥匙。
 /// 实现 IPlayerHealth 供魂之门扣除 HP。
 /// </summary>
-public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
+public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUnit
 {
     // ============================================================
     //  初始化
@@ -478,6 +478,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         hp += amount;
     }
 
+    /// <summary>
+    /// IBattleUnit 实现：按减伤结算伤害。等价于 SubtractHP，
+    /// 但换个明确的名字 —— 敌人的同名方法语义正好相反（那边是真实伤害、不过减伤）。
+    /// </summary>
+    int IBattleUnit.ReceiveDamage(int amount) => SubtractHP(amount);
+
     /// <summary>直接设置生命值（用于濒死回复等机制）。</summary>
     public void SetHP(int value)
     {
@@ -659,6 +665,9 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
         if (blessing == null) return;
         if (!RequireOutOfBattle(nameof(ApplyBlessing))) return;
 
+        // 登记「已获得祝福」记录（存档用）。放在守卫之后：战斗中调用被拦时不应计数。
+        BlessingManager.Instance?.RecordObtainedBlessing(blessing.id);
+
         switch (blessing.type)
         {
             case BlessingType.DirectBonus:
@@ -676,17 +685,31 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth
     {
         BlessingEffect effect = BlessingEffect.Create(b.id);
 
-        if (effect != null)
-        {
-            string effectId = b.id.ToString();
-            BlessingManager.Instance?.AddEffect(effectId, effect, this);
-            effect.OnAcquired(this); // 永久属性加成（仅首次获得时调用）
-            Debug.Log($"[PlayerData] 获得特殊祝福「{b.blessingName}」({effect.GetEffectDescription()})");
-        }
-        else
+        if (effect == null)
         {
             Debug.LogWarning($"[PlayerData] 未注册的特殊祝福 ID：{b.id}");
+            return;
         }
+
+        string effectId = b.id.ToString();
+        BlessingManager manager = BlessingManager.Instance;
+
+        // 先判断是首次获得还是叠加升级：重复选择 = 升级，
+        // 升级路径由 AddEffect 内部对 existing 实例做 AddLevel + OnLevelUp。
+        bool firstTime = manager == null || !manager.HasEffect(effectId);
+
+        manager?.AddEffect(effectId, effect, this);
+
+        // OnAcquired = 一生一次的开荒加成，只在首次获得时调用。
+        // 注意：升级时 effect 是刚 new 出来、随即被丢弃的实例（真正生效的是 activeEffects 里那个），
+        // 所以这里绝不能无条件调用 —— 『智慧』升一级会变成 +1000(OnLevelUp) 再 +1000(OnAcquired)。
+        if (firstTime)
+            effect.OnAcquired(this);
+
+        // 日志取真正生效的实例，否则升级时会打印 Lv.1 的描述
+        BlessingEffect live = manager != null ? (manager.GetEffect<BlessingEffect>(effectId) ?? effect) : effect;
+        int level = live != null ? live.Level : 1;
+        Debug.Log($"[PlayerData] {(firstTime ? "获得" : "升级")}特殊祝福「{b.blessingName}」Lv.{level}（{live.GetEffectDescription()}）");
     }
 
     private void ApplyStatBonus(BlessingData b)

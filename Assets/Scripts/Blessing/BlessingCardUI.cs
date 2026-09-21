@@ -12,4 +12,7 @@ public class BlessingCardUI : MonoBehaviour
     public Image background;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI descText;
+
+    [Tooltip("卡片底部的状态行：特殊祝福显示 Lv.N → Lv.N+1，普通祝福显示已获得 N 次")]
+    public TextMeshProUGUI statusText;
 }
