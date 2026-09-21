@@ -17,10 +17,11 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
 
     void Start()
     {
-        // 全局道具由全局存档覆盖（Aeon 钥匙 / 神圣火花）
+        // 从全局存档读取 Aeon 钥匙数量
         if (SaveManager.Instance != null)
         {
             SaveManager.Instance.ApplyGlobalAeonKeys();
+            // 神圣火花同为全局道具，一起从全局存档覆盖
             SaveManager.Instance.ApplyGlobalDivineSpark();
         }
     }
@@ -58,6 +59,9 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     [SerializeField] private int aeonKeys = 0; 
 
     [Header("全局道具（跨存档保留）")]
+    [Tooltip("神圣火花：数量 > 0 时解锁开场菜单的「无尽模式」。\n" +
+             "运行中可直接在 Inspector 里改；与 save/global.json 的同步规则和 Aeon 钥匙完全一致——\n" +
+             "进场景时由全局存档覆盖，存档（P）时再由这里写回全局存档。")]
     [SerializeField] private int divineSpark = 0;
 
     [Header("传送器数量")]
@@ -107,7 +111,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     public int EnemyHalveItemCount => enemyHalveItemCount;
     public int PendingEnemyHalveBattles => pendingEnemyHalveBattles;
 
-    /// <summary>神圣火花数量（全局道具）</summary>
+    /// <summary>神圣火花数量（全局道具，跨存档保留；&gt;0 时解锁无尽模式）</summary>
     public int DivineSpark => divineSpark;
 
     // 系数
@@ -782,10 +786,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     /// <summary>直接设置 Aeon 钥匙数量（供全局存档覆盖）</summary>
     public void SetAeonKeys(int v) => aeonKeys = v;
 
-    /// <summary>直接设置神圣火花数量（供全局存档覆盖）</summary>
+    /// <summary>直接设置神圣火花数量（供全局存档覆盖 / Inspector 调试）</summary>
     public void SetDivineSpark(int v) => divineSpark = v;
 
-    /// <summary>神圣火花 +amount（拾取时调用）</summary>
+    /// <summary>神圣火花 +amount（拾取时调用；落盘由 SaveManager 负责）</summary>
     public void AddDivineSpark(int amount = 1)
     {
         divineSpark += amount;

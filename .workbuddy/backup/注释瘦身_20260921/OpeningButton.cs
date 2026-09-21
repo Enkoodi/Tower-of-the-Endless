@@ -12,7 +12,9 @@ using UnityEngine.UI;
 ///   且悬停/按下都不再出外框（由下面的 Interactable 检查保证）；
 /// - 通过 SetLocked(true) 可锁定为常驻选中（外框一直显示），用于设置页等互斥选择按钮。
 /// 外框由 4 条纯色细条（上/下/左/右）拼成，不依赖任何图片资源和九宫格切片，渲染稳定。
-/// 灰字只能自己做：Button 的 Color Tint 只作用于 targetGraphic，那是按钮自己 alpha=0 的热区图。
+///
+/// 未解锁的灰字由本脚本自己负责（不依赖 Button 的 Color Tint —— 那个只作用于
+/// targetGraphic，而按钮自己的 Image 是 alpha=0 的热区，灰了也看不见）。
 /// </summary>
 [RequireComponent(typeof(Button))]
 public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
@@ -47,6 +49,8 @@ public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public bool IsSpeedOption => speedDelay > 0f;
 
     [Header("未解锁（不可交互）外观")]
+    [Tooltip("Button.interactable == false 时，按钮文字标签显示的颜色（灰）。\n" +
+             "恢复可交互时会自动还原为设计时的原色。")]
     [SerializeField] private Color lockedLabelColor = new Color(0.45f, 0.45f, 0.45f, 1f);
 
     private Button button;
@@ -68,20 +72,21 @@ public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         originalScale = transform.localScale;
         targetScale = originalScale;
 
-        // 本节点下唯一的 TMP 文本（外框是几条 Image，不会误抓）
+        // 文字标签：本节点下唯一的 TMP 文本（代码画的外框是几条 Image，不会误抓）
         label = GetComponentInChildren<TextMeshProUGUI>(true);
         if (label != null) originalLabelColor = label.color;
 
         frameBars = CreateFrame();
         SetFrameColor(Color.clear);
 
-        // 控制器也可能在 Awake 里设锁定，两者顺序不保证 → 先刷一次，其余交给 Update 轮询
+        // 先按当前 interactable 刷一次。菜单控制器（如 OpeningMenu）也会在 Awake 里设锁定，
+        // 而两个脚本的 Awake 顺序 Unity 不保证 —— 漏掉的那一半由 Update 轮询补齐。
         RefreshInteractableVisual();
     }
 
     private void Update()
     {
-        // interactable 变化时同步灰字
+        // interactable 可能在任意时刻被外部改写，变化时同步"未解锁灰字"
         if (button.interactable != interactableCached) RefreshInteractableVisual();
 
         if (frameBars == null || frameBars.Length == 0) return;
@@ -110,14 +115,20 @@ public class OpeningButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         targetScale = isPressed ? originalScale * pressedScale : originalScale;
     }
 
-    /// <summary>按 interactable 切换标签颜色：可交互为原色，不可交互为 lockedLabelColor。</summary>
+    /// <summary>
+    /// 按 <c>Button.interactable</c> 同步文字标签颜色，并清理残留的外框状态：
+    /// - 可交互 → 还原为设计时的原色；
+    /// - 不可交互（未解锁）→ 换成 <see cref="lockedLabelColor"/>（灰）。
+    /// 注意换灰用的是 TextMeshPro 的 <c>color</c>，它与顶点渐变是"相乘"关系，
+    /// 所以标题上那层四角渐变仍然生效、只是整体被压成灰色。
+    /// </summary>
     private void RefreshInteractableVisual()
     {
         interactableCached = button.interactable;
 
         if (!interactableCached)
         {
-            // 锁定瞬间残留的外框一并清掉
+            // 锁定瞬间若正被悬停/选中，外框会留在画面上，这里一并清掉
             isHovered = false;
             isSelected = false;
             isPressed = false;

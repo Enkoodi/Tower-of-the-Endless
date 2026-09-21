@@ -16,7 +16,6 @@ public class DoorController : MonoBehaviour
 
     private BoxCollider2D col;
     private SpriteRenderer sr;
-    private Animator animator;
     private bool isOpened = false;
 
     public bool IsOpened => isOpened;
@@ -31,13 +30,9 @@ public class DoorController : MonoBehaviour
     {
         col = GetComponent<BoxCollider2D>();
         sr = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
 
         if (doorData != null && doorData.doorSprite != null && sr != null)
             sr.sprite = doorData.doorSprite;
-
-        // 开门动画平时不播：否则门一生成就会自己循环播下去
-        DoorOpenAnimation.Prepare(animator);
     }
 
     public bool TryOpen(IKeyInventory playerInventory, IPlayerHealth playerHealth)
@@ -127,13 +122,6 @@ public class DoorController : MonoBehaviour
         // 记录到楼层记忆中
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkDoorOpened(gridPosition);
 
-        // 碰撞体保留到动画播完再撤 —— 否则玩家会从还没开完的门里穿过去
-        DoorOpenAnimation.PlayOpen(this, animator, RemoveDoor);
-    }
-
-    /// <summary>开门动画播完（或门没有动画时）撤掉门的碰撞体和画面。</summary>
-    private void RemoveDoor()
-    {
         col.enabled = false;
         if (sr != null) sr.enabled = false;
     }

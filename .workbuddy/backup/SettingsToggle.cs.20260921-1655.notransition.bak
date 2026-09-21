@@ -65,8 +65,8 @@ public class SettingsToggle : MonoBehaviour
             SaveManager.Instance.SaveAutoGame();
         }
 
-        // 进入设置界面不做转场：直接切场景（不淡入淡出、不留黑屏）
-        ScreenFader.LoadSceneInstant("Setting");
+        // 进入设置界面使用淡入淡出，时长减半（默认 1 秒 → 0.5 秒）
+        ScreenFader.FadeToScene("Setting", 0.5f);
         StartCoroutine(WaitSceneLoaded("Setting"));
     }
 
@@ -83,15 +83,14 @@ public class SettingsToggle : MonoBehaviour
 
         string target = string.IsNullOrEmpty(previousSceneName) ? "Opening" : previousSceneName;
 
-        // 退出设置界面同样不做转场：直接切场景（不淡入淡出、不留黑屏）
-        ScreenFader.LoadSceneInstant(target);
-
         if (target == "Game")
         {
+            ScreenFader.FadeToScene("Game");
             StartCoroutine(ReturnToGame());
         }
         else
         {
+            ScreenFader.FadeToScene(target);
             StartCoroutine(WaitSceneLoaded(target));
         }
     }

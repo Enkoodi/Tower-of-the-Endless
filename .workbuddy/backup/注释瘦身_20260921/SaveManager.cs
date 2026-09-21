@@ -70,7 +70,8 @@ public class SaveManager : MonoBehaviour
         PlayerData player = FindAnyObjectByType<PlayerData>();
         globalData.aeonKeys = player != null ? player.GetKeyCount(KeyType.Aeon) : 0;
 
-        // divineSpark 无玩家时保留文件旧值，不清零
+        // 神圣火花同样是「运行时以 PlayerData 为准」（那里可以直接在 Inspector 里改），
+        // 存档时写回全局存档。没有玩家时保留文件里的旧值，绝不清零。
         if (player != null) globalData.divineSpark = player.DivineSpark;
 
         WriteJson(globalSavePath, globalData);
@@ -200,7 +201,7 @@ public class SaveManager : MonoBehaviour
         player.SetAeonKeys(globalData.aeonKeys);
     }
 
-    /// <summary>将全局存档中的 divineSpark 应用到玩家</summary>
+    /// <summary>将全局存档中的 divineSpark 应用到玩家（进场景 / 读档时调用）</summary>
     public void ApplyGlobalDivineSpark()
     {
         PlayerData player = FindAnyObjectByType<PlayerData>();
@@ -210,7 +211,11 @@ public class SaveManager : MonoBehaviour
         player.SetDivineSpark(globalData.divineSpark);
     }
 
-    /// <summary>神圣火花 +amount：先改玩家再落盘，否则 SaveGlobal 会用旧值覆盖</summary>
+    /// <summary>
+    /// 神圣火花 +amount，并立即写入全局存档。
+    /// 运行时的事实来源是 PlayerData（可在 Inspector 里直接改），所以这里同步改玩家再落盘 ——
+    /// 否则之后 SaveGlobal() 会用玩家那边的旧值把这一颗覆盖掉。
+    /// </summary>
     public void AddDivineSpark(int amount = 1)
     {
         GlobalSaveData globalData = LoadGlobal();
@@ -223,7 +228,7 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            // 无玩家时退化为纯全局累加
+            // 理论上不会走到：没有玩家时退化为纯全局累加
             globalData.divineSpark += amount;
         }
 
@@ -295,7 +300,7 @@ public class SaveManager : MonoBehaviour
             Debug.LogWarning("[SaveManager] 未找到 PlayerData，玩家属性恢复跳过");
         }
 
-        // 2. 从全局存档覆盖全局道具
+        // 2. 从全局存档覆盖全局道具（Aeon 钥匙 / 神圣火花）
         ApplyGlobalAeonKeys();
         ApplyGlobalDivineSpark();
 

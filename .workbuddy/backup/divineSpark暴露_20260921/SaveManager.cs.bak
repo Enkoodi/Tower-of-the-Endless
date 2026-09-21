@@ -70,12 +70,8 @@ public class SaveManager : MonoBehaviour
         PlayerData player = FindAnyObjectByType<PlayerData>();
         globalData.aeonKeys = player != null ? player.GetKeyCount(KeyType.Aeon) : 0;
 
-        // divineSpark 无玩家时保留文件旧值，不清零
-        if (player != null) globalData.divineSpark = player.DivineSpark;
-
         WriteJson(globalSavePath, globalData);
-        Debug.Log($"[SaveManager] 全局存档已保存 → {globalSavePath}" +
-                  $"（aeonKeys = {globalData.aeonKeys}，divineSpark = {globalData.divineSpark}）");
+        Debug.Log($"[SaveManager] 全局存档已保存 → {globalSavePath}");
     }
 
     /// <summary>保存主动存档（P 键 / 未来 UI 按钮），写入 game_save.json。</summary>
@@ -200,33 +196,11 @@ public class SaveManager : MonoBehaviour
         player.SetAeonKeys(globalData.aeonKeys);
     }
 
-    /// <summary>将全局存档中的 divineSpark 应用到玩家</summary>
-    public void ApplyGlobalDivineSpark()
-    {
-        PlayerData player = FindAnyObjectByType<PlayerData>();
-        if (player == null) return;
-
-        GlobalSaveData globalData = LoadGlobal();
-        player.SetDivineSpark(globalData.divineSpark);
-    }
-
-    /// <summary>神圣火花 +amount：先改玩家再落盘，否则 SaveGlobal 会用旧值覆盖</summary>
+    /// <summary>神圣火花数量 +amount，并立即写入全局存档。</summary>
     public void AddDivineSpark(int amount = 1)
     {
         GlobalSaveData globalData = LoadGlobal();
-        PlayerData player = FindAnyObjectByType<PlayerData>();
-
-        if (player != null)
-        {
-            player.AddDivineSpark(amount);
-            globalData.divineSpark = player.DivineSpark;
-        }
-        else
-        {
-            // 无玩家时退化为纯全局累加
-            globalData.divineSpark += amount;
-        }
-
+        globalData.divineSpark += amount;
         WriteJson(globalSavePath, globalData);
         Debug.Log($"[SaveManager] 神圣火花 +{amount}（总计 {globalData.divineSpark}），已写入全局存档");
     }
@@ -295,9 +269,8 @@ public class SaveManager : MonoBehaviour
             Debug.LogWarning("[SaveManager] 未找到 PlayerData，玩家属性恢复跳过");
         }
 
-        // 2. 从全局存档覆盖全局道具
+        // 2. 从全局存档覆盖 aeonKeys
         ApplyGlobalAeonKeys();
-        ApplyGlobalDivineSpark();
 
         // 2.5. 恢复特殊祝福效果
         if (BlessingManager.Instance != null && data.specialBlessings != null)

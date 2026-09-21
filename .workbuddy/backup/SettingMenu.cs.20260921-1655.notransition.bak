@@ -241,8 +241,8 @@ public class SettingMenu : MonoBehaviour
 
     private void BackToTitle()
     {
-        // 直接返回标题，不触发开场过场动画；离开设置界面不做转场（直接切场景）
-        ScreenFader.LoadSceneInstant(titleSceneName);
+        // 直接返回标题，不触发开场过场动画
+        ScreenFader.FadeToScene(titleSceneName);
     }
 
     private void ReturnToGame()
@@ -267,8 +267,8 @@ public class SettingMenu : MonoBehaviour
         NPCController.ResetPurchaseCount();
         BlessingManager.Instance?.ResetAll();
 
-        // 离开设置界面不做转场：直接切场景（不淡入淡出、不留黑屏）
-        ScreenFader.LoadSceneInstant(gameSceneName);
+        // 退出设置界面时淡入淡出
+        ScreenFader.FadeToScene(gameSceneName);
     }
 
     private void QuitGame()

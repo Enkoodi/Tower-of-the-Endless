@@ -22,7 +22,6 @@ public class BattleDoorController : MonoBehaviour
 
     private BoxCollider2D col;
     private SpriteRenderer sr;
-    private Animator animator;
     private bool isOpened = false;
     private bool initialized = false;
 
@@ -41,13 +40,9 @@ public class BattleDoorController : MonoBehaviour
     {
         col = GetComponent<BoxCollider2D>();
         sr = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
 
         if (doorSprite != null && sr != null)
             sr.sprite = doorSprite;
-
-        // 开门动画平时不播：否则战斗门一生成就会自己循环播下去
-        DoorOpenAnimation.Prepare(animator);
 
         remainingEnemies = requiredEnemyPositions != null ? requiredEnemyPositions.Length : 0;
     }
@@ -73,7 +68,7 @@ public class BattleDoorController : MonoBehaviour
         FloorState state = FloorMemoryManager.Instance?.GetState(floorNumber);
         if (state != null && state.IsBattleDoorOpened(gridPosition))
         {
-            Open(false);   // 恢复流程：不放动画，直接消失
+            Open();
             return;
         }
 
@@ -90,7 +85,7 @@ public class BattleDoorController : MonoBehaviour
         // 所有敌人已死，直接开门
         if (remainingEnemies <= 0)
         {
-            Open(false);   // 恢复流程：不放动画，直接消失
+            Open();
             return;
         }
 
@@ -146,7 +141,7 @@ public class BattleDoorController : MonoBehaviour
 
         if (remainingEnemies <= 0)
         {
-            Open(true);
+            Open();
         }
     }
 
@@ -160,37 +155,20 @@ public class BattleDoorController : MonoBehaviour
 
         if (remainingEnemies <= 0)
         {
-            Open(true);
+            Open();
         }
     }
 
-    /// <summary>
-    /// 打开战斗门并记入楼层记忆。
-    /// </summary>
-    /// <param name="animate">
-    /// true  = 先播开门动画，动画播完再消失（敌人被击败的正常流程）；
-    /// false = 立刻消失、不放动画（读档 / 重返楼层等恢复流程）。
-    /// </param>
-    private void Open(bool animate)
+    private void Open()
     {
         if (isOpened) return;
         isOpened = true;
 
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkBattleDoorOpened(gridPosition);
 
-        // 碰撞体保留到动画播完再撤 —— 否则玩家会从还没开完的门里穿过去
-        if (animate)
-            DoorOpenAnimation.PlayOpen(this, animator, RemoveDoor);
-        else
-            RemoveDoor();
-
-        Debug.Log($"[BattleDoor] 战斗门已打开！位置：{gridPosition}");
-    }
-
-    /// <summary>开门动画播完（或不需要动画时）撤掉门的碰撞体和画面。</summary>
-    private void RemoveDoor()
-    {
         col.enabled = false;
         if (sr != null) sr.enabled = false;
+
+        Debug.Log($"[BattleDoor] 战斗门已打开！位置：{gridPosition}");
     }
 }

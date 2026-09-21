@@ -331,9 +331,7 @@ public class BattleManager : MonoBehaviour
 
     private void EndBattle(bool won, PlayerData playerData, EnemyController enemy, int playerManaSnapshot, int enemyManaSnapshot)
     {
-        // ⚠️ 这里只做结算，不解锁输入：战斗界面还要再留一会儿（见 CloseAfterDelay）才真正消失。
-        //    isFighting / OnBattleClose / onBattleEnd 全部挪到那之后 —— 否则玩家会在窗口还开着的
-        //    时候就能走动，甚至走进旁边的敌人再开一场战斗（旧窗口的收尾协程会把新窗口关掉）。
+        isFighting = false;
 
         // 特殊祝福生命周期：战斗结束（恢复加攻等）
         BlessingManager.Instance?.OnBattleEnd(playerData, enemy, battleUI, won);
@@ -360,28 +358,18 @@ public class BattleManager : MonoBehaviour
             battleUI.AddLog("战斗失败...");
         }
 
-        StartCoroutine(CloseAfterDelay(won));
+        StartCoroutine(CloseAfterDelay());
+        OnBattleClose?.Invoke();
+        onBattleEnd?.Invoke(won);
+        onBattleEnd = null;
     }
 
-    /// <summary>
-    /// 战斗界面收尾：留出阅读结算的时间 → 真正关闭窗口 → **然后**才解锁输入、通知调用方。
-    ///
-    /// ⚠️ 解锁必须排在 CloseBattle() 之后。界面还显示着的时候玩家不能动，
-    ///    否则「禁止输入」的时长会比界面存续时间短一截。
-    ///    顺序上也要先 OnBattleClose（解除移动锁定）再 onBattleEnd（此时才允许玩家前进 / 移除NPC）。
-    /// </summary>
-    private IEnumerator CloseAfterDelay(bool won)
+    private IEnumerator CloseAfterDelay()
     {
         // 跳过档没有演出来看，不用留结算时间；其余档保留这 1 秒给玩家看清金币收益
         if (!silentBattle)
             yield return new WaitForSeconds(1f);
         battleUI?.CloseBattle();
-
-        // 界面已经消失，这时才真正解除锁定
-        isFighting = false;
-        OnBattleClose?.Invoke();
-        onBattleEnd?.Invoke(won);
-        onBattleEnd = null;
     }
 
     private static string FormatDamage(int attackCount, int physicalDamage, int manaCost, int totalDamage)

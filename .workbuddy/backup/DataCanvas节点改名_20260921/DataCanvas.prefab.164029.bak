@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 619577622721067541}
   - component: {fileID: 495043796501057849}
   m_Layer: 5
-  m_Name: AeonKeyText
+  m_Name: Text (TMP) (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 7631294676351999611}
   - component: {fileID: 2006848327814310898}
   m_Layer: 5
-  m_Name: UpTeleporterText
+  m_Name: Text (TMP) (11)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 3721440979292440127}
   - component: {fileID: 4137094637905892227}
   m_Layer: 5
-  m_Name: FloorText
+  m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -414,7 +414,7 @@ GameObject:
   - component: {fileID: 1664562177905944611}
   - component: {fileID: 2558328118425655040}
   m_Layer: 5
-  m_Name: DownTeleporterIcon
+  m_Name: Image (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -489,7 +489,7 @@ GameObject:
   - component: {fileID: 1503689540301840671}
   - component: {fileID: 1031748257910350845}
   m_Layer: 5
-  m_Name: EnemyHalveItemText
+  m_Name: Text (TMP) (13)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -623,7 +623,7 @@ GameObject:
   - component: {fileID: 413389685555085783}
   - component: {fileID: 2737149571987381652}
   m_Layer: 5
-  m_Name: HPText
+  m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -757,7 +757,7 @@ GameObject:
   - component: {fileID: 6816607516116140972}
   - component: {fileID: 1550318001454384641}
   m_Layer: 5
-  m_Name: RedKeyIcon
+  m_Name: Image (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -832,7 +832,7 @@ GameObject:
   - component: {fileID: 284778583906330772}
   - component: {fileID: 8890920126896257900}
   m_Layer: 5
-  m_Name: YellowKeyIcon
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -907,7 +907,7 @@ GameObject:
   - component: {fileID: 6882358076135839100}
   - component: {fileID: 1214837310370803438}
   m_Layer: 5
-  m_Name: DamageReductionText
+  m_Name: Text (TMP) (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1041,7 +1041,7 @@ GameObject:
   - component: {fileID: 845230747753079175}
   - component: {fileID: 259965122229264217}
   m_Layer: 5
-  m_Name: EnemyHalveItemIcon
+  m_Name: Image (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1116,7 +1116,7 @@ GameObject:
   - component: {fileID: 8258840459966439989}
   - component: {fileID: 6907066977110340461}
   m_Layer: 5
-  m_Name: PlayerImage
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1191,7 +1191,7 @@ GameObject:
   - component: {fileID: 4923387167813257530}
   - component: {fileID: 3068685497567370617}
   m_Layer: 5
-  m_Name: ManaChargeText
+  m_Name: Text (TMP) (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1325,7 +1325,7 @@ GameObject:
   - component: {fileID: 4032723263895143283}
   - component: {fileID: 8898140908249077762}
   m_Layer: 5
-  m_Name: AeonKeyIcon
+  m_Name: Image (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1400,7 +1400,7 @@ GameObject:
   - component: {fileID: 3209206532616271088}
   - component: {fileID: 2178598681381942502}
   m_Layer: 5
-  m_Name: BlueKeyText
+  m_Name: Text (TMP) (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1534,7 +1534,7 @@ GameObject:
   - component: {fileID: 598810405719810896}
   - component: {fileID: 5148858954612321828}
   m_Layer: 5
-  m_Name: DownTeleporterText
+  m_Name: Text (TMP) (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1668,7 +1668,7 @@ GameObject:
   - component: {fileID: 5475727605143561698}
   - component: {fileID: 5660261257591723862}
   m_Layer: 5
-  m_Name: LifeStealText
+  m_Name: Text (TMP) (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1918,7 +1918,7 @@ GameObject:
   - component: {fileID: 3425112754820581867}
   - component: {fileID: 1924483219635916319}
   m_Layer: 5
-  m_Name: DefenseText
+  m_Name: Text (TMP) (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2139,7 +2139,7 @@ GameObject:
   - component: {fileID: 2103001076657447680}
   - component: {fileID: 6438457829455612664}
   m_Layer: 5
-  m_Name: GoldText
+  m_Name: Text (TMP) (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2273,7 +2273,7 @@ GameObject:
   - component: {fileID: 1421328483027579428}
   - component: {fileID: 5794297790523493920}
   m_Layer: 5
-  m_Name: SpeedText
+  m_Name: Text (TMP) (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2407,7 +2407,7 @@ GameObject:
   - component: {fileID: 589630692289359966}
   - component: {fileID: 4530208386120432305}
   m_Layer: 5
-  m_Name: BlueKeyIcon
+  m_Name: Image (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2482,7 +2482,7 @@ GameObject:
   - component: {fileID: 4234051989411148939}
   - component: {fileID: 177692082263564693}
   m_Layer: 5
-  m_Name: ManaMaxText
+  m_Name: Text (TMP) (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2616,7 +2616,7 @@ GameObject:
   - component: {fileID: 8442111252443902281}
   - component: {fileID: 2337605980526879657}
   m_Layer: 5
-  m_Name: AttackCountText
+  m_Name: Text (TMP) (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2750,7 +2750,7 @@ GameObject:
   - component: {fileID: 2578355374685651141}
   - component: {fileID: 5359147055539933599}
   m_Layer: 5
-  m_Name: RedKeyText
+  m_Name: Text (TMP) (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2884,7 +2884,7 @@ GameObject:
   - component: {fileID: 8035106214799261262}
   - component: {fileID: 7828832231266977747}
   m_Layer: 5
-  m_Name: UpTeleporterIcon
+  m_Name: Image (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3049,7 +3049,7 @@ GameObject:
   - component: {fileID: 2416840904023928503}
   - component: {fileID: 2579476388304622321}
   m_Layer: 5
-  m_Name: YellowKeyText
+  m_Name: Text (TMP) (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3183,7 +3183,7 @@ GameObject:
   - component: {fileID: 2813663799654359033}
   - component: {fileID: 2941854513338750303}
   m_Layer: 5
-  m_Name: ReflectDamageText
+  m_Name: Text (TMP) (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3317,7 +3317,7 @@ GameObject:
   - component: {fileID: 6102908952304231868}
   - component: {fileID: 1084648946605358007}
   m_Layer: 5
-  m_Name: AttackText
+  m_Name: Text (TMP) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

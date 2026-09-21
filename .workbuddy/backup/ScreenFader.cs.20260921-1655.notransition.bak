@@ -6,9 +6,8 @@ using UnityEngine.UI;
 /// <summary>
 /// 全屏淡入淡出过场控制器（单例，跨场景常驻）。
 /// 首次调用 FadeToScene 时自动创建自身与全屏遮罩，无需在场景中手动放置。
-/// 常规场景跳转走 ScreenFader.FadeToScene("场景名")：
+/// 所有场景跳转统一走 ScreenFader.FadeToScene("场景名")：
 /// 先淡出（画面变黑）→ 切换场景 → 再淡入（画面恢复）。
-/// 需要「瞬时切换、不要过场」的跳转走 ScreenFader.LoadSceneInstant("场景名")（如设置界面进出）。
 /// </summary>
 public class ScreenFader : MonoBehaviour
 {
@@ -39,15 +38,6 @@ public class ScreenFader : MonoBehaviour
     public static void FadeToScene(string sceneName, float duration)
     {
         GetOrCreate().FadeTo(sceneName, duration);
-    }
-
-    /// <summary>
-    /// 无转场地跳转场景：不淡出、不留黑屏，立刻切换（用于设置界面这类需要瞬时进出的跳转）。
-    /// 仍会做 Build Settings 场景存在性检查，缺场景时只打警告、不跳转。
-    /// </summary>
-    public static void LoadSceneInstant(string sceneName)
-    {
-        GetOrCreate().LoadInstant(sceneName);
     }
 
     private static ScreenFader GetOrCreate()
@@ -103,28 +93,6 @@ public class ScreenFader : MonoBehaviour
     public void FadeTo(string sceneName)
     {
         FadeTo(sceneName, 0f);
-    }
-
-    /// <summary>瞬时跳转场景的实现：先清掉遮罩残留，再直接 LoadScene。</summary>
-    private void LoadInstant(string sceneName)
-    {
-        // 上一次淡入淡出若还没跑完，先停掉并把遮罩恢复透明，
-        // 否则切完场景会残留一层黑屏（新场景看不到东西）。
-        if (fadeRoutine != null)
-        {
-            StopCoroutine(fadeRoutine);
-            fadeRoutine = null;
-        }
-        SetAlpha(0f);
-
-        if (Application.CanStreamedLevelBeLoaded(sceneName))
-        {
-            SceneManager.LoadScene(sceneName);
-        }
-        else
-        {
-            Debug.LogWarning($"[ScreenFader] 未在 Build Settings 中找到场景 '{sceneName}'，请添加后重试");
-        }
     }
 
     /// <summary>淡入淡出跳转场景；duration 传 0 表示使用 fadeDuration。</summary>
