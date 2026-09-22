@@ -14,6 +14,8 @@ Opening / Game / Credits / Ending / Setting）。
 | `topics/battle-resolver.md` | 结算内核 `BattleResolver`、图鉴共用、反伤/提前收场、技术债 |
 | `topics/ui-scene-door.md` | UI 约定、战斗速度档位、门与开门动画 |
 | `topics/fonts.md` | TMP 字体缺字方块的决定性结论与诊断工具 |
+| `topics/floor-map-data.md` | `floor_XX.json` 的 objects/items **ID 表**（钥匙/门/碎片/药水）、id→物品映射在 `Game.unity`、带注释 JSON 与场景数组的解析坑 |
+| `topics/npc-dialogue.md` | `DialogueTrigger`/`DialogueUI` 与选项后果（**选项后续对话 + 战斗胜利后自动续接**）、nextLineIndex 语义、跳过档时序坑 |
 
 ## 跨专题铁律（改代码前先扫一眼）
 1. **改完必须让用户回 Unity 编译一次** —— 本机 `csc` 被安全策略拦，离线查不了语言错误（如 CS1612）。

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 64
   blessingName: "\u8840\u68D8"
-  description: "\u751F\u547D\u5077\u53D6+5\n\u53CD\u4F24\u7CFB\u6570+10"
+  description: "\u751F\u547D\u5077\u53D6+10\n\u53CD\u4F24+18"
   rarity: 3
   backgroundSprite: {fileID: 21300000, guid: 65641c0e270ec4847b1f547012dcdeb3, type: 3}
   type: 0
@@ -25,8 +25,8 @@ MonoBehaviour:
   speedBonus: 0
   hpBonus: 0
   attackCountBonus: 0
-  lifeStealBonus: 0
-  reflectDamageBonus: 5
+  lifeStealBonus: 10
+  reflectDamageBonus: 18
   damageReductionBonus: 0
   attackMultiplierBonus: 0
   defenseMultiplierBonus: 0

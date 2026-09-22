@@ -187,6 +187,10 @@ MonoBehaviour:
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"
     content: "\u65E2\u7136\u4F60\u6765\u5230\u4E86\u8FD9\u91CC\uFF0C\u90A3\u4E48\u5F00\u59CB\u5427"
     showChoices: 1
+    nextLineIndex: -2
+  - speakerName: "\u9B54\u5BFC\u5E08Zeno"
+    content: "\u4E00\u5B9A\u8981\u6709\u4E00\u4F4D..."
+    showChoices: 1
     nextLineIndex: -1
   entryBranches: []
   choice1Text: "\u6218\u6597"
@@ -221,6 +225,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  choice1NextLineIndex: 2
+  choice2NextLineIndex: 2
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-5487906984667632092

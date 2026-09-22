@@ -159,8 +159,7 @@ public class PlayerMove : MonoBehaviour
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
         // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC，按组件类型分流
-        LayerMask obstacleMask = doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer | npcLayer;
-        Collider2D[] hits = Physics2D.OverlapCircleAll(target, checkRadius, obstacleMask);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(target, checkRadius, ObstacleMask);
 
         // 门优先：门未打开时会遮挡身后的道具，必须先处理门，避免隔门直接捡起道具
         DoorController blockingDoor = null;
@@ -179,7 +178,19 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        Collider2D hit = hits.Length > 0 ? hits[0] : null;
+        // 战斗门触发器不阻挡通行、走过即激活，且不参与下面的占位物分流 ——
+        // 这样它与敌人/道具同格时也照样触发（Trigger 内部幂等，重复调用无副作用）。
+        Collider2D hit = null;
+        foreach (Collider2D c in hits)
+        {
+            BattleTrigger trigger = c.GetComponent<BattleTrigger>();
+            if (trigger != null)
+            {
+                trigger.Trigger();
+                continue;
+            }
+            if (hit == null) hit = c;
+        }
 
         if (hit == null)
         {
@@ -297,17 +308,6 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        // 检查 BattleTrigger — 战斗门触发器，不阻挡，走过即激活
-        BattleTrigger battleTrigger = hit.GetComponent<BattleTrigger>();
-        if (battleTrigger != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            battleTrigger.Trigger();
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
         // 再检查 EnemyController
         EnemyController enemy = hit.GetComponent<EnemyController>();
         if (enemy != null)
@@ -384,6 +384,9 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    /// <summary>移动与占位检测用的层：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC</summary>
+    private LayerMask ObstacleMask => doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer | npcLayer;
+
     private IEnumerator SmoothMove()
     {
         Vector3 start = transform.position;
@@ -400,8 +403,23 @@ public class PlayerMove : MonoBehaviour
         transform.position = targetPosition;
         isMoving = false;
 
+        // 落点补检：战斗胜利后是「先开打再走进该格」，没走过 TryMove 的分流，
+        // 所以在这里把落点上的触发器再激活一次（幂等）。
+        TriggerOnCell(transform.position);
+
         // 夹击检测
         PincerAttack.CheckPincerFormation(playerData);
+    }
+
+    /// <summary>激活指定格上的战斗门触发器（没有则什么都不做）。</summary>
+    private void TriggerOnCell(Vector3 worldPos)
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(worldPos, checkRadius, ObstacleMask);
+        foreach (Collider2D c in hits)
+        {
+            BattleTrigger trigger = c.GetComponent<BattleTrigger>();
+            if (trigger != null) trigger.Trigger();
+        }
     }
 
     /// <summary>

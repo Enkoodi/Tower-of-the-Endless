@@ -1,0 +1,3224 @@
+{
+ "tables": {
+  "terrainPrefabs": [
+   {
+    "id": 1,
+    "name": "墙",
+    "prefab": "Prefabs/Environment/Wall2.prefab"
+   },
+   {
+    "id": 2,
+    "name": "墙",
+    "prefab": "Prefabs/Environment/Wall3.prefab"
+   },
+   {
+    "id": 3,
+    "name": "墙",
+    "prefab": "Prefabs/Environment/Wall4.prefab"
+   },
+   {
+    "id": 4,
+    "name": "墙",
+    "prefab": "Prefabs/Environment/Wall5.prefab"
+   },
+   {
+    "id": 5,
+    "name": "墙",
+    "prefab": "Prefabs/Environment/Wall6.prefab"
+   }
+  ],
+  "objectPrefabs": [
+   {
+    "id": 1,
+    "name": "黄之门",
+    "prefab": "Prefabs/DoorAndStair/YellowDoor.prefab"
+   },
+   {
+    "id": 2,
+    "name": "蓝之门",
+    "prefab": "Prefabs/DoorAndStair/BlueDoor.prefab"
+   },
+   {
+    "id": 3,
+    "name": "红之门",
+    "prefab": "Prefabs/DoorAndStair/RedDoor.prefab"
+   },
+   {
+    "id": 4,
+    "name": "魂之门",
+    "prefab": "Prefabs/DoorAndStair/PsycheDoor500.prefab"
+   },
+   {
+    "id": 5,
+    "name": "魂之门",
+    "prefab": "Prefabs/DoorAndStair/PsycheDoor1000.prefab"
+   },
+   {
+    "id": 6,
+    "name": "魂之门",
+    "prefab": "Prefabs/DoorAndStair/PsycheDoor2000.prefab"
+   },
+   {
+    "id": 7,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 1.prefab"
+   },
+   {
+    "id": 8,
+    "name": "上楼梯",
+    "prefab": "Prefabs/DoorAndStair/StairUp.prefab"
+   },
+   {
+    "id": 9,
+    "name": "下楼梯",
+    "prefab": "Prefabs/DoorAndStair/StairDown.prefab"
+   },
+   {
+    "id": 10,
+    "name": "8F战斗门",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/8FBattleDoor.prefab"
+   },
+   {
+    "id": 11,
+    "name": "8F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/8FBattleTrigger.prefab"
+   },
+   {
+    "id": 12,
+    "name": "3F战斗门",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/3FBattleDoor.prefab"
+   },
+   {
+    "id": 13,
+    "name": "19F战斗门",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/19FBattleDoor.prefab"
+   },
+   {
+    "id": 14,
+    "name": "20F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/20FBattleTrigger.prefab"
+   },
+   {
+    "id": 15,
+    "name": "24F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/24FBattleDoor.prefab"
+   },
+   {
+    "id": 16,
+    "name": "25F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/25FBattleTrigger.prefab"
+   },
+   {
+    "id": 17,
+    "name": "28F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/28FBattleTrigger.prefab"
+   },
+   {
+    "id": 18,
+    "name": "4F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/4FBattleDoor.prefab"
+   },
+   {
+    "id": 19,
+    "name": "29F战斗门",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/29FBattleDoor.prefab"
+   },
+   {
+    "id": 19,
+    "name": "29F战斗门",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/29FBattleDoor.prefab"
+   },
+   {
+    "id": 20,
+    "name": "30F战斗门触发器",
+    "prefab": "Prefabs/DoorAndStair/BattleDoor/30FBattleTrigger.prefab"
+   },
+   {
+    "id": 21,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 2.prefab"
+   },
+   {
+    "id": 22,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 3.prefab"
+   },
+   {
+    "id": 23,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 4.prefab"
+   },
+   {
+    "id": 24,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 5.prefab"
+   },
+   {
+    "id": 25,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 6.prefab"
+   },
+   {
+    "id": 26,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 7.prefab"
+   },
+   {
+    "id": 27,
+    "name": "移涌之门",
+    "prefab": "Prefabs/DoorAndStair/AeonDoor 8.prefab"
+   }
+  ],
+  "enemyPrefabs": [
+   {
+    "id": 1,
+    "name": "绿史莱姆",
+    "prefab": "Prefabs/Enemies/Slime/GreenSlime.prefab"
+   },
+   {
+    "id": 2,
+    "name": "红史莱姆",
+    "prefab": "Prefabs/Enemies/Slime/RedSlime.prefab"
+   },
+   {
+    "id": 3,
+    "name": "暗影史莱姆 ",
+    "prefab": "Prefabs/Enemies/Slime/ShadowSlime.prefab"
+   },
+   {
+    "id": 4,
+    "name": "史莱姆领主 ",
+    "prefab": "Prefabs/Enemies/Slime/SlimeLord.prefab"
+   },
+   {
+    "id": 5,
+    "name": "史莱姆 ",
+    "prefab": "Prefabs/Enemies/Slime/Slime.prefab"
+   },
+   {
+    "id": 6,
+    "name": "蝙蝠 ",
+    "prefab": "Prefabs/Enemies/VampireLord/Bat.prefab"
+   },
+   {
+    "id": 7,
+    "name": "大型蝙蝠 ",
+    "prefab": "Prefabs/Enemies/VampireLord/BigBat.prefab"
+   },
+   {
+    "id": 8,
+    "name": "吸血蝙蝠 ",
+    "prefab": "Prefabs/Enemies/VampireLord/VampireBat.prefab"
+   },
+   {
+    "id": 9,
+    "name": "吸血鬼领主 ",
+    "prefab": "Prefabs/Enemies/VampireLord/VampireLord.prefab"
+   },
+   {
+    "id": 10,
+    "name": "骷髅兵 ",
+    "prefab": "Prefabs/Enemies/Undead/Skeleton.prefab"
+   },
+   {
+    "id": 11,
+    "name": "骷髅战士 ",
+    "prefab": "Prefabs/Enemies/Undead/SkeletonFighter.prefab"
+   },
+   {
+    "id": 12,
+    "name": "骷髅队长 ",
+    "prefab": "Prefabs/Enemies/Undead/SkeletonCommander.prefab"
+   },
+   {
+    "id": 13,
+    "name": "丧尸 ",
+    "prefab": "Prefabs/Enemies/Undead/Zombie.prefab"
+   },
+   {
+    "id": 14,
+    "name": "丧尸骑士 ",
+    "prefab": "Prefabs/Enemies/Undead/ZombieKnight.prefab"
+   },
+   {
+    "id": 15,
+    "name": "不死图腾 ",
+    "prefab": "Prefabs/Enemies/Undead/UndeadTotem.prefab"
+   },
+   {
+    "id": 16,
+    "name": "初级僧侣 ",
+    "prefab": "Prefabs/Enemies/GreatMagicMaster/Priest.prefab"
+   },
+   {
+    "id": 17,
+    "name": "高级僧侣 ",
+    "prefab": "Prefabs/Enemies/GreatMagicMaster/SuperiorPriest.prefab"
+   },
+   {
+    "id": 18,
+    "name": "魔术师（右） ",
+    "prefab": "Prefabs/Enemies/GreatMagicMaster/MagicianRight.prefab"
+   },
+   {
+    "id": 19,
+    "name": "魔术师（左） ",
+    "prefab": "Prefabs/Enemies/GreatMagicMaster/MagicianLeft.prefab"
+   },
+   {
+    "id": 20,
+    "name": "大魔导师 ",
+    "prefab": "Prefabs/Enemies/GreatMagicMaster/GreatMagicMaster.prefab"
+   },
+   {
+    "id": 21,
+    "name": "初级卫兵 ",
+    "prefab": "Prefabs/Enemies/GateKeeper/GateKeeperYellow.prefab"
+   },
+   {
+    "id": 22,
+    "name": "中级卫兵 ",
+    "prefab": "Prefabs/Enemies/GateKeeper/GateKeeperBlue.prefab"
+   },
+   {
+    "id": 23,
+    "name": "高级卫兵 ",
+    "prefab": "Prefabs/Enemies/GateKeeper/GateKeeperRed.prefab"
+   },
+   {
+    "id": 24,
+    "name": "战士 ",
+    "prefab": "Prefabs/Enemies/Knight/Soldier.prefab"
+   },
+   {
+    "id": 25,
+    "name": "鬼战士 ",
+    "prefab": "Prefabs/Enemies/Knight/GhostSoldier.prefab"
+   },
+   {
+    "id": 26,
+    "name": "剑士 ",
+    "prefab": "Prefabs/Enemies/Knight/Swordman.prefab"
+   },
+   {
+    "id": 27,
+    "name": "金骑士 ",
+    "prefab": "Prefabs/Enemies/Knight/GoldenKnight.prefab"
+   },
+   {
+    "id": 28,
+    "name": "绯红骑士 ",
+    "prefab": "Prefabs/Enemies/Knight/ScarletKnight.prefab"
+   },
+   {
+    "id": 29,
+    "name": "暗黑骑士 ",
+    "prefab": "Prefabs/Enemies/Knight/DarkKnight.prefab"
+   },
+   {
+    "id": 30,
+    "name": "沉睡者 ",
+    "prefab": "Prefabs/Enemies/Knight/TheSleeper.prefab"
+   },
+   {
+    "id": 31,
+    "name": "初觉者 ",
+    "prefab": "Prefabs/Enemies/Knight/TheHalfAwake.prefab"
+   },
+   {
+    "id": 32,
+    "name": "魔导师Zeno ",
+    "prefab": "Prefabs/Enemies/Knight/Zeno.prefab"
+   },
+   {
+    "id": 33,
+    "name": "朽木魔像",
+    "prefab": "Prefabs/Enemies/Golem/WitherwoodGolem.prefab"
+   },
+   {
+    "id": 34,
+    "name": "魔像",
+    "prefab": "Prefabs/Enemies/Golem/StoneGolem.prefab"
+   },
+   {
+    "id": 35,
+    "name": "冰魔像",
+    "prefab": "Prefabs/Enemies/Golem/IceGolem.prefab"
+   },
+   {
+    "id": 36,
+    "name": "齿械魔像",
+    "prefab": "Prefabs/Enemies/Golem/CogworkGolem.prefab"
+   },
+   {
+    "id": 37,
+    "name": "余烬魔像",
+    "prefab": "Prefabs/Enemies/Golem/EmberGloem.prefab"
+   },
+   {
+    "id": 38,
+    "name": "骨龙",
+    "prefab": "Prefabs/Enemies/Gragon/02_bone_dragon.prefab"
+   },
+   {
+    "id": 39,
+    "name": "冰霜巨龙",
+    "prefab": "Prefabs/Enemies/Gragon/01_frost_dragon.prefab"
+   },
+   {
+    "id": 40,
+    "name": "黄金龙",
+    "prefab": "Prefabs/Enemies/Gragon/08_gold_dragon.prefab"
+   },
+   {
+    "id": 41,
+    "name": "奇美拉",
+    "prefab": "Prefabs/Enemies/Gragon/03_chimera.prefab"
+   },
+   {
+    "id": 42,
+    "name": "棱镜龙",
+    "prefab": "Prefabs/Enemies/Gragon/10_crystal_dragon.prefab"
+   },
+   {
+    "id": 43,
+    "name": "虚空之龙",
+    "prefab": "Prefabs/Enemies/Gragon/13_void_dragon.prefab"
+   },
+   {
+    "id": 44,
+    "name": "神圣之龙",
+    "prefab": "Prefabs/Enemies/Gragon/14_angel_dragon.prefab"
+   },
+   {
+    "id": 45,
+    "name": "彩色史莱姆",
+    "prefab": "Prefabs/Enemies/Slime/ColorSlime.prefab"
+   }
+  ],
+  "itemPrefabs": [
+   {
+    "id": 1,
+    "name": "黄之钥",
+    "prefab": "Prefabs/Key/YellowKey.prefab"
+   },
+   {
+    "id": 2,
+    "name": "蓝之钥",
+    "prefab": "Prefabs/Key/BlueKey.prefab"
+   },
+   {
+    "id": 3,
+    "name": "红之钥",
+    "prefab": "Prefabs/Key/RedKey.prefab"
+   },
+   {
+    "id": 4,
+    "name": "移涌之钥",
+    "prefab": "Prefabs/Key/AeonKey.prefab"
+   },
+   {
+    "id": 5,
+    "name": "攻击力碎片",
+    "prefab": "Prefabs/Emanation/Attack1.prefab"
+   },
+   {
+    "id": 6,
+    "name": "攻击力碎片",
+    "prefab": "Prefabs/Emanation/Attack2.prefab"
+   },
+   {
+    "id": 7,
+    "name": "攻击力碎片",
+    "prefab": "Prefabs/Emanation/Attack3.prefab"
+   },
+   {
+    "id": 8,
+    "name": "防御力碎片",
+    "prefab": "Prefabs/Emanation/Defense1.prefab"
+   },
+   {
+    "id": 9,
+    "name": "防御力碎片",
+    "prefab": "Prefabs/Emanation/Defense2.prefab"
+   },
+   {
+    "id": 10,
+    "name": "防御力碎片",
+    "prefab": "Prefabs/Emanation/Defense3.prefab"
+   },
+   {
+    "id": 11,
+    "name": "魔力充能碎片",
+    "prefab": "Prefabs/Emanation/ManaCharge1.prefab"
+   },
+   {
+    "id": 12,
+    "name": "魔力充能碎片",
+    "prefab": "Prefabs/Emanation/ManaCharge2.prefab"
+   },
+   {
+    "id": 13,
+    "name": "魔力充能碎片",
+    "prefab": "Prefabs/Emanation/ManaCharge3.prefab"
+   },
+   {
+    "id": 14,
+    "name": "魔力输出碎片",
+    "prefab": "Prefabs/Emanation/ManaMax1.prefab"
+   },
+   {
+    "id": 15,
+    "name": "魔力输出碎片",
+    "prefab": "Prefabs/Emanation/ManaMax2.prefab"
+   },
+   {
+    "id": 16,
+    "name": "魔力输出碎片",
+    "prefab": "Prefabs/Emanation/ManaMax3.prefab"
+   },
+   {
+    "id": 17,
+    "name": "速度碎片",
+    "prefab": "Prefabs/Emanation/Speed1.prefab"
+   },
+   {
+    "id": 18,
+    "name": "速度碎片",
+    "prefab": "Prefabs/Emanation/Speed2.prefab"
+   },
+   {
+    "id": 19,
+    "name": "速度碎片",
+    "prefab": "Prefabs/Emanation/Speed3.prefab"
+   },
+   {
+    "id": 20,
+    "name": "祝福",
+    "prefab": "Prefabs/Emanation/Blessing.prefab"
+   },
+   {
+    "id": 21,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP1.prefab"
+   },
+   {
+    "id": 22,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP2.prefab"
+   },
+   {
+    "id": 23,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP3.prefab"
+   },
+   {
+    "id": 24,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP4.prefab"
+   },
+   {
+    "id": 25,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP5.prefab"
+   },
+   {
+    "id": 26,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP6.prefab"
+   },
+   {
+    "id": 27,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP7.prefab"
+   },
+   {
+    "id": 28,
+    "name": "生命恢复",
+    "prefab": "Prefabs/Emanation/HP8.prefab"
+   },
+   {
+    "id": 29,
+    "name": "生息剑",
+    "prefab": "Prefabs/Equipment/Sword1.prefab"
+   },
+   {
+    "id": 30,
+    "name": "魂流剑",
+    "prefab": "Prefabs/Equipment/Sword2.prefab"
+   },
+   {
+    "id": 31,
+    "name": "悲焰剑",
+    "prefab": "Prefabs/Equipment/Sword3.prefab"
+   },
+   {
+    "id": 32,
+    "name": "灵知剑",
+    "prefab": "Prefabs/Equipment/Sword4.prefab"
+   },
+   {
+    "id": 33,
+    "name": "生息盾",
+    "prefab": "Prefabs/Equipment/Shield1.prefab"
+   },
+   {
+    "id": 34,
+    "name": "魂流盾",
+    "prefab": "Prefabs/Equipment/Shield2.prefab"
+   },
+   {
+    "id": 35,
+    "name": "悲焰盾",
+    "prefab": "Prefabs/Equipment/Shield3.prefab"
+   },
+   {
+    "id": 36,
+    "name": "灵知盾",
+    "prefab": "Prefabs/Equipment/Shield4.prefab"
+   },
+   {
+    "id": 37,
+    "name": "向上传送器",
+    "prefab": "Prefabs/Equipment/UP.prefab"
+   },
+   {
+    "id": 38,
+    "name": "向下传送器",
+    "prefab": "Prefabs/Equipment/DOWN.prefab"
+   },
+   {
+    "id": 39,
+    "name": "幸运金币",
+    "prefab": "Prefabs/Emanation/LuckyCoin.prefab"
+   },
+   {
+    "id": 40,
+    "name": "祝福",
+    "prefab": "Prefabs/Emanation/BlessingBoss.prefab"
+   },
+   {
+    "id": 41,
+    "name": "神圣剑",
+    "prefab": "Prefabs/Equipment/HolySword.prefab"
+   },
+   {
+    "id": 42,
+    "name": "神圣盾",
+    "prefab": "Prefabs/Equipment/HolyShield.prefab"
+   },
+   {
+    "id": 43,
+    "name": "神圣火花",
+    "prefab": "Prefabs/Equipment/DivineSpark.prefab"
+   }
+  ],
+  "npcPrefabs": [
+   {
+    "id": 1,
+    "name": "商店",
+    "prefab": "Prefabs/NPC/Saintess1.prefab"
+   },
+   {
+    "id": 2,
+    "name": "商店",
+    "prefab": "Prefabs/NPC/Saintess2.prefab"
+   },
+   {
+    "id": 3,
+    "name": "商店",
+    "prefab": "Prefabs/NPC/Saintess3.prefab"
+   },
+   {
+    "id": 11,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/2F.prefab"
+   },
+   {
+    "id": 12,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/4F.prefab"
+   },
+   {
+    "id": 13,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/5F.prefab"
+   },
+   {
+    "id": 14,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/9F.prefab"
+   },
+   {
+    "id": 15,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/22F.prefab"
+   },
+   {
+    "id": 16,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/23F.prefab"
+   },
+   {
+    "id": 17,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/24F.prefab"
+   },
+   {
+    "id": 18,
+    "name": "老者",
+    "prefab": "Prefabs/NPC/3F 1.prefab"
+   },
+   {
+    "id": 31,
+    "name": "神秘商人",
+    "prefab": "Prefabs/NPC/7F Shop 1.prefab"
+   },
+   {
+    "id": 32,
+    "name": "神秘商人",
+    "prefab": "Prefabs/NPC/7F Shop 2.prefab"
+   },
+   {
+    "id": 33,
+    "name": "神秘商人",
+    "prefab": "Prefabs/NPC/24F Shop.prefab"
+   },
+   {
+    "id": 34,
+    "name": "神秘商人",
+    "prefab": "Prefabs/NPC/26F Shop.prefab"
+   },
+   {
+    "id": 35,
+    "name": "“神秘”商人",
+    "prefab": "Prefabs/NPC/3F Shop.prefab"
+   },
+   {
+    "id": 36,
+    "name": "神秘商人",
+    "prefab": "Prefabs/NPC/26F Shop 1.prefab"
+   },
+   {
+    "id": 51,
+    "name": "公主",
+    "prefab": "Prefabs/NPC/12.prefab"
+   },
+   {
+    "id": 71,
+    "name": "盗贼",
+    "prefab": "Prefabs/NPC/15F.prefab"
+   },
+   {
+    "id": 72,
+    "name": "盗贼",
+    "prefab": "Prefabs/NPC/3F.prefab"
+   },
+   {
+    "id": 91,
+    "name": "吸血鬼领主",
+    "prefab": "Prefabs/NPC/VampireLord.prefab"
+   },
+   {
+    "id": 92,
+    "name": "史莱姆",
+    "prefab": "Prefabs/NPC/Slime.prefab"
+   },
+   {
+    "id": 93,
+    "name": "大魔导师",
+    "prefab": "Prefabs/NPC/GreatMagicMaster.prefab"
+   },
+   {
+    "id": 94,
+    "name": "初觉者",
+    "prefab": "Prefabs/NPC/TheHalfAwake.prefab"
+   },
+   {
+    "id": 95,
+    "name": "魔王",
+    "prefab": "Prefabs/NPC/Zeno.prefab"
+   }
+  ]
+ },
+ "items": {
+  "1": {
+   "id": 1,
+   "name": "黄之钥",
+   "prefab": "Prefabs/Key/YellowKey.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "2": {
+   "id": 2,
+   "name": "蓝之钥",
+   "prefab": "Prefabs/Key/BlueKey.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "3": {
+   "id": 3,
+   "name": "红之钥",
+   "prefab": "Prefabs/Key/RedKey.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "4": {
+   "id": 4,
+   "name": "移涌之钥",
+   "prefab": "Prefabs/Key/AeonKey.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "5": {
+   "id": 5,
+   "name": "攻击力碎片",
+   "prefab": "Prefabs/Emanation/Attack1.prefab",
+   "效果": "攻击",
+   "数值": "+1",
+   "附加": "Attack 1"
+  },
+  "6": {
+   "id": 6,
+   "name": "攻击力碎片",
+   "prefab": "Prefabs/Emanation/Attack2.prefab",
+   "效果": "攻击",
+   "数值": "+2",
+   "附加": "Attack 2"
+  },
+  "7": {
+   "id": 7,
+   "name": "攻击力碎片",
+   "prefab": "Prefabs/Emanation/Attack3.prefab",
+   "效果": "攻击",
+   "数值": "+4",
+   "附加": "Attack 3"
+  },
+  "8": {
+   "id": 8,
+   "name": "防御力碎片",
+   "prefab": "Prefabs/Emanation/Defense1.prefab",
+   "效果": "防御",
+   "数值": "+2",
+   "附加": "Defense 1"
+  },
+  "9": {
+   "id": 9,
+   "name": "防御力碎片",
+   "prefab": "Prefabs/Emanation/Defense2.prefab",
+   "效果": "防御",
+   "数值": "+4",
+   "附加": "Defense 2"
+  },
+  "10": {
+   "id": 10,
+   "name": "防御力碎片",
+   "prefab": "Prefabs/Emanation/Defense3.prefab",
+   "效果": "防御",
+   "数值": "+8",
+   "附加": "Defense 3"
+  },
+  "11": {
+   "id": 11,
+   "name": "魔力充能碎片",
+   "prefab": "Prefabs/Emanation/ManaCharge1.prefab",
+   "效果": "魔力充能",
+   "数值": "+10",
+   "附加": "ManaCharge 1"
+  },
+  "12": {
+   "id": 12,
+   "name": "魔力充能碎片",
+   "prefab": "Prefabs/Emanation/ManaCharge2.prefab",
+   "效果": "魔力充能",
+   "数值": "+20",
+   "附加": "ManaCharge 2"
+  },
+  "13": {
+   "id": 13,
+   "name": "魔力充能碎片",
+   "prefab": "Prefabs/Emanation/ManaCharge3.prefab",
+   "效果": "魔力充能",
+   "数值": "+40",
+   "附加": "ManaCharge 3"
+  },
+  "14": {
+   "id": 14,
+   "name": "魔力输出碎片",
+   "prefab": "Prefabs/Emanation/ManaMax1.prefab",
+   "效果": "魔力输出",
+   "数值": "+10",
+   "附加": "ManaMax 1"
+  },
+  "15": {
+   "id": 15,
+   "name": "魔力输出碎片",
+   "prefab": "Prefabs/Emanation/ManaMax2.prefab",
+   "效果": "魔力输出",
+   "数值": "+20",
+   "附加": "ManaMax 2"
+  },
+  "16": {
+   "id": 16,
+   "name": "魔力输出碎片",
+   "prefab": "Prefabs/Emanation/ManaMax3.prefab",
+   "效果": "魔力输出",
+   "数值": "+40",
+   "附加": "ManaMax 3"
+  },
+  "17": {
+   "id": 17,
+   "name": "速度碎片",
+   "prefab": "Prefabs/Emanation/Speed1.prefab",
+   "效果": "速度",
+   "数值": "+1",
+   "附加": "Speed 1"
+  },
+  "18": {
+   "id": 18,
+   "name": "速度碎片",
+   "prefab": "Prefabs/Emanation/Speed2.prefab",
+   "效果": "速度",
+   "数值": "+2",
+   "附加": "Speed 2"
+  },
+  "19": {
+   "id": 19,
+   "name": "速度碎片",
+   "prefab": "Prefabs/Emanation/Speed3.prefab",
+   "效果": "速度",
+   "数值": "+4",
+   "附加": "Speed 3"
+  },
+  "20": {
+   "id": 20,
+   "name": "祝福",
+   "prefab": "Prefabs/Emanation/Blessing.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "21": {
+   "id": 21,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP1.prefab",
+   "效果": "生命值",
+   "数值": "+100",
+   "附加": "HP 1"
+  },
+  "22": {
+   "id": 22,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP2.prefab",
+   "效果": "生命值",
+   "数值": "+200",
+   "附加": "HP 2"
+  },
+  "23": {
+   "id": 23,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP3.prefab",
+   "效果": "生命值",
+   "数值": "+300",
+   "附加": "HP 3"
+  },
+  "24": {
+   "id": 24,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP4.prefab",
+   "效果": "生命值",
+   "数值": "+400",
+   "附加": "HP 4"
+  },
+  "25": {
+   "id": 25,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP5.prefab",
+   "效果": "生命值",
+   "数值": "+200",
+   "附加": "HP 5"
+  },
+  "26": {
+   "id": 26,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP6.prefab",
+   "效果": "生命值",
+   "数值": "+400",
+   "附加": "HP 6"
+  },
+  "27": {
+   "id": 27,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP7.prefab",
+   "效果": "生命值",
+   "数值": "+600",
+   "附加": "HP 7"
+  },
+  "28": {
+   "id": 28,
+   "name": "生命恢复",
+   "prefab": "Prefabs/Emanation/HP8.prefab",
+   "效果": "生命值",
+   "数值": "+800",
+   "附加": "HP 8"
+  },
+  "29": {
+   "id": 29,
+   "name": "生息剑",
+   "prefab": "Prefabs/Equipment/Sword1.prefab",
+   "效果": "攻击",
+   "数值": "+10",
+   "附加": "Sword1"
+  },
+  "30": {
+   "id": 30,
+   "name": "魂流剑",
+   "prefab": "Prefabs/Equipment/Sword2.prefab",
+   "效果": "攻击",
+   "数值": "+25",
+   "附加": "Sword2"
+  },
+  "31": {
+   "id": 31,
+   "name": "悲焰剑",
+   "prefab": "Prefabs/Equipment/Sword3.prefab",
+   "效果": "攻击",
+   "数值": "+50",
+   "附加": "Sword3"
+  },
+  "32": {
+   "id": 32,
+   "name": "灵知剑",
+   "prefab": "Prefabs/Equipment/Sword4.prefab",
+   "效果": "攻击",
+   "数值": "+75",
+   "附加": "Sword4"
+  },
+  "33": {
+   "id": 33,
+   "name": "生息盾",
+   "prefab": "Prefabs/Equipment/Shield1.prefab",
+   "效果": "防御",
+   "数值": "+20",
+   "附加": "Shield1"
+  },
+  "34": {
+   "id": 34,
+   "name": "魂流盾",
+   "prefab": "Prefabs/Equipment/Shield2.prefab",
+   "效果": "防御",
+   "数值": "+50",
+   "附加": "Shield2"
+  },
+  "35": {
+   "id": 35,
+   "name": "悲焰盾",
+   "prefab": "Prefabs/Equipment/Shield3.prefab",
+   "效果": "防御",
+   "数值": "+100",
+   "附加": "Shield3"
+  },
+  "36": {
+   "id": 36,
+   "name": "灵知盾",
+   "prefab": "Prefabs/Equipment/Shield4.prefab",
+   "效果": "防御",
+   "数值": "+150",
+   "附加": "Shield4"
+  },
+  "37": {
+   "id": 37,
+   "name": "向上传送器",
+   "prefab": "Prefabs/Equipment/UP.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "38": {
+   "id": 38,
+   "name": "向下传送器",
+   "prefab": "Prefabs/Equipment/DOWN.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "39": {
+   "id": 39,
+   "name": "幸运金币",
+   "prefab": "Prefabs/Emanation/LuckyCoin.prefab",
+   "效果": "金币倍率",
+   "数值": "+20",
+   "附加": "LuckyCoin"
+  },
+  "40": {
+   "id": 40,
+   "name": "祝福",
+   "prefab": "Prefabs/Emanation/BlessingBoss.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  },
+  "41": {
+   "id": 41,
+   "name": "神圣剑",
+   "prefab": "Prefabs/Equipment/HolySword.prefab",
+   "效果": "攻击",
+   "数值": "+100",
+   "附加": "魔力伤害×2"
+  },
+  "42": {
+   "id": 42,
+   "name": "神圣盾",
+   "prefab": "Prefabs/Equipment/HolyShield.prefab",
+   "效果": "防御",
+   "数值": "+200",
+   "附加": "免疫魔力光环 / 夹击"
+  },
+  "43": {
+   "id": 43,
+   "name": "神圣火花",
+   "prefab": "Prefabs/Equipment/DivineSpark.prefab",
+   "效果": "",
+   "数值": "",
+   "附加": ""
+  }
+ },
+ "enemies": [
+  {
+   "prefab": "Prefabs/Enemies/Slime/GreenSlime.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GreenSlime",
+    "名称": "\\u7EFF\\u53F2\\u83B1\\u59C6",
+    "HP": 30,
+    "攻击": 22,
+    "防御": 5,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 10,
+    "金币": 3,
+    "特殊敌人信号": ""
+   },
+   "id": 1,
+   "name": "绿史莱姆"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Slime/RedSlime.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "RedSlime",
+    "名称": "\\u7EA2\\u53F2\\u83B1\\u59C6",
+    "HP": 25,
+    "攻击": 25,
+    "防御": 5,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 20,
+    "金币": 3,
+    "特殊敌人信号": ""
+   },
+   "id": 2,
+   "name": "红史莱姆"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Slime/ShadowSlime.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "ShadowSlime",
+    "名称": "\\u6697\\u5F71\\u53F2\\u83B1\\u59C6",
+    "HP": 200,
+    "攻击": 50,
+    "防御": 20,
+    "攻击次数": 5,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 50,
+    "魔力上限": 50,
+    "速度": 55,
+    "金币": 8,
+    "特殊敌人信号": ""
+   },
+   "id": 3,
+   "name": "暗影史莱姆"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Slime/SlimeLord.prefab",
+   "battler": true,
+   "dropIds": [
+    21,
+    21,
+    21,
+    21,
+    25,
+    25,
+    11,
+    14,
+    5,
+    5,
+    5,
+    5,
+    8,
+    8,
+    8,
+    8,
+    40
+   ],
+   "stats": {
+    "资产": "SlimeLord",
+    "名称": "\\u53F2\\u83B1\\u59C6\\u738B",
+    "HP": 300,
+    "攻击": 60,
+    "防御": 10,
+    "攻击次数": 4,
+    "吸血%": 0,
+    "反伤%": 10,
+    "减伤%": 0,
+    "魔力充能": 100,
+    "魔力上限": 50,
+    "速度": 80,
+    "金币": 12,
+    "特殊敌人信号": ""
+   },
+   "id": 4,
+   "name": "史莱姆领主"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Slime/Slime.prefab",
+   "battler": true,
+   "dropIds": [
+    40
+   ],
+   "stats": {
+    "资产": "Slime",
+    "名称": "\\u53F2\\u83B1\\u59C6",
+    "HP": 500,
+    "攻击": 400,
+    "防御": 150,
+    "攻击次数": 3,
+    "吸血%": 10,
+    "反伤%": 20,
+    "减伤%": 0,
+    "魔力充能": 500,
+    "魔力上限": 100,
+    "速度": 120,
+    "金币": 250,
+    "特殊敌人信号": ""
+   },
+   "id": 5,
+   "name": "史莱姆"
+  },
+  {
+   "prefab": "Prefabs/Enemies/VampireLord/Bat.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Bat",
+    "名称": "\\u8759\\u8760",
+    "HP": 30,
+    "攻击": 40,
+    "防御": 5,
+    "攻击次数": 1,
+    "吸血%": 5,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 30,
+    "金币": 5,
+    "特殊敌人信号": ""
+   },
+   "id": 6,
+   "name": "蝙蝠"
+  },
+  {
+   "prefab": "Prefabs/Enemies/VampireLord/BigBat.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "BigBat",
+    "名称": "\\u5927\\u578B\\u8759\\u8760",
+    "HP": 150,
+    "攻击": 65,
+    "防御": 10,
+    "攻击次数": 1,
+    "吸血%": 10,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 50,
+    "金币": 9,
+    "特殊敌人信号": ""
+   },
+   "id": 7,
+   "name": "大型蝙蝠"
+  },
+  {
+   "prefab": "Prefabs/Enemies/VampireLord/VampireBat.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "VampireBat",
+    "名称": "\\u5438\\u8840\\u8759\\u8760",
+    "HP": 500,
+    "攻击": 450,
+    "防御": 175,
+    "攻击次数": 1,
+    "吸血%": 20,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 200,
+    "魔力上限": 100,
+    "速度": 140,
+    "金币": 50,
+    "特殊敌人信号": ""
+   },
+   "id": 8,
+   "name": "吸血蝙蝠"
+  },
+  {
+   "prefab": "Prefabs/Enemies/VampireLord/VampireLord.prefab",
+   "battler": true,
+   "dropIds": [
+    40,
+    40
+   ],
+   "stats": {
+    "资产": "VampireLord",
+    "名称": "\\u5438\\u8840\\u9B3C\\u9886\\u4E3B",
+    "HP": 500000,
+    "攻击": 10000,
+    "防御": 5000,
+    "攻击次数": 3,
+    "吸血%": 100,
+    "反伤%": 30,
+    "减伤%": 50,
+    "魔力充能": 20000,
+    "魔力上限": 2000,
+    "速度": 200,
+    "金币": 2000,
+    "特殊敌人信号": ""
+   },
+   "id": 9,
+   "name": "吸血鬼领主"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Undead/Skeleton.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Skeleton",
+    "名称": "\\u9AB7\\u9AC5\\u5175",
+    "HP": 50,
+    "攻击": 50,
+    "防御": 10,
+    "攻击次数": 1,
+    "吸血%": 5,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 35,
+    "金币": 5,
+    "特殊敌人信号": ""
+   },
+   "id": 10,
+   "name": "骷髅兵"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Undead/SkeletonFighter.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "SkeletonFighter",
+    "名称": "\\u9AB7\\u9AC5\\u6218\\u58EB",
+    "HP": 100,
+    "攻击": 80,
+    "防御": 15,
+    "攻击次数": 1,
+    "吸血%": 5,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 40,
+    "金币": 6,
+    "特殊敌人信号": ""
+   },
+   "id": 11,
+   "name": "骷髅战士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Undead/SkeletonCommander.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "SkeletonCommander",
+    "名称": "\\u9AB7\\u9AC5\\u961F\\u957F",
+    "HP": 150,
+    "攻击": 85,
+    "防御": 20,
+    "攻击次数": 1,
+    "吸血%": 5,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 80,
+    "金币": 8,
+    "特殊敌人信号": ""
+   },
+   "id": 12,
+   "name": "骷髅队长"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Undead/Zombie.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Zombie",
+    "名称": "\\u4E27\\u5C38",
+    "HP": 300,
+    "攻击": 165,
+    "防御": 40,
+    "攻击次数": 1,
+    "吸血%": 10,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 95,
+    "金币": 22,
+    "特殊敌人信号": ""
+   },
+   "id": 13,
+   "name": "丧尸"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Undead/ZombieKnight.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "ZombieKnight",
+    "名称": "\\u4E27\\u5C38\\u9A91\\u58EB",
+    "HP": 350,
+    "攻击": 225,
+    "防御": 50,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 70,
+    "金币": 32,
+    "特殊敌人信号": ""
+   },
+   "id": 14,
+   "name": "丧尸骑士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Undead/UndeadTotem.prefab",
+   "battler": true,
+   "dropIds": [
+    23,
+    23,
+    26,
+    27,
+    12,
+    12,
+    15,
+    15,
+    6,
+    6,
+    6,
+    6,
+    9,
+    9,
+    9,
+    9,
+    40
+   ],
+   "stats": {
+    "资产": "UndeadTotem",
+    "名称": "\\u4E0D\\u6B7B\\u56FE\\u817E",
+    "HP": 123,
+    "攻击": 321,
+    "防御": 123,
+    "攻击次数": 321,
+    "吸血%": 321,
+    "反伤%": 123,
+    "减伤%": 0,
+    "魔力充能": 321,
+    "魔力上限": 123,
+    "速度": 123,
+    "金币": 321,
+    "特殊敌人信号": ""
+   },
+   "id": 15,
+   "name": "不死图腾"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GreatMagicMaster/Priest.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Priest",
+    "名称": "\\u521D\\u7EA7\\u50E7\\u4FA3",
+    "HP": 30,
+    "攻击": 22,
+    "防御": 5,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 150,
+    "魔力上限": 50,
+    "速度": 20,
+    "金币": 10,
+    "特殊敌人信号": ""
+   },
+   "id": 16,
+   "name": "初级僧侣"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GreatMagicMaster/SuperiorPriest.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "SuperiorPriest",
+    "名称": "\\u9AD8\\u7EA7\\u50E7\\u4FA3",
+    "HP": 250,
+    "攻击": 30,
+    "防御": 50,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 1000,
+    "魔力上限": 100,
+    "速度": 50,
+    "金币": 30,
+    "特殊敌人信号": ""
+   },
+   "id": 17,
+   "name": "高级僧侣"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GreatMagicMaster/MagicianRight.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "MagicianRight",
+    "名称": "\\u9B54\\u672F\\u5E08\\u53F3",
+    "HP": 240,
+    "攻击": 60,
+    "防御": 88,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 1000,
+    "魔力上限": 75,
+    "速度": 50,
+    "金币": 65,
+    "特殊敌人信号": ""
+   },
+   "id": 18,
+   "name": "魔术师（右）"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GreatMagicMaster/MagicianLeft.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "MagicianLeft",
+    "名称": "\\u9B54\\u672F\\u5E08\\u5DE6",
+    "HP": 210,
+    "攻击": 30,
+    "防御": 66,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 1000,
+    "魔力上限": 150,
+    "速度": 144,
+    "金币": 65,
+    "特殊敌人信号": ""
+   },
+   "id": 19,
+   "name": "魔术师（左）"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GreatMagicMaster/GreatMagicMaster.prefab",
+   "battler": true,
+   "dropIds": [
+    40,
+    41,
+    42
+   ],
+   "stats": {
+    "资产": "GreatMagicMaster",
+    "名称": "\\u5927\\u9B54\\u5BFC\\u5E08",
+    "HP": 300000,
+    "攻击": 1000,
+    "防御": 1000,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 25,
+    "减伤%": 70,
+    "魔力充能": 5000000,
+    "魔力上限": 2000,
+    "速度": 175,
+    "金币": 2000,
+    "特殊敌人信号": ""
+   },
+   "id": 20,
+   "name": "大魔导师"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GateKeeper/GateKeeperYellow.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GateKeeperYellow",
+    "名称": "\\u9EC4\\u8272\\u536B\\u5175",
+    "HP": 125,
+    "攻击": 75,
+    "防御": 25,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 10,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 100,
+    "金币": 50,
+    "特殊敌人信号": ""
+   },
+   "id": 21,
+   "name": "初级卫兵"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GateKeeper/GateKeeperBlue.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GateKeeperBlue",
+    "名称": "\\u84DD\\u8272\\u536B\\u5175",
+    "HP": 250,
+    "攻击": 150,
+    "防御": 50,
+    "攻击次数": 2,
+    "吸血%": 0,
+    "反伤%": 20,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 110,
+    "金币": 100,
+    "特殊敌人信号": ""
+   },
+   "id": 22,
+   "name": "中级卫兵"
+  },
+  {
+   "prefab": "Prefabs/Enemies/GateKeeper/GateKeeperRed.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GateKeeperRed",
+    "名称": "\\u7EA2\\u8272\\u536B\\u5175",
+    "HP": 1000,
+    "攻击": 750,
+    "防御": 200,
+    "攻击次数": 3,
+    "吸血%": 0,
+    "反伤%": 40,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 130,
+    "金币": 400,
+    "特殊敌人信号": ""
+   },
+   "id": 23,
+   "name": "高级卫兵"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/Soldier.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Soldier",
+    "名称": "\\u6218\\u58EB",
+    "HP": 310,
+    "攻击": 200,
+    "防御": 60,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 20,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 110,
+    "金币": 30,
+    "特殊敌人信号": ""
+   },
+   "id": 24,
+   "name": "战士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/GhostSoldier.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GhostSoldier",
+    "名称": "\\u9B3C\\u6218\\u58EB",
+    "HP": 300,
+    "攻击": 215,
+    "防御": 50,
+    "攻击次数": 1,
+    "吸血%": 10,
+    "反伤%": 10,
+    "减伤%": 0,
+    "魔力充能": 25,
+    "魔力上限": 25,
+    "速度": 125,
+    "金币": 30,
+    "特殊敌人信号": ""
+   },
+   "id": 25,
+   "name": "鬼战士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/Swordman.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Swordman",
+    "名称": "\\u5251\\u58EB",
+    "HP": 120,
+    "攻击": 450,
+    "防御": 30,
+    "攻击次数": 4,
+    "吸血%": 20,
+    "反伤%": 0,
+    "减伤%": 0,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 165,
+    "金币": 5,
+    "特殊敌人信号": ""
+   },
+   "id": 26,
+   "name": "剑士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/GoldenKnight.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GoldenKnight",
+    "名称": "\\u91D1\\u9A91\\u58EB",
+    "HP": 200,
+    "攻击": 220,
+    "防御": 75,
+    "攻击次数": 1,
+    "吸血%": 5,
+    "反伤%": 20,
+    "减伤%": 0,
+    "魔力充能": 25,
+    "魔力上限": 25,
+    "速度": 115,
+    "金币": 45,
+    "特殊敌人信号": ""
+   },
+   "id": 27,
+   "name": "金骑士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/ScarletKnight.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "ScarletKnight",
+    "名称": "\\u7EEF\\u7EA2\\u9A91\\u58EB",
+    "HP": 300,
+    "攻击": 325,
+    "防御": 80,
+    "攻击次数": 1,
+    "吸血%": 10,
+    "反伤%": 10,
+    "减伤%": 0,
+    "魔力充能": 50,
+    "魔力上限": 25,
+    "速度": 120,
+    "金币": 55,
+    "特殊敌人信号": ""
+   },
+   "id": 28,
+   "name": "绯红骑士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/DarkKnight.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "DarkKnight",
+    "名称": "\\u6697\\u9ED1\\u9A91\\u58EB",
+    "HP": 700,
+    "攻击": 380,
+    "防御": 150,
+    "攻击次数": 2,
+    "吸血%": 20,
+    "反伤%": 40,
+    "减伤%": 0,
+    "魔力充能": 125,
+    "魔力上限": 25,
+    "速度": 145,
+    "金币": 65,
+    "特殊敌人信号": ""
+   },
+   "id": 29,
+   "name": "暗黑骑士"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/TheSleeper.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "TheSleeper",
+    "名称": "\\u6C89\\u7761\\u8005",
+    "HP": 450,
+    "攻击": 145,
+    "防御": 90,
+    "攻击次数": 2,
+    "吸血%": 0,
+    "反伤%": 10,
+    "减伤%": 0,
+    "魔力充能": 500,
+    "魔力上限": 100,
+    "速度": 120,
+    "金币": 80,
+    "特殊敌人信号": ""
+   },
+   "id": 30,
+   "name": "沉睡者"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/TheHalfAwake.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "TheHalfAwake",
+    "名称": "\\u521D\\u89C9\\u8005",
+    "HP": 750,
+    "攻击": 500,
+    "防御": 250,
+    "攻击次数": 3,
+    "吸血%": 0,
+    "反伤%": 20,
+    "减伤%": 0,
+    "魔力充能": 1000,
+    "魔力上限": 200,
+    "速度": 130,
+    "金币": 70,
+    "特殊敌人信号": ""
+   },
+   "id": 31,
+   "name": "初觉者"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Knight/Zeno.prefab",
+   "battler": true,
+   "dropIds": [
+    4,
+    40,
+    40
+   ],
+   "stats": {
+    "资产": "Zeno",
+    "名称": "\\u9B54\\u5BFC\\u5E08Zeno",
+    "HP": 10000,
+    "攻击": 1000,
+    "防御": 500,
+    "攻击次数": 3,
+    "吸血%": 30,
+    "反伤%": 30,
+    "减伤%": 30,
+    "魔力充能": 5000,
+    "魔力上限": 500,
+    "速度": 200,
+    "金币": 1000,
+    "特殊敌人信号": "Zeno"
+   },
+   "id": 32,
+   "name": "魔导师Zeno"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Golem/WitherwoodGolem.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "WitherwoodGolem",
+    "名称": "\\u673D\\u6728\\u9B54\\u50CF",
+    "HP": 100,
+    "攻击": 75,
+    "防御": 20,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 5,
+    "魔力充能": 0,
+    "魔力上限": 100,
+    "速度": 5,
+    "金币": 20,
+    "特殊敌人信号": ""
+   },
+   "id": 33,
+   "name": "朽木魔像"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Golem/StoneGolem.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "StoneGolem",
+    "名称": "\\u9B54\\u50CF",
+    "HP": 300,
+    "攻击": 320,
+    "防御": 120,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 5,
+    "魔力充能": 0,
+    "魔力上限": 100,
+    "速度": 5,
+    "金币": 35,
+    "特殊敌人信号": ""
+   },
+   "id": 34,
+   "name": "魔像"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Golem/IceGolem.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "IceGolem",
+    "名称": "\\u51B0\\u9B54\\u50CF",
+    "HP": 300,
+    "攻击": 400,
+    "防御": 135,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 15,
+    "魔力充能": 200,
+    "魔力上限": 100,
+    "速度": 5,
+    "金币": 75,
+    "特殊敌人信号": ""
+   },
+   "id": 35,
+   "name": "冰魔像"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Golem/CogworkGolem.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "CogworkGolem",
+    "名称": "\\u9F7F\\u68B0\\u9B54\\u50CF",
+    "HP": 200,
+    "攻击": 375,
+    "防御": 80,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 15,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 5,
+    "金币": 75,
+    "特殊敌人信号": ""
+   },
+   "id": 36,
+   "name": "齿械魔像"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Golem/EmberGloem.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "EmberGolem",
+    "名称": "\\u4F59\\u70EC\\u9B54\\u50CF",
+    "HP": 600,
+    "攻击": 800,
+    "防御": 400,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 10,
+    "减伤%": 30,
+    "魔力充能": 0,
+    "魔力上限": 100,
+    "速度": 5,
+    "金币": 100,
+    "特殊敌人信号": ""
+   },
+   "id": 37,
+   "name": "余烬魔像"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/02_bone_dragon.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "BoneDragon",
+    "名称": "\\u9AA8\\u9F99",
+    "HP": 350,
+    "攻击": 200,
+    "防御": 50,
+    "攻击次数": 1,
+    "吸血%": 10,
+    "反伤%": 10,
+    "减伤%": 10,
+    "魔力充能": 0,
+    "魔力上限": 0,
+    "速度": 120,
+    "金币": 50,
+    "特殊敌人信号": ""
+   },
+   "id": 38,
+   "name": "骨龙"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/01_frost_dragon.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "FrostDragon",
+    "名称": "\\u51B0\\u971C\\u5DE8\\u9F99",
+    "HP": 300,
+    "攻击": 220,
+    "防御": 50,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 10,
+    "减伤%": 10,
+    "魔力充能": 1000,
+    "魔力上限": 100,
+    "速度": 110,
+    "金币": 200,
+    "特殊敌人信号": ""
+   },
+   "id": 39,
+   "name": "冰霜巨龙"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/08_gold_dragon.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "GoldDragon",
+    "名称": "\\u9EC4\\u91D1\\u9F99",
+    "HP": 200,
+    "攻击": 450,
+    "防御": 150,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 0,
+    "减伤%": 10,
+    "魔力充能": 200,
+    "魔力上限": 100,
+    "速度": 115,
+    "金币": 2000,
+    "特殊敌人信号": ""
+   },
+   "id": 40,
+   "name": "黄金龙"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/03_chimera.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "Chimera",
+    "名称": "\\u5947\\u7F8E\\u62C9",
+    "HP": 800,
+    "攻击": 800,
+    "防御": 235,
+    "攻击次数": 3,
+    "吸血%": 15,
+    "反伤%": 15,
+    "减伤%": 15,
+    "魔力充能": 1000,
+    "魔力上限": 300,
+    "速度": 125,
+    "金币": 300,
+    "特殊敌人信号": ""
+   },
+   "id": 41,
+   "name": "奇美拉"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/10_crystal_dragon.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "CrystalDragon",
+    "名称": "\\u68F1\\u955C\\u9F99",
+    "HP": 1500,
+    "攻击": 850,
+    "防御": 200,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 50,
+    "减伤%": 30,
+    "魔力充能": 1000,
+    "魔力上限": 100,
+    "速度": 140,
+    "金币": 300,
+    "特殊敌人信号": ""
+   },
+   "id": 42,
+   "name": "棱镜龙"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/13_void_dragon.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "VoidDragon",
+    "名称": "\\u865A\\u7A7A\\u4E4B\\u9F99",
+    "HP": 750,
+    "攻击": 500,
+    "防御": 250,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 100,
+    "减伤%": 75,
+    "魔力充能": 15000,
+    "魔力上限": 300,
+    "速度": 150,
+    "金币": 500,
+    "特殊敌人信号": ""
+   },
+   "id": 43,
+   "name": "虚空之龙"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Gragon/14_angel_dragon.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "HolyDragon",
+    "名称": "\\u795E\\u5723\\u4E4B\\u9F99",
+    "HP": 10000,
+    "攻击": 5000,
+    "防御": 3500,
+    "攻击次数": 1,
+    "吸血%": 100,
+    "反伤%": 75,
+    "减伤%": 95,
+    "魔力充能": 20000,
+    "魔力上限": 2000,
+    "速度": 300,
+    "金币": 2000,
+    "特殊敌人信号": "HolyDragon"
+   },
+   "id": 44,
+   "name": "神圣之龙"
+  },
+  {
+   "prefab": "Prefabs/Enemies/Slime/ColorSlime.prefab",
+   "battler": true,
+   "dropIds": [],
+   "stats": {
+    "资产": "ColorSlime",
+    "名称": "\\u5F69\\u8272\\u53F2\\u83B1\\u59C6",
+    "HP": 1,
+    "攻击": 1,
+    "防御": 1,
+    "攻击次数": 1,
+    "吸血%": 1,
+    "反伤%": 1,
+    "减伤%": 1,
+    "魔力充能": 1,
+    "魔力上限": 1,
+    "速度": 1,
+    "金币": 1,
+    "特殊敌人信号": ""
+   },
+   "id": 45,
+   "name": "彩色史莱姆"
+  }
+ ],
+ "npcs": [
+  {
+   "prefab": "Prefabs/NPC/Saintess1.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 1,
+   "name": "商店"
+  },
+  {
+   "prefab": "Prefabs/NPC/Saintess2.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 2,
+   "name": "商店"
+  },
+  {
+   "prefab": "Prefabs/NPC/Saintess3.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 3,
+   "name": "商店"
+  },
+  {
+   "prefab": "Prefabs/NPC/2F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 11,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/4F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 12,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/5F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 13,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/9F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 14,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/22F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 15,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/23F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 16,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/24F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 17,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/3F 1.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 18,
+   "name": "老者"
+  },
+  {
+   "prefab": "Prefabs/NPC/7F Shop 1.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 31,
+   "name": "神秘商人"
+  },
+  {
+   "prefab": "Prefabs/NPC/7F Shop 2.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 32,
+   "name": "神秘商人"
+  },
+  {
+   "prefab": "Prefabs/NPC/24F Shop.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 33,
+   "name": "神秘商人"
+  },
+  {
+   "prefab": "Prefabs/NPC/26F Shop.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 34,
+   "name": "神秘商人"
+  },
+  {
+   "prefab": "Prefabs/NPC/3F Shop.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 35,
+   "name": "“神秘”商人"
+  },
+  {
+   "prefab": "Prefabs/NPC/26F Shop 1.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 36,
+   "name": "神秘商人"
+  },
+  {
+   "prefab": "Prefabs/NPC/12.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 51,
+   "name": "公主"
+  },
+  {
+   "prefab": "Prefabs/NPC/15F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 71,
+   "name": "盗贼"
+  },
+  {
+   "prefab": "Prefabs/NPC/3F.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 72,
+   "name": "盗贼"
+  },
+  {
+   "prefab": "Prefabs/NPC/VampireLord.prefab",
+   "battler": true,
+   "dropIds": [
+    40,
+    40
+   ],
+   "stats": {
+    "资产": "VampireLord",
+    "名称": "\\u5438\\u8840\\u9B3C\\u9886\\u4E3B",
+    "HP": 500000,
+    "攻击": 10000,
+    "防御": 5000,
+    "攻击次数": 3,
+    "吸血%": 100,
+    "反伤%": 30,
+    "减伤%": 50,
+    "魔力充能": 20000,
+    "魔力上限": 2000,
+    "速度": 200,
+    "金币": 2000,
+    "特殊敌人信号": ""
+   },
+   "id": 91,
+   "name": "吸血鬼领主"
+  },
+  {
+   "prefab": "Prefabs/NPC/Slime.prefab",
+   "battler": true,
+   "dropIds": [
+    40
+   ],
+   "stats": {
+    "资产": "Slime",
+    "名称": "\\u53F2\\u83B1\\u59C6",
+    "HP": 500,
+    "攻击": 400,
+    "防御": 150,
+    "攻击次数": 3,
+    "吸血%": 10,
+    "反伤%": 20,
+    "减伤%": 0,
+    "魔力充能": 500,
+    "魔力上限": 100,
+    "速度": 120,
+    "金币": 250,
+    "特殊敌人信号": ""
+   },
+   "id": 92,
+   "name": "史莱姆"
+  },
+  {
+   "prefab": "Prefabs/NPC/GreatMagicMaster.prefab",
+   "battler": true,
+   "dropIds": [
+    40,
+    41,
+    42
+   ],
+   "stats": {
+    "资产": "GreatMagicMaster",
+    "名称": "\\u5927\\u9B54\\u5BFC\\u5E08",
+    "HP": 300000,
+    "攻击": 1000,
+    "防御": 1000,
+    "攻击次数": 1,
+    "吸血%": 0,
+    "反伤%": 25,
+    "减伤%": 70,
+    "魔力充能": 5000000,
+    "魔力上限": 2000,
+    "速度": 175,
+    "金币": 2000,
+    "特殊敌人信号": ""
+   },
+   "id": 93,
+   "name": "大魔导师"
+  },
+  {
+   "prefab": "Prefabs/NPC/TheHalfAwake.prefab",
+   "battler": false,
+   "dropIds": [],
+   "stats": null,
+   "id": 94,
+   "name": "初觉者"
+  },
+  {
+   "prefab": "Prefabs/NPC/Zeno.prefab",
+   "battler": true,
+   "dropIds": [
+    4,
+    40,
+    40
+   ],
+   "stats": {
+    "资产": "Zeno",
+    "名称": "\\u9B54\\u5BFC\\u5E08Zeno",
+    "HP": 10000,
+    "攻击": 1000,
+    "防御": 500,
+    "攻击次数": 3,
+    "吸血%": 30,
+    "反伤%": 30,
+    "减伤%": 30,
+    "魔力充能": 5000,
+    "魔力上限": 500,
+    "速度": 200,
+    "金币": 1000,
+    "特殊敌人信号": "Zeno"
+   },
+   "id": 95,
+   "name": "魔王"
+  }
+ ],
+ "appear": {
+  "enemy": {
+   "44": {
+    "-6": 1
+   },
+   "34": {
+    "1": 1,
+    "6": 2
+   },
+   "12": {
+    "1": 1,
+    "4": 2,
+    "7": 1
+   },
+   "11": {
+    "1": 2,
+    "2": 1,
+    "4": 1,
+    "5": 2,
+    "7": 2
+   },
+   "6": {
+    "1": 3,
+    "2": 1,
+    "4": 1,
+    "5": 8,
+    "7": 1,
+    "9": 1,
+    "10": 4,
+    "18": 4
+   },
+   "1": {
+    "1": 3,
+    "2": 14,
+    "4": 1,
+    "5": 3,
+    "6": 4,
+    "7": 16,
+    "8": 4,
+    "9": 4,
+    "11": 1,
+    "14": 1,
+    "17": 6,
+    "18": 3
+   },
+   "33": {
+    "1": 2,
+    "2": 1
+   },
+   "2": {
+    "1": 2,
+    "2": 2,
+    "4": 1,
+    "6": 4,
+    "7": 4,
+    "8": 4,
+    "9": 2,
+    "18": 4
+   },
+   "10": {
+    "1": 1,
+    "2": 1,
+    "4": 3,
+    "5": 5,
+    "6": 4,
+    "7": 2,
+    "9": 2,
+    "10": 2
+   },
+   "3": {
+    "1": 2,
+    "6": 4,
+    "7": 2,
+    "8": 4,
+    "9": 2,
+    "10": 2,
+    "18": 4
+   },
+   "23": {
+    "3": 2,
+    "29": 2
+   },
+   "38": {
+    "4": 1,
+    "21": 4
+   },
+   "21": {
+    "4": 2
+   },
+   "7": {
+    "4": 1,
+    "6": 3,
+    "9": 2,
+    "18": 1
+   },
+   "16": {
+    "4": 1,
+    "5": 2,
+    "6": 1,
+    "7": 1,
+    "9": 2,
+    "17": 1
+   },
+   "4": {
+    "8": 1
+   },
+   "17": {
+    "9": 3,
+    "19": 1,
+    "21": 2,
+    "23": 1
+   },
+   "27": {
+    "9": 1,
+    "22": 1,
+    "23": 1,
+    "24": 1,
+    "27": 4
+   },
+   "8": {
+    "10": 2,
+    "18": 1,
+    "26": 1,
+    "27": 4,
+    "28": 1
+   },
+   "25": {
+    "10": 1,
+    "11": 1,
+    "19": 1,
+    "21": 2,
+    "22": 3,
+    "24": 1,
+    "25": 12
+   },
+   "13": {
+    "10": 1,
+    "17": 1,
+    "19": 1,
+    "25": 11
+   },
+   "28": {
+    "11": 1,
+    "24": 2,
+    "26": 4,
+    "27": 10
+   },
+   "24": {
+    "11": 1,
+    "19": 1,
+    "21": 2,
+    "22": 2,
+    "23": 1,
+    "24": 1
+   },
+   "29": {
+    "16": 1,
+    "27": 7,
+    "28": 2
+   },
+   "26": {
+    "17": 1,
+    "19": 1,
+    "22": 2,
+    "23": 1,
+    "24": 1,
+    "26": 2,
+    "27": 5,
+    "28": 2
+   },
+   "22": {
+    "19": 2
+   },
+   "39": {
+    "19": 1
+   },
+   "14": {
+    "19": 1,
+    "21": 2,
+    "24": 1,
+    "25": 10
+   },
+   "36": {
+    "21": 4,
+    "22": 1
+   },
+   "19": {
+    "22": 2,
+    "23": 1,
+    "24": 1,
+    "27": 5
+   },
+   "35": {
+    "22": 2
+   },
+   "41": {
+    "23": 1
+   },
+   "18": {
+    "24": 1,
+    "27": 5
+   },
+   "15": {
+    "25": 1
+   },
+   "42": {
+    "26": 1
+   },
+   "30": {
+    "26": 2,
+    "27": 18
+   },
+   "31": {
+    "27": 4,
+    "28": 4,
+    "30": 6
+   },
+   "37": {
+    "27": 4,
+    "28": 3
+   },
+   "43": {
+    "29": 1
+   },
+   "45": {
+    "29": 1
+   },
+   "40": {
+    "31": 1
+   }
+  },
+  "npc": {
+   "94": {
+    "-1": 2,
+    "-2": 4,
+    "-3": 6,
+    "-4": 8,
+    "-5": 10,
+    "-6": 12,
+    "-7": 14
+   },
+   "11": {
+    "2": 1
+   },
+   "1": {
+    "2": 1
+   },
+   "72": {
+    "3": 1
+   },
+   "18": {
+    "3": 1
+   },
+   "35": {
+    "3": 1
+   },
+   "12": {
+    "4": 1
+   },
+   "13": {
+    "5": 1
+   },
+   "91": {
+    "6": 1
+   },
+   "32": {
+    "7": 1
+   },
+   "31": {
+    "7": 1
+   },
+   "14": {
+    "9": 1
+   },
+   "92": {
+    "12": 1
+   },
+   "71": {
+    "15": 1
+   },
+   "93": {
+    "20": 1
+   },
+   "15": {
+    "22": 1
+   },
+   "2": {
+    "23": 1
+   },
+   "16": {
+    "23": 1
+   },
+   "17": {
+    "24": 1
+   },
+   "33": {
+    "24": 1
+   },
+   "34": {
+    "26": 1
+   },
+   "36": {
+    "26": 1
+   },
+   "3": {
+    "29": 1
+   },
+   "51": {
+    "29": 1
+   },
+   "95": {
+    "30": 1
+   }
+  },
+  "item": {
+   "43": {
+    "-7": 1
+   },
+   "39": {
+    "0": 1
+   },
+   "14": {
+    "1": 1,
+    "6": 1,
+    "7": 1
+   },
+   "2": {
+    "1": 1,
+    "2": 1,
+    "4": 2,
+    "6": 1,
+    "7": 2,
+    "16": 1,
+    "22": 2,
+    "23": 2,
+    "24": 2,
+    "26": 1,
+    "28": 4,
+    "31": 10
+   },
+   "1": {
+    "1": 3,
+    "2": 13,
+    "4": 6,
+    "5": 2,
+    "6": 6,
+    "7": 4,
+    "10": 1,
+    "11": 1,
+    "19": 2,
+    "22": 8,
+    "23": 5,
+    "24": 10,
+    "26": 10,
+    "28": 6,
+    "31": 14
+   },
+   "21": {
+    "1": 6,
+    "2": 4,
+    "4": 6,
+    "5": 6,
+    "6": 6,
+    "7": 2
+   },
+   "25": {
+    "1": 1,
+    "2": 4,
+    "3": 6,
+    "4": 2,
+    "6": 2
+   },
+   "17": {
+    "1": 3,
+    "5": 2,
+    "7": 2,
+    "19": 2
+   },
+   "5": {
+    "1": 4,
+    "2": 1,
+    "3": 6,
+    "4": 3,
+    "5": 1,
+    "6": 3,
+    "7": 2,
+    "18": 1
+   },
+   "8": {
+    "1": 4,
+    "2": 2,
+    "3": 6,
+    "4": 2,
+    "5": 1,
+    "6": 3,
+    "7": 2
+   },
+   "6": {
+    "2": 1,
+    "9": 2,
+    "10": 2,
+    "11": 4,
+    "13": 1,
+    "17": 1,
+    "19": 2,
+    "21": 2,
+    "22": 6,
+    "23": 4,
+    "24": 5
+   },
+   "11": {
+    "2": 1,
+    "6": 1,
+    "7": 1
+   },
+   "33": {
+    "4": 1
+   },
+   "3": {
+    "4": 1,
+    "11": 1,
+    "20": 2,
+    "22": 1,
+    "26": 1,
+    "28": 1
+   },
+   "20": {
+    "4": 1,
+    "15": 1,
+    "20": 4,
+    "23": 1,
+    "26": 1,
+    "28": 1,
+    "29": 3
+   },
+   "29": {
+    "7": 1
+   },
+   "9": {
+    "9": 1,
+    "11": 1,
+    "13": 1,
+    "17": 2,
+    "18": 1,
+    "19": 2,
+    "21": 2,
+    "22": 6,
+    "23": 3,
+    "24": 5,
+    "26": 3
+   },
+   "22": {
+    "9": 3,
+    "11": 1,
+    "17": 2,
+    "18": 3
+   },
+   "26": {
+    "11": 1,
+    "16": 2
+   },
+   "18": {
+    "11": 2,
+    "13": 1,
+    "21": 2,
+    "22": 6,
+    "23": 1
+   },
+   "15": {
+    "11": 1,
+    "13": 1,
+    "21": 1,
+    "22": 2,
+    "23": 1
+   },
+   "12": {
+    "13": 1,
+    "21": 1,
+    "23": 1
+   },
+   "30": {
+    "14": 1
+   },
+   "34": {
+    "15": 1
+   },
+   "27": {
+    "19": 1,
+    "21": 6,
+    "22": 2,
+    "23": 4,
+    "24": 6
+   },
+   "23": {
+    "19": 3,
+    "20": 4,
+    "23": 4,
+    "24": 2
+   },
+   "35": {
+    "22": 1
+   },
+   "31": {
+    "24": 1
+   },
+   "7": {
+    "26": 7,
+    "28": 8,
+    "31": 10
+   },
+   "28": {
+    "26": 2,
+    "28": 7,
+    "31": 6
+   },
+   "24": {
+    "26": 8,
+    "28": 15,
+    "31": 22
+   },
+   "10": {
+    "26": 1,
+    "28": 8,
+    "31": 10
+   },
+   "13": {
+    "26": 1,
+    "28": 3,
+    "29": 2,
+    "31": 3
+   },
+   "19": {
+    "26": 1,
+    "28": 4,
+    "31": 3
+   },
+   "16": {
+    "26": 1,
+    "28": 3,
+    "29": 1,
+    "31": 3
+   },
+   "36": {
+    "27": 1
+   },
+   "32": {
+    "28": 1
+   }
+  },
+  "object": {
+   "9": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "0": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1,
+    "6": 1,
+    "7": 1,
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1,
+    "12": 1,
+    "13": 1,
+    "14": 1,
+    "15": 1,
+    "16": 1,
+    "17": 1,
+    "18": 1,
+    "19": 1,
+    "20": 1,
+    "21": 1,
+    "22": 1,
+    "23": 1,
+    "24": 1,
+    "25": 1,
+    "26": 1,
+    "27": 1,
+    "28": 1,
+    "29": 1,
+    "30": 1,
+    "31": 1
+   },
+   "21": {
+    "-1": 1
+   },
+   "8": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "0": 1,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1,
+    "6": 1,
+    "7": 1,
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1,
+    "12": 1,
+    "13": 1,
+    "14": 1,
+    "15": 1,
+    "16": 1,
+    "17": 1,
+    "18": 1,
+    "19": 1,
+    "20": 1,
+    "21": 1,
+    "22": 1,
+    "23": 1,
+    "24": 1,
+    "25": 1,
+    "26": 1,
+    "27": 1,
+    "28": 1,
+    "29": 1
+   },
+   "22": {
+    "-2": 1
+   },
+   "23": {
+    "-3": 1
+   },
+   "24": {
+    "-4": 1
+   },
+   "25": {
+    "-5": 1
+   },
+   "26": {
+    "-6": 1
+   },
+   "27": {
+    "-7": 1
+   },
+   "1": {
+    "1": 3,
+    "2": 8,
+    "4": 7,
+    "5": 2,
+    "6": 7,
+    "7": 6,
+    "19": 3,
+    "21": 4,
+    "22": 12,
+    "23": 6,
+    "24": 5,
+    "26": 8,
+    "28": 4
+   },
+   "5": {
+    "3": 1,
+    "14": 11,
+    "24": 1
+   },
+   "12": {
+    "3": 8
+   },
+   "18": {
+    "4": 1
+   },
+   "4": {
+    "4": 1
+   },
+   "2": {
+    "4": 1,
+    "5": 2,
+    "6": 2,
+    "7": 3,
+    "19": 4,
+    "21": 4,
+    "23": 1,
+    "24": 2,
+    "26": 1,
+    "28": 1
+   },
+   "11": {
+    "8": 1
+   },
+   "3": {
+    "8": 1,
+    "20": 2,
+    "25": 1,
+    "28": 1,
+    "30": 1
+   },
+   "13": {
+    "19": 1
+   },
+   "14": {
+    "20": 1
+   },
+   "6": {
+    "23": 2,
+    "26": 1,
+    "28": 1,
+    "29": 1
+   },
+   "15": {
+    "24": 1
+   },
+   "16": {
+    "25": 1
+   },
+   "17": {
+    "28": 1
+   },
+   "19": {
+    "29": 1
+   },
+   "7": {
+    "30": 1
+   },
+   "20": {
+    "30": 1
+   }
+  }
+ },
+ "floorNames": {
+  "-1": "第-1层",
+  "-2": "第-2层",
+  "-3": "第-3层",
+  "-4": "第-4层",
+  "-5": "第-5层",
+  "-6": "第-6层",
+  "-7": "第-7层",
+  "0": "第0层",
+  "1": "第1层",
+  "2": "第2层",
+  "3": "第3层",
+  "4": "第4层",
+  "5": "第5层",
+  "6": "第6层",
+  "7": "第7层",
+  "8": "第8层",
+  "9": "第9层",
+  "10": "第10层",
+  "11": "第11层",
+  "12": "第12层",
+  "13": "第13层",
+  "14": "第14层",
+  "15": "第15层",
+  "16": "第16层",
+  "17": "第17层",
+  "18": "第18层",
+  "19": "第19层",
+  "20": "第20层",
+  "21": "第21层",
+  "22": "第22层",
+  "23": "第23层",
+  "24": "第24层",
+  "25": "第25层",
+  "26": "第26层",
+  "27": "第27层",
+  "28": "第28层",
+  "29": "第29层",
+  "30": "第30层",
+  "31": "第31层"
+ }
+}

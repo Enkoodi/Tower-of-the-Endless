@@ -43,6 +43,10 @@ public class DialogueTrigger : MonoBehaviour
     [Header("选项2逻辑（选择<选项2>时触发，挂载目标脚本的方法）")]
     [SerializeField] private UnityEvent onChoice2;
 
+    [Header("选项后续对话（-1=结束对话；>=0=点击后从该句继续。该选项若开战，则改到战斗胜利后再继续）")]
+    [SerializeField] private int choice1NextLineIndex = -1;
+    [SerializeField] private int choice2NextLineIndex = -1;
+
     /// <summary>在地图网格中的坐标（由MapGenerator在生成时设置）</summary>
     [HideInInspector] public Vector2Int gridPosition;
 
@@ -55,4 +59,6 @@ public class DialogueTrigger : MonoBehaviour
     public string Choice2Text => choice2Text;
     public UnityEvent OnChoice1 => onChoice1;
     public UnityEvent OnChoice2 => onChoice2;
+    public int Choice1NextLineIndex => choice1NextLineIndex;
+    public int Choice2NextLineIndex => choice2NextLineIndex;
 }

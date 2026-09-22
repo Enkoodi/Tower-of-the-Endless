@@ -92,5 +92,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   doorPrefab: {fileID: 6778320178882896130, guid: cf08a6d486d2dbf4bb1edbc09e0d0cea, type: 3}
   spawnPositions:
-  - {x: 8, y: 8}
+  - {x: 8, y: 10}
   floorNumber: 0

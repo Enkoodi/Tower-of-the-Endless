@@ -75,6 +75,9 @@ public class BattleManager : MonoBehaviour
     /// <summary>战斗是否正在进行（战斗窗口打开时为 true），供按键输入锁定使用。</summary>
     public bool IsFighting => isFighting;
 
+    /// <summary>最近一场战斗是否胜利。供需要按结果分支的系统读取（如 NPC 对话的战后续接）。</summary>
+    public bool LastBattleWon { get; private set; }
+
     private int turnCount = 1;
     private System.Action<bool> onBattleEnd;
 
@@ -379,6 +382,7 @@ public class BattleManager : MonoBehaviour
 
         // 界面已经消失，这时才真正解除锁定
         isFighting = false;
+        LastBattleWon = won;
         OnBattleClose?.Invoke();
         onBattleEnd?.Invoke(won);
         onBattleEnd = null;

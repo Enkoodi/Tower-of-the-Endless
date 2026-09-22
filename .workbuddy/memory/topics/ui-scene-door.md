@@ -67,6 +67,19 @@
   读档 / 重返楼层的恢复流程 = `false` 直接撤掉。
 - 重返楼层时 `MapGenerator.SpawnObject` 本来就会跳过「记忆里已开」的门，所以不会残留动画。
 
+### 战斗触发器的分流约定（2026-09-22 修「同格不触发」）
+- `BattleTrigger`（物体 id 11/14/16/17/20/28）不阻挡通行，**不参与 `TryMove` 的占位物分流**：
+  `PlayerMove.TryMove` 遍历命中先激活所有触发器（`Trigger()` 自带幂等），
+  `hit` = 第一个非触发器。**别再回到 `hit = hits[0]`** —— `OverlapCircleAll` 顺序不确定，
+  同格只处理一个：敌人先被取到就永远走不到触发器那一支（27F 的 bug），
+  触发器先被取到则玩家直接穿过敌人不打架。
+- `SmoothMove` 落点还会 `TriggerOnCell()` 补检一次，覆盖「战斗胜利后走进该格」这条路
+  （`OnBattleEnd` 是先开打、再 SmoothMove 走进去，不经过 TryMove）。
+- 门优先分支（`DoorController` 早退）**保持不动**：门挡着时不激活触发器是既定设计。
+- 全地图同格叠加只有 2 处：27F (5,11) 触发器+敌人 18、`floor_-07` (8,0) 门+神圣火花。
+  查这类问题用 `.workbuddy/tools/map_cell_conflicts.py`（同格叠加普查）和
+  `.workbuddy/tools/battle_trigger_overlap.py`（触发器位置 + spawnPositions + 需求敌人）。
+
 ## DataCanvas HUD 的绑定约定（2026-09-21 改名后）
 
 `PlayerHUD`（挂 DataCanvas）**不再按下标绑定，改为按节点名查找**（`panel.Find("HPText")`）。

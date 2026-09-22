@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
   m_Name: UndeadTotem
   m_EditorClassIdentifier: 
-  enemyName: ???
+  enemyName: "\u4E0D\u6B7B\u56FE\u817E"
   enemySprite: {fileID: 21300000, guid: c1bb7eff4c4becc47851e74b34e7e34e, type: 3}
   hp: 123
   attack: 321
@@ -25,3 +25,4 @@ MonoBehaviour:
   manaMax: 123
   speed: 123
   goldReward: 321
+  specialEnemyId: 

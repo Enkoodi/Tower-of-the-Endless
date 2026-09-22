@@ -166,6 +166,10 @@ MonoBehaviour:
     content: "\u4EFB\u4F55\u751F\u7269\u90FD\u4F1A\u6709\u60F3\u8981\u6210\u4E3A\u7279\u522B\u7684\u5B58\u5728\uFF0C\u53F2\u83B1\u59C6\u4E5F\u4E0D\u4F8B\u5916"
     showChoices: 1
     nextLineIndex: -1
+  - speakerName: "\u53F2\u83B1\u59C6"
+    content: "\u6211..\u4E0D\u662F\u7279\u522B\u7684...\u5417"
+    showChoices: 1
+    nextLineIndex: -1
   entryBranches: []
   choice1Text: "\u6218\u6597"
   choice2Text: "\u79BB\u5F00"
@@ -187,6 +191,8 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: 1
+  choice2NextLineIndex: -1
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-417152862202691173
