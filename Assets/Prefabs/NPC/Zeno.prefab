@@ -185,7 +185,7 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"
-    content: "\u65E2\u7136\u4F60\u6765\u5230\u4E86\u8FD9\u91CC\uFF0C\u90A3\u4E48\u5F00\u59CB\u5427"
+    content: "\u65E2\u7136\u4F60\u90FD\u80FD\u6765\u5230\u8FD9\u91CC\u4E86\uFF0C\u90A3\u4E48\u4E0D\u5E9F\u8BDD\u76F4\u63A5\u5F00\u59CB\u5427"
     showChoices: 1
     nextLineIndex: -2
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"

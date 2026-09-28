@@ -25,4 +25,4 @@ MonoBehaviour:
   manaMax: 100
   speed: 120
   goldReward: 300
-  specialEnemyId: 
+  specialEnemyId: Slime

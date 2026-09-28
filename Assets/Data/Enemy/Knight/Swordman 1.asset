@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
-  m_Name: Swordman
+  m_Name: Swordman 1
   m_EditorClassIdentifier: 
-  enemyName: "\u5251\u58EB"
+  enemyName: "\u6D41\u6D6A\u5251\u58EB"
   enemySprite: {fileID: 21300000, guid: b29903b35c0d59d4d8063c6e0b82c7bb, type: 3}
-  hp: 120
-  attack: 450
-  defense: 30
-  attackCount: 4
+  hp: 200
+  attack: 550
+  defense: 20
+  attackCount: 5
   lifeSteal: 20
   reflectDamage: 0
   damageReduction: 0
   manaCharge: 0
   manaMax: 0
-  speed: 165
-  goldReward: 25
-  specialEnemyId: 
+  speed: 175
+  goldReward: 5
+  specialEnemyId: Swordman

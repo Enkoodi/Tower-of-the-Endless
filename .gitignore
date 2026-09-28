@@ -86,6 +86,10 @@ reasonix.toml
 .aider*
 .ai/
 
+# === WorkBuddy 工作区数据（记忆 / 备份 / 工具 / 报表，不上传） ===
+/.workbuddy/
+/.workbuddy-ai/
+
 # === IDE / Editor ===
 .vscode/
 .idea/
