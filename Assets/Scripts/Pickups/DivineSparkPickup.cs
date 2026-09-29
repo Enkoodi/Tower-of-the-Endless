@@ -6,13 +6,34 @@ using UnityEngine;
 /// 并触发游戏真结局片尾 ED。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class DivineSparkPickup : MonoBehaviour
+public class DivineSparkPickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public Vector2Int gridPosition;
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：效果型道具，不能出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        Debug.LogWarning("[DivineSparkPickup] 神圣火花是效果型道具，不能出售");
+        return false;
+    }
+
+
+    /// <summary>IPurchasable：只加数量，不触发片尾 ED —— 商店买到 ≠ 在地图上找到。</summary>
+    public void ApplyPurchase(PlayerData player, int amount)
+    {
+        SaveManager.Instance?.AddDivineSpark(Mathf.Abs(amount));
+    }
 
     private void Awake()
     {

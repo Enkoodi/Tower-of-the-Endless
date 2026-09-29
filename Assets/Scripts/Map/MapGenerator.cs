@@ -390,28 +390,7 @@ public class MapGenerator : MonoBehaviour
         GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
         obj.name = entry.displayName;
 
-        // 如果是门，设置网格坐标和楼层编号
-        DoorController door = obj.GetComponent<DoorController>();
-        if (door != null)
-        {
-            door.gridPosition = gridPos;
-            door.floorNumber = floor;
-        }
-
-        // 如果是战斗门，设置网格坐标和楼层编号
-        BattleDoorController battleDoor = obj.GetComponent<BattleDoorController>();
-        if (battleDoor != null)
-        {
-            battleDoor.gridPosition = gridPos;
-            battleDoor.floorNumber = floor;
-        }
-
-        // 如果是战斗触发器，设置楼层编号
-        BattleTrigger battleTrigger = obj.GetComponent<BattleTrigger>();
-        if (battleTrigger != null)
-        {
-            battleTrigger.floorNumber = floor;
-        }
+        ApplyFloorInfo(obj, gridPos, floor);
     }
 
     private void SpawnEnemy(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -421,7 +400,7 @@ public class MapGenerator : MonoBehaviour
         FloorMemoryManager mgr = FloorMemoryManager.Instance;
         FloorState state = mgr?.GetState(floor);
 
-        if (state != null && state.IsEnemyDefeated(gridPos))
+        if (state != null && state.IsEntityCleared(gridPos))
         {
             // 敌人已击败 — 通过 DropManager 复活尚未被拾取的掉落物
             if (enemyMap != null && enemyMap.TryGetValue(id, out PrefabEntry entry) && entry.prefab != null)
@@ -440,12 +419,7 @@ public class MapGenerator : MonoBehaviour
         GameObject obj = Instantiate(entry2.prefab, worldPos, Quaternion.identity, mapContainer);
         obj.name = entry2.displayName;
 
-        EnemyController ec = obj.GetComponent<EnemyController>();
-        if (ec != null)
-        {
-            ec.gridPosition = gridPos;
-            ec.floorNumber = floor;
-        }
+        ApplyFloorInfo(obj, gridPos, floor);
     }
 
     private void SpawnItem(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -465,32 +439,10 @@ public class MapGenerator : MonoBehaviour
         GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
         obj.name = entry.displayName;
 
-        KeyPickup kp = obj.GetComponent<KeyPickup>();
-        if (kp != null) { kp.gridPosition = gridPos; kp.floorNumber = floor; }
-
-        StatBoostPickup sb = obj.GetComponent<StatBoostPickup>();
-        if (sb != null) { sb.gridPosition = gridPos; sb.floorNumber = floor; }
-
-        BlessingPickup bp = obj.GetComponent<BlessingPickup>();
-        if (bp != null) { bp.gridPosition = gridPos; bp.floorNumber = floor; }
-
-        FloorUpTeleporter ut = obj.GetComponent<FloorUpTeleporter>();
-        if (ut != null) { ut.gridPosition = gridPos; ut.floorNumber = floor; }
-
-        FloorDownTeleporter dt = obj.GetComponent<FloorDownTeleporter>();
-        if (dt != null) { dt.gridPosition = gridPos; dt.floorNumber = floor; }
-
-        AegisAmuletPickup amulet = obj.GetComponent<AegisAmuletPickup>();
-        if (amulet != null) { amulet.gridPosition = gridPos; amulet.floorNumber = floor; }
-
-        MagicAmplifierPickup amplifier = obj.GetComponent<MagicAmplifierPickup>();
-        if (amplifier != null) { amplifier.gridPosition = gridPos; amplifier.floorNumber = floor; }
-
-        EnemyHalveItemPickup halveItem = obj.GetComponent<EnemyHalveItemPickup>();
-        if (halveItem != null) { halveItem.gridPosition = gridPos; halveItem.floorNumber = floor; }
-
-        DivineSparkPickup divineSpark = obj.GetComponent<DivineSparkPickup>();
-        if (divineSpark != null) { divineSpark.gridPosition = gridPos; divineSpark.floorNumber = floor; }
+        // 「楼层 + 网格坐标」的写入收敛到 DropManager.SetPickupInfo 一处。
+        // 原先这里和 DropManager 各维护一份拾取物类型清单，掉落物走的是 DropManager 那份、
+        // 地图预置物走的是这份，两边一不同步就会出现「掉落物重返楼层重复刷出」。
+        DropManager.SetPickupInfo(obj, gridPos, floor);
     }
 
     private void SpawnNpc(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -505,7 +457,7 @@ public class MapGenerator : MonoBehaviour
 
         // 若该NPC已被移除（记忆），跳过生成；但需复活尚未被拾取的掉落物
         FloorState state = FloorMemoryManager.Instance?.GetState(floor);
-        if (state != null && state.IsNpcRemoved(gridPos))
+        if (state != null && state.IsEntityCleared(gridPos))
         {
             if (entry.prefab != null)
             {
@@ -517,34 +469,23 @@ public class MapGenerator : MonoBehaviour
         GameObject obj = Instantiate(entry.prefab, worldPos, Quaternion.identity, mapContainer);
         obj.name = entry.displayName;
 
-        NPCController npc = obj.GetComponent<NPCController>();
-        if (npc != null)
-        {
-            npc.gridPosition = gridPos;
-            npc.floorNumber = floor;
-        }
+        ApplyFloorInfo(obj, gridPos, floor);
+    }
 
-        // 这些组件可能挂在子物体上，用 GetComponentInChildren 更稳健
-        NpcRemover remover = obj.GetComponentInChildren<NpcRemover>();
-        if (remover != null)
-        {
-            remover.gridPosition = gridPos;
-            remover.floorNumber = floor;
-        }
+    /// <summary>
+    /// 把「我在第几层、第几格」写给对象上**所有**实现 IFloorEntity 的组件（含子物体）。
+    ///
+    /// 这是全工程唯一的楼层坐标写入口。原先每个 Spawn 方法各维护一份组件清单，
+    /// 清单之间互不相通 —— 预制体一旦跨层使用（如 enemies 层的 VampireLord 挂的是
+    /// NpcBattler 而非 EnemyController）就会漏写，坐标停在默认 (0,0) / 0，
+    /// 击败后往第 0 层记了一笔，重返本层就「复活」。
+    /// </summary>
+    private static void ApplyFloorInfo(GameObject obj, Vector2Int gridPos, int floor)
+    {
+        if (obj == null) return;
 
-        DialogueTrigger trigger = obj.GetComponentInChildren<DialogueTrigger>();
-        if (trigger != null)
-        {
-            trigger.gridPosition = gridPos;
-            trigger.floorNumber = floor;
-        }
-
-        NpcBattler battler = obj.GetComponentInChildren<NpcBattler>();
-        if (battler != null)
-        {
-            battler.gridPosition = gridPos;
-            battler.floorNumber = floor;
-        }
+        foreach (IFloorEntity entity in obj.GetComponentsInChildren<IFloorEntity>(true))
+            entity.SetFloorInfo(gridPos, floor);
     }
 
     /// <summary>从查找表中取出对应的 PrefabEntry 并实例化，返回实例化的 GameObject（失败返回 null）</summary>
@@ -668,11 +609,11 @@ public class MapGenerator : MonoBehaviour
         GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity, mapContainer);
         obj.name = $"{prefab.name}_({gridPos.x},{gridPos.y})";
 
+        ApplyFloorInfo(obj, gridPos, floor);
+
         BattleDoorController door = obj.GetComponent<BattleDoorController>();
         if (door != null)
         {
-            door.gridPosition = gridPos;
-            door.floorNumber = floor;
             door.Initialize();
         }
         else
@@ -715,7 +656,7 @@ public class MapGenerator : MonoBehaviour
 
                 // 该格子的敌人已被击败则跳过；同一类型其它格子可能仍存活
                 Vector2Int pos = new Vector2Int(x, y);
-                if (state != null && state.IsEnemyDefeated(pos)) continue;
+                if (state != null && state.IsEntityCleared(pos)) continue;
 
                 seen.Add(id);
                 ids.Add(id);
@@ -752,7 +693,7 @@ public class MapGenerator : MonoBehaviour
 
                 // 该格子的NPC已被移除（战斗胜利后消失）则跳过
                 Vector2Int pos = new Vector2Int(x, y);
-                if (state != null && state.IsNpcRemoved(pos)) continue;
+                if (state != null && state.IsEntityCleared(pos)) continue;
 
                 seen.Add(battler.Stats);
                 result.Add(battler.Stats);

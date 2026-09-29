@@ -5,7 +5,7 @@ using UnityEngine;
 /// 玩家拾取后弹出祝福选择面板，选择后销毁此对象。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class BlessingPickup : MonoBehaviour
+public class BlessingPickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("数据引用")]
     [SerializeField] private Sprite blessingSprite;
@@ -18,6 +18,32 @@ public class BlessingPickup : MonoBehaviour
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：效果型道具，不能出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        Debug.LogWarning("[BlessingPickup] 祝福是效果型道具，不能出售");
+        return false;
+    }
+
+
+    /// <summary>IPurchasable：弹出祝福选择面板（数量不适用）。</summary>
+    public void ApplyPurchase(PlayerData player, int amount)
+    {
+        if (BlessingManager.Instance == null)
+        {
+            Debug.LogError("[BlessingPickup] BlessingManager 不存在！");
+            return;
+        }
+        BlessingManager.Instance.ShowWithPool(player, overridePool);
+    }
 
     public BlessingPool OverridePool => overridePool;
 

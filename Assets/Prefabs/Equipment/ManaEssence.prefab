@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3187541951279467748}
   - component: {fileID: 7187212697500288183}
   - component: {fileID: 2358089097146104149}
+  - component: {fileID: 8402915736104827395}
   m_Layer: 10
   m_Name: ManaEssence
   m_TagString: Untagged
@@ -130,3 +131,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &8402915736104827395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979639868013418241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dd1304fd02145d280d97af8c6bf2e58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupSprite: {fileID: 21300000, guid: 5403ac5f3216e8642b51c042cd79934f, type: 3}
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0

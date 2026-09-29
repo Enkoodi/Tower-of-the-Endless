@@ -5,13 +5,20 @@ using UnityEngine;
 /// 与NPC对话结束后玩家点击选项触发（由 DialogueTrigger 的 OnChoice1/OnChoice2 绑定）。
 /// 移除自身并写入楼层记忆，重返该楼层时该NPC不再生成。
 /// </summary>
-public class NpcRemover : MonoBehaviour
+public class NpcRemover : MonoBehaviour, IFloorEntity
 {
     /// <summary>在地图网格中的坐标（由MapGenerator生成时设置，或运行时从DialogueTrigger同步）</summary>
     [HideInInspector] public Vector2Int gridPosition;
 
     /// <summary>所属楼层编号</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     /// <summary>供 UnityEvent 绑定的无参入口：记录记忆并销毁自身</summary>
     public void RemoveSelf()

@@ -574,6 +574,12 @@ MonoBehaviour:
   - id: 43
     prefab: {fileID: 6471941729579337095, guid: 3f120940ba7ccd24292d52ceb38f0627, type: 3}
     displayName: "\u795E\u5723\u706B\u82B1"
+  - id: 44
+    prefab: {fileID: 1979639868013418241, guid: 6e4aad8bc9a93ca4f90393a6b0ae1501, type: 3}
+    displayName: "\u9EA6\u9152"
+  - id: 45
+    prefab: {fileID: 1979639868013418241, guid: 705b05c5ddfbcf449a6179e1f995d84f, type: 3}
+    displayName: "\u9B54\u529B\u7CBE\u534E"
   npcPrefabs:
   - id: 1
     prefab: {fileID: 1646308864207292781, guid: caf0920c2e72dc848bd43c966a9ba236, type: 3}

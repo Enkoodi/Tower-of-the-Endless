@@ -128,7 +128,11 @@ public class SaveManager : MonoBehaviour
             upTeleporterCount = player.UpTeleporterCount,
             downTeleporterCount = player.DownTeleporterCount,
             enemyHalveItemCount = player.EnemyHalveItemCount,
-            pendingEnemyHalveBattles = player.PendingEnemyHalveBattles,
+            pendingEnemyHalve = player.PendingEnemyHalve,
+            aleCount = player.AleCount,
+            manaEssenceCount = player.ManaEssenceCount,
+            pendingAleStacks = player.PendingAleStacks,
+            pendingManaEssence = player.PendingManaEssence,
             playerX = player.transform.position.x,
             playerY = player.transform.position.y,
             playerZ = player.transform.position.z
@@ -287,7 +291,11 @@ public class SaveManager : MonoBehaviour
             player.SetUpTeleporterCount(data.upTeleporterCount);
             player.SetDownTeleporterCount(data.downTeleporterCount);
             player.SetEnemyHalveItemCount(data.enemyHalveItemCount);
-            player.SetPendingEnemyHalveBattles(data.pendingEnemyHalveBattles);
+            player.SetPendingEnemyHalve(data.pendingEnemyHalve);
+            player.SetAleCount(data.aleCount);
+            player.SetManaEssenceCount(data.manaEssenceCount);
+            player.SetPendingAleStacks(data.pendingAleStacks);
+            player.SetPendingManaEssence(data.pendingManaEssence);
             // aeonKeys 从全局存档覆盖
         }
         else

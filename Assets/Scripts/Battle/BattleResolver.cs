@@ -73,7 +73,7 @@ public class BattleResolver
 
     private readonly IBattleUnit player;
     private readonly IBattleUnit enemy;
-    private readonly int magicPercent;   // 魔力增幅器倍率，100 = 无增幅
+    private readonly int magicPercent;   // 神圣剑倍率，100 = 无增幅
 
     // ------------------------------------------------------------
     //  可选挂钩。不设则跳过（图鉴就是这么用的）。

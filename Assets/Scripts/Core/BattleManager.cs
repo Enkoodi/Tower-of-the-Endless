@@ -164,6 +164,14 @@ public class BattleManager : MonoBehaviour
             battleUI.AddLog($"<color=#FFCC66>敌人血量减半</color>：{enemy.EnemyName} 生命值减半");
         battleUI.UpdateTurn(turnCount);
         BlessingManager.Instance?.OnBattleStart(playerData, enemy, battleUI);
+
+        // 兑现「下一场战斗生效」的消耗品（麦酒 / 魔力精华）。
+        // ⚠️ 位置不能挪：上面魔力快照与 BeginBattleStats 都已完成，缺一不可 ——
+        //    · 魔力精华直接改 ManaCharge，早于快照会被一起存下来，
+        //      战斗结束「恢复」成加过的值 → 变成永久加成；
+        //    · 麦酒写的是战斗内修正层，早于 BeginBattleStats 会被整体清零。
+        playerData.ApplyPendingBattleItems(battleUI);
+
         OnBattleOpen?.Invoke();
         StartCoroutine(BattleCoroutine(playerData, enemy, playerManaSnapshot, enemyManaSnapshot));
     }
@@ -171,8 +179,8 @@ public class BattleManager : MonoBehaviour
     private IEnumerator BattleCoroutine(PlayerData playerData, EnemyController enemy,
                                         int playerManaSnapshot, int enemyManaSnapshot)
     {
-        // 魔力增幅器倍率（拾取魔力增幅器后生效；只放大魔力伤害，不影响魔力消耗）
-        MagicAmplifier amp = playerData.GetComponent<MagicAmplifier>();
+        // 神圣剑倍率（拾取神圣剑后生效；只放大魔力伤害，不影响魔力消耗）
+        HolySwordEffect amp = playerData.GetComponent<HolySwordEffect>();
         int magicPercent = amp != null ? amp.MultiplierPercent : 100;
 
         // 结算内核 —— 实战与图鉴共用同一份，这里只负责把每一步「演」出来。

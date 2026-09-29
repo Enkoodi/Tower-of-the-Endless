@@ -11,6 +11,7 @@ using UnityEngine;
 ///             LifeStealText 吸血 / ReflectDamageText 反伤 / DamageReductionText 减伤 /
 ///             ManaChargeText 魔力充能 / ManaMaxText 魔力输出 / SpeedText 速度 / GoldText 金币
 /// RightPanel：FloorText 当前楼层 / YellowKeyText / BlueKeyText / RedKeyText / AeonKeyText /
+///             AleText（麦酒）/ ManaEssenceText（魔力精华）/
 ///             UpTeleporterText / DownTeleporterText / EnemyHalveItemText（圣水）
 /// </summary>
 public class PlayerHUD : MonoBehaviour
@@ -28,12 +29,14 @@ public class PlayerHUD : MonoBehaviour
     private TMPro.TextMeshProUGUI speedText;
     private TMPro.TextMeshProUGUI goldText;
 
-    // 右面板（FloorText 是标题，其余 7 项是道具数量）
+    // 右面板（FloorText 是标题，其余 9 项是道具数量）
     private TMPro.TextMeshProUGUI floorText;
     private TMPro.TextMeshProUGUI yellowKeyText;
     private TMPro.TextMeshProUGUI blueKeyText;
     private TMPro.TextMeshProUGUI redKeyText;
     private TMPro.TextMeshProUGUI aeonKeyText;
+    private TMPro.TextMeshProUGUI aleText;
+    private TMPro.TextMeshProUGUI manaEssenceText;
     private TMPro.TextMeshProUGUI upTeleporterText;
     private TMPro.TextMeshProUGUI downTeleporterText;
     private TMPro.TextMeshProUGUI enemyHalveItemText;
@@ -63,6 +66,8 @@ public class PlayerHUD : MonoBehaviour
         blueKeyText         = FindText(rightPanel, "BlueKeyText");
         redKeyText          = FindText(rightPanel, "RedKeyText");
         aeonKeyText         = FindText(rightPanel, "AeonKeyText");
+        aleText             = FindText(rightPanel, "AleText");
+        manaEssenceText     = FindText(rightPanel, "ManaEssenceText");
         upTeleporterText    = FindText(rightPanel, "UpTeleporterText");
         downTeleporterText  = FindText(rightPanel, "DownTeleporterText");
         enemyHalveItemText  = FindText(rightPanel, "EnemyHalveItemText");
@@ -105,6 +110,8 @@ public class PlayerHUD : MonoBehaviour
         SetNumber(blueKeyText,        playerData.GetKeyCount(KeyType.Blue));
         SetNumber(redKeyText,         playerData.GetKeyCount(KeyType.Red));
         SetNumber(aeonKeyText,        playerData.GetKeyCount(KeyType.Aeon));
+        SetNumber(aleText,            playerData.AleCount);
+        SetNumber(manaEssenceText,    playerData.ManaEssenceCount);
         SetNumber(upTeleporterText,   playerData.UpTeleporterCount);
         SetNumber(downTeleporterText, playerData.DownTeleporterCount);
         SetNumber(enemyHalveItemText, playerData.EnemyHalveItemCount);

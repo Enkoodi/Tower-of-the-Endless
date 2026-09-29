@@ -6,7 +6,7 @@ using UnityEngine;
 /// 玩家走到该格子时自动拾取，钥匙数量 +1，物体消失。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class KeyPickup : MonoBehaviour
+public class KeyPickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("数据引用")]
     [SerializeField] private KeyPickupData data;
@@ -18,6 +18,26 @@ public class KeyPickup : MonoBehaviour
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：钥匙是数量型道具，可出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        int owned = player.GetKeyCount(KeyType);
+        if (owned >= sellAmount) return true;
+
+        Debug.LogWarning($"[KeyPickup] {KeyType} 钥匙不足：需要出售 {sellAmount}，当前 {owned}");
+        return false;
+    }
+
+    /// <summary>IPurchasable：发放（amount &gt; 0）或回收（amount &lt; 0）。</summary>
+    public void ApplyPurchase(PlayerData player, int amount) => player.AddKey(KeyType, amount);
 
     public KeyType KeyType => data != null ? data.keyType : KeyType.Yellow;
 
@@ -33,24 +53,22 @@ public class KeyPickup : MonoBehaviour
     }
 
     /// <summary>
-    /// 被 PlayerMove 调用，尝试拾取。
+    /// 被 PlayerMove 调用，尝试拾取（IFloorPickup 统一入口）。
+    /// 参数用 PlayerData 而非 IKeyInventory：调用方只有 PlayerMove，
+    /// 而原实现拿到 IKeyInventory 后第一件事就是强转回 PlayerData，白绕一层。
     /// </summary>
-    public bool TryPickup(IKeyInventory playerInventory)
+    public bool TryPickup(PlayerData playerData)
     {
-        if (playerInventory == null)
+        if (playerData == null)
         {
-            Debug.LogError($"[KeyPickup] playerInventory 为 null，无法拾取钥匙");
+            Debug.LogError("[KeyPickup] playerData 为 null，无法拾取钥匙");
             return false;
         }
 
         KeyType type = KeyType;
         Debug.Log($"[KeyPickup] 拾取 {type} 钥匙！");
 
-        PlayerData pd = playerInventory as PlayerData;
-        if (pd != null)
-            pd.AddKey(type, 1);
-        else
-            Debug.LogError("[KeyPickup] 无法将 IKeyInventory 转换为 PlayerData");
+        playerData.AddKey(type, 1);
 
         // 记录到楼层记忆中
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);

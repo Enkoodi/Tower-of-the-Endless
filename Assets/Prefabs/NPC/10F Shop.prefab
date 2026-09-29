@@ -147,7 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u9152\u4FDD"
-    content: "\u8981\u6765\u4E00\u676F\u5417\u5144\u5F1F\uFF0C\u5F88\u4FBF\u5B9C\u7684\uFF0C\u4E00\u676F\u53EA\u6536300\u91D1\u5E01"
+    content: "\u8981\u6765\u4E00\u676F\u5417\u5144\u5F1F\uFF0C\u5F88\u4FBF\u5B9C\u7684\uFF0C\u4E00\u676F\u53EA\u6536100\u91D1\u5E01"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldCost: 300
+  goldCost: 100
   items:
-  - prefab: {fileID: 9082593690080390034, guid: 1c26c32e61e1f1a47b7ee9d1b3192dfe, type: 3}
+  - prefab: {fileID: 1979639868013418241, guid: 6e4aad8bc9a93ca4f90393a6b0ae1501, type: 3}
     quantity: 1

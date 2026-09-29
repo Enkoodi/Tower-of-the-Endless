@@ -76,7 +76,7 @@ public class MagicAuraAttack : MonoBehaviour
     /// <summary>检查玩家是否免疫魔力伤害</summary>
     private bool IsPlayerImmune(PlayerData player)
     {
-        return player.GetComponent<PlayerImmunity>() != null;
+        return player.GetComponent<HolyShieldEffect>() != null;
     }
 }
 

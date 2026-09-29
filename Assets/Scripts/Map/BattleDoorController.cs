@@ -11,7 +11,7 @@ using UnityEngine;
 /// 当所有关联敌人被击败后自动开门消失。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class BattleDoorController : MonoBehaviour
+public class BattleDoorController : MonoBehaviour, IFloorEntity
 {
     [Header("敌人追踪")]
     [Tooltip("需要击败的敌人所在的网格坐标列表（普通敌人或NPC敌人都可）")]
@@ -34,6 +34,13 @@ public class BattleDoorController : MonoBehaviour
 
     /// <summary>所属楼层编号</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     public bool IsOpened => isOpened;
 
@@ -82,7 +89,7 @@ public class BattleDoorController : MonoBehaviour
         {
             foreach (var pos in requiredEnemyPositions)
             {
-                if (state.IsEnemyDefeated(pos) || state.IsNpcRemoved(pos))
+                if (state.IsEntityCleared(pos))
                     remainingEnemies--;
             }
         }

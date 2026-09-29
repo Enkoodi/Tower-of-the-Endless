@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// 玩家移动碰撞检测到NPC时，停止移动并打开商店界面。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class NPCController : MonoBehaviour
+public class NPCController : MonoBehaviour, IFloorEntity
 {
     [Header("NPC基本信息")]
     [SerializeField] private string npcName = "NPC";
@@ -74,6 +74,13 @@ public class NPCController : MonoBehaviour
 
     /// <summary>所属楼层编号（由MapGenerator在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     // ============================================================
     //  公开属性

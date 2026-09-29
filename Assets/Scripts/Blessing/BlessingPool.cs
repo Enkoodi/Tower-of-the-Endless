@@ -26,6 +26,11 @@ public class BlessingPool : ScriptableObject
         List<BlessingData> results = new List<BlessingData>();
         List<BlessingData> poolCopy = new List<BlessingData>(blessings);
 
+        // 剔空引用：祝福资源被删/改名后，池里会留下解析不到的条目（Unity 反序列化成 null）
+        int dangling = poolCopy.RemoveAll(b => b == null);
+        if (dangling > 0)
+            Debug.LogWarning($"[BlessingPool] {name} 有 {dangling} 条空引用（祝福资源可能已被删除），已跳过");
+
         if (poolCopy.Count == 0)
         {
             Debug.LogWarning("[BlessingPool] 池为空！");

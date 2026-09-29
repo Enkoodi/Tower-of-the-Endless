@@ -5,7 +5,7 @@ using UnityEngine;
 /// 玩家走到该格子时拾取，上楼传送器数量 +1，随后由玩家按 X 键使用。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class FloorUpTeleporter : MonoBehaviour
+public class FloorUpTeleporter : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("显示")]
     [SerializeField] private Sprite pickupSprite;
@@ -17,6 +17,25 @@ public class FloorUpTeleporter : MonoBehaviour
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：数量型道具，可出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        if (player.UpTeleporterCount >= sellAmount) return true;
+
+        Debug.LogWarning($"[FloorUpTeleporter] 上楼传送器不足：需要出售 {sellAmount}，当前 {player.UpTeleporterCount}");
+        return false;
+    }
+
+    /// <summary>IPurchasable：发放（amount &gt; 0）或回收（amount &lt; 0）。</summary>
+    public void ApplyPurchase(PlayerData player, int amount) => player.AddUpTeleporter(amount);
 
     void Awake()
     {

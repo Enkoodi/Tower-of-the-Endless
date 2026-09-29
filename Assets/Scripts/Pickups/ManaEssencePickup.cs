@@ -1,11 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// 下楼传送器 — 挂载在道具 Prefab 上。
-/// 玩家走到该格子时拾取，下楼传送器数量 +1，随后由玩家按 Z 键使用。
+/// 魔力精华 — 挂载在道具 Prefab 上。
+/// 玩家走到该格子时拾取，魔力精华数量 +1，随后由玩家使用（使用效果待定）。
+/// 与其它道具一致：拾取会写入楼层记忆，防止重返楼层时重复生成。
+///
+/// 实现 IFloorPickup 即可 —— PlayerMove 的拾取分发、MapGenerator 的坐标写入、
+/// DropManager 的掉落物坐标写入都会自动认它，不需要再改那三处。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class FloorDownTeleporter : MonoBehaviour, IFloorPickup, IPurchasable
+public class ManaEssencePickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("显示")]
     [SerializeField] private Sprite pickupSprite;
@@ -28,14 +32,14 @@ public class FloorDownTeleporter : MonoBehaviour, IFloorPickup, IPurchasable
     /// <summary>IPurchasable：数量型道具，可出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {
-        if (player.DownTeleporterCount >= sellAmount) return true;
+        if (player.ManaEssenceCount >= sellAmount) return true;
 
-        Debug.LogWarning($"[FloorDownTeleporter] 下楼传送器不足：需要出售 {sellAmount}，当前 {player.DownTeleporterCount}");
+        Debug.LogWarning($"[ManaEssencePickup] 魔力精华不足：需要出售 {sellAmount}，当前 {player.ManaEssenceCount}");
         return false;
     }
 
     /// <summary>IPurchasable：发放（amount &gt; 0）或回收（amount &lt; 0）。</summary>
-    public void ApplyPurchase(PlayerData player, int amount) => player.AddDownTeleporter(amount);
+    public void ApplyPurchase(PlayerData player, int amount) => player.AddManaEssence(amount);
 
     void Awake()
     {
@@ -50,17 +54,17 @@ public class FloorDownTeleporter : MonoBehaviour, IFloorPickup, IPurchasable
     }
 
     /// <summary>
-    /// 玩家走到该格子时由 PlayerMove 调用，拾取传送器。
+    /// 玩家走到该格子时由 PlayerMove 调用，拾取魔力精华。
     /// </summary>
     public bool TryPickup(PlayerData playerData)
     {
         if (playerData == null)
         {
-            Debug.LogError($"[FloorDownTeleporter] playerData 为 null，无法拾取");
+            Debug.LogError("[ManaEssencePickup] playerData 为 null，无法拾取");
             return false;
         }
 
-        playerData.AddDownTeleporter(1);
+        playerData.AddManaEssence(1);
 
         // 记录到楼层记忆中，防止重返楼层时重复生成
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
@@ -68,7 +72,7 @@ public class FloorDownTeleporter : MonoBehaviour, IFloorPickup, IPurchasable
         // 通知 DropManager 移除此位置的活跃掉落记录
         DropManager.Instance?.MarkDropPickedUp(floorNumber, gridPosition);
 
-        Debug.Log($"[FloorDownTeleporter] 拾取下楼传送器（第 {floorNumber} 层）");
+        Debug.Log($"[ManaEssencePickup] 拾取魔力精华（第 {floorNumber} 层）");
         Destroy(gameObject);
         return true;
     }

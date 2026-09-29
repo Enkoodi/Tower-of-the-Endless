@@ -160,7 +160,7 @@ public class PincerAttack : MonoBehaviour
         // 对中间角色造成伤害
         if (midPos == playerGridPos)
         {
-            // 玩家免疫：PincerAttack.isImmune 或护身符 PlayerImmunity
+            // 玩家免疫：PincerAttack.isImmune 或神圣盾 HolyShieldEffect
             if ((midIsA && midPincer.IsImmune) || IsPlayerPincerImmune())
             {
                 Debug.Log($"[夹击] {pattern} 形成但玩家免疫夹击");
@@ -213,7 +213,7 @@ public class PincerAttack : MonoBehaviour
         bool playerIsA = playerPincer != null;
         string pattern = playerIsA ? "AAA" : "ABA";
 
-        // 玩家免疫：PincerAttack.isImmune 或护身符 PlayerImmunity
+        // 玩家免疫：PincerAttack.isImmune 或神圣盾 HolyShieldEffect
         if ((playerIsA && playerPincer.IsImmune) || IsPlayerPincerImmune())
         {
             Debug.Log($"[夹击] {pattern} 形成但玩家免疫夹击");
@@ -228,11 +228,11 @@ public class PincerAttack : MonoBehaviour
     //  免疫检查
     // ============================================================
 
-    /// <summary>检查玩家是否拥有护身符免疫（PlayerImmunity 组件）</summary>
+    /// <summary>检查玩家是否拥有神圣盾免疫（HolyShieldEffect 组件）</summary>
     private static bool IsPlayerPincerImmune()
     {
         PlayerData player = FindAnyObjectByType<PlayerData>();
-        return player != null && player.GetComponent<PlayerImmunity>() != null;
+        return player != null && player.GetComponent<HolyShieldEffect>() != null;
     }
 
     // ============================================================

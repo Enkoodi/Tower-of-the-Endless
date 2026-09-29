@@ -66,7 +66,21 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
 
     [Header("圣水数量")]
     [SerializeField] private int enemyHalveItemCount = 0;
-    [SerializeField] private int pendingEnemyHalveBattles = 0;
+
+    [Header("麦酒数量")]
+    [SerializeField] private int aleCount = 0;
+
+    [Header("魔力精华数量")]
+    [SerializeField] private int manaEssenceCount = 0;
+
+    // 「下一场战斗生效」的消耗品 —— 战斗开始时一次性兑现，出战即失效。
+    // 三个都是**开关**（只作用于下一场、不累计场次），区别只在于兑现出来的效果：
+    //   麦酒 → 攻/防修正层（可叠层数）· 魔力精华 → 魔力充能 +50 · 圣水 → 敌人血量减半
+    // 已经待生效时再用一次，一律**白白消耗**（策划要求）。
+    [Header("待生效的战斗道具")]
+    [SerializeField] private int pendingAleStacks = 0;
+    [SerializeField] private bool pendingManaEssence = false;
+    [SerializeField] private bool pendingEnemyHalve = false;
 
     // ============================================================
     //  公开只读属性
@@ -105,7 +119,15 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     public int DownTeleporterCount => downTeleporterCount;
 
     public int EnemyHalveItemCount => enemyHalveItemCount;
-    public int PendingEnemyHalveBattles => pendingEnemyHalveBattles;
+
+    /// <summary>圣水是否已待生效。</summary>
+    public bool PendingEnemyHalve => pendingEnemyHalve;
+
+    /// <summary>麦酒数量</summary>
+    public int AleCount => aleCount;
+
+    /// <summary>魔力精华数量</summary>
+    public int ManaEssenceCount => manaEssenceCount;
 
     /// <summary>神圣火花数量（全局道具）</summary>
     public int DivineSpark => divineSpark;
@@ -424,7 +446,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     }
 
     // ============================================================
-    //  敌人减半道具
+    //  圣水（敌人减半道具）
+    //
+    //  与魔力精华同一套：**只作用于下一场战斗**，不累计场次。
+    //  已经待生效时再用一次会白白消耗掉（策划要求）。
     // ============================================================
 
     public void AddEnemyHalveItem(int amount = 1)
@@ -433,23 +458,169 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         Debug.Log($"[PlayerData] 获得 {amount} 个圣水（总计 {enemyHalveItemCount}）");
     }
 
-    /// <summary>使用一个敌人减半道具：下一场战斗敌人血量减半。数量不足时返回 false。</summary>
+    /// <summary>
+    /// 使用圣水：下一场战斗敌人血量减半。
+    /// 效果不累计场次 —— 已待生效时再使用会白白消耗（与魔力精华一致）。
+    /// </summary>
     public bool UseEnemyHalveItem()
     {
-        if (enemyHalveItemCount <= 0) return false;
+        if (enemyHalveItemCount <= 0)
+        {
+            Debug.Log("[PlayerData] 没有圣水可用");
+            return false;
+        }
+
         enemyHalveItemCount--;
-        pendingEnemyHalveBattles++;
-        Debug.Log($"[PlayerData] 使用圣水（剩余 {enemyHalveItemCount}，待生效 {pendingEnemyHalveBattles} 场）");
+
+        if (pendingEnemyHalve)
+        {
+            Debug.LogWarning($"[PlayerData] 圣水已待生效，本次使用被浪费（剩余 {enemyHalveItemCount}）");
+            return true;
+        }
+
+        pendingEnemyHalve = true;
+        Debug.Log($"[PlayerData] 使用圣水（剩余 {enemyHalveItemCount}，下一场战斗敌人血量减半）");
         return true;
     }
 
-    /// <summary>战斗开始时消耗一次减半效果。返回 true 表示本场敌人血量应减半。</summary>
+    /// <summary>战斗开始时消耗待生效的减半效果。返回 true 表示本场敌人血量应减半。</summary>
     public bool ConsumeEnemyHalve()
     {
-        if (pendingEnemyHalveBattles <= 0) return false;
-        pendingEnemyHalveBattles--;
-        Debug.Log($"[PlayerData] 敌人减半效果生效（剩余 {pendingEnemyHalveBattles} 场）");
+        if (!pendingEnemyHalve) return false;
+        pendingEnemyHalve = false;
+        Debug.Log("[PlayerData] 敌人减半效果生效");
         return true;
+    }
+
+    // ============================================================
+    //  麦酒
+    //
+    //  效果：**只作用于下一场战斗**，出战即失效 ——
+    //  每层攻击 +1% / 防御 -1%，可叠至 3 层（攻防同步长）。
+    //  战斗中走「战斗内修正层」，所以战斗结束 EndBattleStats 会整体清零，
+    //  不会残留成下一场的基准。
+    // ============================================================
+
+    /// <summary>麦酒每层给攻击 +1% / 防御 -1%。</summary>
+    public const int AlePercentPerStack = 1;
+
+    /// <summary>麦酒最多叠 3 层。</summary>
+    public const int AleMaxStacks = 3;
+
+    /// <summary>麦酒已叠层数（0~3），供存档与 UI 查询。</summary>
+    public int PendingAleStacks => pendingAleStacks;
+
+    public void AddAle(int amount = 1)
+    {
+        aleCount += amount;
+        Debug.Log($"[PlayerData] 获得 {amount} 个麦酒（总计 {aleCount}）");
+    }
+
+    /// <summary>
+    /// 饮用麦酒：数量 -1，下一场战斗攻击 +1% / 防御 -1%，可叠至 3 层。
+    /// 已满层时**仍然消耗**（层数不变，白白浪费）—— 与魔力精华同一套设计（策划确认）。
+    /// </summary>
+    public bool UseAle()
+    {
+        if (aleCount <= 0)
+        {
+            Debug.Log("[PlayerData] 没有麦酒可用");
+            return false;
+        }
+
+        aleCount--;
+
+        if (pendingAleStacks >= AleMaxStacks)
+        {
+            Debug.LogWarning($"[PlayerData] 麦酒已叠满 {AleMaxStacks} 层，本次饮用被浪费（剩余 {aleCount}）");
+            return true;
+        }
+
+        pendingAleStacks++;
+        Debug.Log($"[PlayerData] 饮用麦酒（剩余 {aleCount}，已叠 {pendingAleStacks}/{AleMaxStacks} 层，下一场战斗生效）");
+        return true;
+    }
+
+    // ============================================================
+    //  魔力精华
+    //
+    //  效果：**只作用于下一场战斗** —— 战斗开始时魔力充能 +50。
+    //  不叠层、不累计场次：已经待生效时再用一次会白白消耗掉（策划明确要求）。
+    //
+    //  ⚠️ 它改的是 ManaCharge 本身，而 BattleManager 会在战斗开始前快照、
+    //     战斗结束后还原，所以「出战即失效」是靠那份快照实现的 ——
+    //     兑现时机必须晚于快照，否则 +50 会被一起存进去、还原成加过的值，变成永久加成。
+    // ============================================================
+
+    /// <summary>魔力精华给下一场战斗的魔力充能加成。</summary>
+    public const int ManaEssenceChargeBonus = 50;
+
+    /// <summary>魔力精华是否已待生效。</summary>
+    public bool PendingManaEssence => pendingManaEssence;
+
+    public void AddManaEssence(int amount = 1)
+    {
+        manaEssenceCount += amount;
+        Debug.Log($"[PlayerData] 获得 {amount} 个魔力精华（总计 {manaEssenceCount}）");
+    }
+
+    /// <summary>
+    /// 使用魔力精华：下一场战斗开始时魔力充能 +50。
+    /// 效果不叠加、不累计场次 —— 已待生效时再使用会白白消耗（策划明确要求）。
+    /// </summary>
+    public bool UseManaEssence()
+    {
+        if (manaEssenceCount <= 0)
+        {
+            Debug.Log("[PlayerData] 没有魔力精华可用");
+            return false;
+        }
+
+        manaEssenceCount--;
+
+        if (pendingManaEssence)
+        {
+            Debug.LogWarning($"[PlayerData] 魔力精华已待生效，本次使用被浪费（剩余 {manaEssenceCount}）");
+            return true;
+        }
+
+        pendingManaEssence = true;
+        Debug.Log($"[PlayerData] 使用魔力精华（剩余 {manaEssenceCount}，下一场战斗魔力充能 +{ManaEssenceChargeBonus}）");
+        return true;
+    }
+
+    // ============================================================
+    //  「下一场战斗生效」的消耗品 —— 统一兑现入口
+    // ============================================================
+
+    /// <summary>
+    /// 战斗开始时由 BattleManager 调用：把待生效的消耗品一次性兑现，随后清零。
+    ///
+    /// ⚠️ 调用时机有硬性要求（BattleManager.StartBattle 里有注释）：
+    ///   · 必须在 BeginBattleStats 之后 —— 麦酒写的是战斗内修正层，早于它会被整体清零；
+    ///   · 必须在取魔力快照之后 —— 魔力精华直接改 ManaCharge，早于快照会被一起存下来，
+    ///     战斗结束「恢复」成加过的值，变成永久加成。
+    /// </summary>
+    public void ApplyPendingBattleItems(BattleUI ui)
+    {
+        if (pendingAleStacks > 0)
+        {
+            int pct = pendingAleStacks * AlePercentPerStack;
+            AddBattleAttackPercent(pct);
+            AddBattleDefensePercent(-pct);
+            // 战斗日志里写死「最多三层」而不是实际层数 —— 玩家不需要知道这一场叠了几层
+            ui?.AddLog($"<color=#FFCC66>麦酒</color>：攻击 +{pct}% / 防御 -{pct}%（最多三层）");
+            Debug.Log($"[PlayerData] 麦酒生效：攻 +{pct}% 防 -{pct}%（{pendingAleStacks} 层）");
+            pendingAleStacks = 0;
+        }
+
+        if (pendingManaEssence)
+        {
+            ManaCharge += ManaEssenceChargeBonus;
+            ui?.AddLog($"<color=#88CCFF>魔力精华</color>：魔力充能 +{ManaEssenceChargeBonus}");
+            Debug.Log($"[PlayerData] 魔力精华生效：魔力充能 +{ManaEssenceChargeBonus}（当前 {ManaCharge}）");
+            pendingManaEssence = false;
+        }
     }
 
     // ============================================================
@@ -802,7 +973,19 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     public void SetEnemyHalveItemCount(int v) => enemyHalveItemCount = v;
 
     /// <summary>直接设置待生效的敌人减半场次（供读档恢复）</summary>
-    public void SetPendingEnemyHalveBattles(int v) => pendingEnemyHalveBattles = v;
+    public void SetPendingEnemyHalve(bool v) => pendingEnemyHalve = v;
+
+    /// <summary>直接设置麦酒数量（供读档恢复）</summary>
+    public void SetAleCount(int v) => aleCount = v;
+
+    /// <summary>直接设置魔力精华数量（供读档恢复）</summary>
+    public void SetManaEssenceCount(int v) => manaEssenceCount = v;
+
+    /// <summary>直接设置麦酒待生效层数（供读档恢复）</summary>
+    public void SetPendingAleStacks(int v) => pendingAleStacks = v;
+
+    /// <summary>直接设置魔力精华待生效标记（供读档恢复）</summary>
+    public void SetPendingManaEssence(bool v) => pendingManaEssence = v;
 
     /// <summary>直接设置指定类型钥匙数量（供读档恢复）</summary>
     public void SetKeyCountDirect(KeyType keyType, int count)

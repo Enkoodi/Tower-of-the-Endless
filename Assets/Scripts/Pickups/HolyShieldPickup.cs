@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// 护身符装备拾取物 — 挂载在护身符装备 Prefab 上。
+/// 神圣盾拾取物 — 挂载在神圣盾装备 Prefab 上。
 /// 玩家走到该格子时获得属性增益（可选）和免疫能力：
 /// - 免疫魔力光环（MagicAuraAttack）的相邻伤害
 /// - 免疫夹击（PincerAttack）的伤害
 /// 注意：预制体上不要同时挂 StatBoostPickup，属性增益直接在本脚本配置。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class AegisAmuletPickup : MonoBehaviour
+public class HolyShieldPickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("属性增益（可选）")]
     [SerializeField] private bool applyStatBoost = false;
@@ -21,6 +21,28 @@ public class AegisAmuletPickup : MonoBehaviour
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
 
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：效果型道具，不能出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        Debug.LogWarning("[HolyShieldPickup] 神圣盾是效果型道具，不能出售");
+        return false;
+    }
+
+
+    /// <summary>IPurchasable：给玩家加上免疫组件（重复购买不叠加）。</summary>
+    public void ApplyPurchase(PlayerData player, int amount)
+    {
+        if (player.GetComponent<HolyShieldEffect>() == null)
+            player.gameObject.AddComponent<HolyShieldEffect>();
+    }
+
     private void Awake()
     {
         GetComponent<BoxCollider2D>().isTrigger = true;
@@ -30,7 +52,7 @@ public class AegisAmuletPickup : MonoBehaviour
     {
         if (playerData == null)
         {
-            Debug.LogError("[AegisAmulet] playerData 为 null");
+            Debug.LogError("[HolyShieldPickup] playerData 为 null");
             return false;
         }
 
@@ -39,9 +61,9 @@ public class AegisAmuletPickup : MonoBehaviour
             playerData.ApplyStatBoost(boostType, boostValue);
 
         // 避免重复添加免疫组件
-        if (playerData.GetComponent<PlayerImmunity>() == null)
+        if (playerData.GetComponent<HolyShieldEffect>() == null)
         {
-            playerData.gameObject.AddComponent<PlayerImmunity>();
+            playerData.gameObject.AddComponent<HolyShieldEffect>();
         }
 
         // 记录到楼层记忆中
@@ -50,7 +72,7 @@ public class AegisAmuletPickup : MonoBehaviour
         // 通知 DropManager 移除此位置的活跃掉落记录
         DropManager.Instance?.MarkDropPickedUp(floorNumber, gridPosition);
 
-        Debug.Log("[AegisAmulet] 玩家获得神圣盾！免疫魔力光环和夹击攻击。");
+        Debug.Log("[HolyShieldPickup] 玩家获得神圣盾！免疫魔力光环和夹击攻击。");
         Destroy(gameObject);
         return true;
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 /// 拖入 EnemyStats 资产即可，所有数值从资产读取。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class EnemyController : MonoBehaviour, IBattleUnit
+public class EnemyController : MonoBehaviour, IFloorEntity, IBattleUnit
 {
     [Header("数据资产（右键 Create → MagicTower → Enemy Stats）")]
     [SerializeField] private EnemyStats stats;
@@ -40,6 +40,13 @@ public class EnemyController : MonoBehaviour, IBattleUnit
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     // ============================================================
     //  公开属性

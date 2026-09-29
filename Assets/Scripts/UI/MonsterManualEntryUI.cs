@@ -99,8 +99,8 @@ public class MonsterManualEntryUI : MonoBehaviour
         SimBattleUnit simPlayer = SimBattleUnit.FromPlayer(player);
         SimBattleUnit simEnemy  = SimBattleUnit.FromEnemyStats(enemy);
 
-        // 魔力增幅器：图鉴在战斗外打开，直接读玩家身上的组件
-        MagicAmplifier amplifier = player.GetComponent<MagicAmplifier>();
+        // 神圣剑：图鉴在战斗外打开，直接读玩家身上的组件
+        HolySwordEffect amplifier = player.GetComponent<HolySwordEffect>();
         int magicPercent = amplifier != null ? amplifier.MultiplierPercent : 100;
 
         // 与实战同一份内核；挂钩一个都不设 → 不跑祝福

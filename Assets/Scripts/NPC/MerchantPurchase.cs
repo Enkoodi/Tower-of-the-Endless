@@ -4,6 +4,10 @@ using UnityEngine;
 /// 神秘商人交易脚本 — 挂载在神秘商人NPC上。
 /// 与商人对话结束后，玩家点击选项触发交易（由 DialogueTrigger 的 OnChoice1/OnChoice2 绑定）。
 /// 金币为正时消耗金币、为负时获得金币；道具数量为正时发放、为负时出售（回收）。
+///
+/// 道具一律按 <see cref="IPurchasable"/> 接口取 —— 不再逐个类型枚举。
+/// 新增可交易道具只要让它实现该接口，本脚本一行都不用改。
+/// 想确认某个道具能不能卖，看它实现的 <c>CanSell</c>。
 /// </summary>
 public class MerchantPurchase : MonoBehaviour
 {
@@ -17,7 +21,7 @@ public class MerchantPurchase : MonoBehaviour
     [System.Serializable]
     public class PurchaseItem
     {
-        [Tooltip("道具预制体（KeyPickup / StatBoostPickup / BlessingPickup 等）")]
+        [Tooltip("道具预制体（需实现 IPurchasable；如 KeyPickup / AlePickup / ManaEssencePickup 等）")]
         public GameObject prefab;
 
         [Tooltip("数量：正=发放，负=出售（回收）")]
@@ -79,64 +83,39 @@ public class MerchantPurchase : MonoBehaviour
         return true;
     }
 
-    /// <summary>交易前校验：出售项需保证玩家持有足够数量。</summary>
+    /// <summary>
+    /// 交易前校验：每个条目都必须实现 IPurchasable；出售项还要保证玩家持有足够数量。
+    ///
+    /// ⚠️ 这个校验必须**同时覆盖发放方向**，不能只管出售 ——
+    /// 因为 TryPurchase 是「先扣金币、再 ApplyItem」，只要有一条发放不了，
+    /// 玩家就是「金币照扣、东西不给」。历史上漏掉麦酒 / 魔力精华 / 圣水时正是这个表现。
+    /// </summary>
     private bool ValidateItems(PlayerData player)
     {
         if (items == null) return true;
 
         foreach (PurchaseItem item in items)
         {
-            if (item == null || item.prefab == null || item.quantity >= 0)
-                continue;
+            if (item == null || item.prefab == null) continue;
 
-            int sellAmount = -item.quantity;
-
-            // 钥匙
-            KeyPickup key = item.prefab.GetComponent<KeyPickup>();
-            if (key != null)
+            if (!item.prefab.TryGetComponent(out IPurchasable purchasable))
             {
-                int owned = player.GetKeyCount(key.KeyType);
-                if (owned < sellAmount)
-                {
-                    Debug.LogWarning($"[MerchantPurchase] {key.KeyType} 钥匙不足：需要出售 {sellAmount}，当前 {owned}");
-                    return false;
-                }
-                continue;
+                Debug.LogWarning($"[MerchantPurchase] {item.prefab.name} 未实现 IPurchasable，无法交易");
+                return false;
             }
 
-            // 上楼传送器
-            FloorUpTeleporter upTeleporter = item.prefab.GetComponent<FloorUpTeleporter>();
-            if (upTeleporter != null)
-            {
-                if (player.UpTeleporterCount < sellAmount)
-                {
-                    Debug.LogWarning($"[MerchantPurchase] 上楼传送器不足：需要出售 {sellAmount}，当前 {player.UpTeleporterCount}");
-                    return false;
-                }
-                continue;
-            }
-
-            // 下楼传送器
-            FloorDownTeleporter downTeleporter = item.prefab.GetComponent<FloorDownTeleporter>();
-            if (downTeleporter != null)
-            {
-                if (player.DownTeleporterCount < sellAmount)
-                {
-                    Debug.LogWarning($"[MerchantPurchase] 下楼传送器不足：需要出售 {sellAmount}，当前 {player.DownTeleporterCount}");
-                    return false;
-                }
-                continue;
-            }
-
-            // 属性增益、祝福等非数量型道具无法出售
-            Debug.LogWarning($"[MerchantPurchase] {item.prefab.name} 为非数量型道具，无法出售");
-            return false;
+            // 只有出售方向才需要校验持有量；发放方向由实现自己保证
+            if (item.quantity < 0 && !purchasable.CanSell(player, -item.quantity))
+                return false;
         }
 
         return true;
     }
 
-    /// <summary>根据预制体上的组件类型发放或回收单个道具</summary>
+    /// <summary>
+    /// 按预制体上的 IPurchasable 实现发放或回收单个道具。
+    /// 原先这里是一张手写的组件清单，新增道具忘了同步就会静默「扣钱不给货」。
+    /// </summary>
     private void ApplyItem(PlayerData player, PurchaseItem item)
     {
         if (item == null || item.prefab == null)
@@ -145,65 +124,14 @@ public class MerchantPurchase : MonoBehaviour
             return;
         }
 
-        int quantity = item.quantity;
-        if (quantity == 0) return;
+        if (item.quantity == 0) return;
 
-        bool selling = quantity < 0;
-        int amount = Mathf.Abs(quantity);
-
-        // 钥匙
-        KeyPickup key = item.prefab.GetComponent<KeyPickup>();
-        if (key != null)
+        if (!item.prefab.TryGetComponent(out IPurchasable purchasable))
         {
-            player.AddKey(key.KeyType, selling ? -amount : amount);
+            Debug.LogWarning($"[MerchantPurchase] {item.prefab.name} 未实现 IPurchasable，跳过");
             return;
         }
 
-        // 属性增益
-        StatBoostPickup stat = item.prefab.GetComponent<StatBoostPickup>();
-        if (stat != null)
-        {
-            if (stat.Data == null)
-            {
-                Debug.LogWarning($"[MerchantPurchase] {item.prefab.name} 的 StatBoostData 未设置");
-                return;
-            }
-            player.ApplyStatBoost(stat.Data.boostType, stat.Data.value * amount);
-            return;
-        }
-
-        // 祝福（弹出选择面板，数量不适用）
-        BlessingPickup blessing = item.prefab.GetComponent<BlessingPickup>();
-        if (blessing != null)
-        {
-            BlessingManager manager = BlessingManager.Instance;
-            if (manager != null)
-            {
-                manager.ShowWithPool(player, blessing.OverridePool);
-            }
-            else
-            {
-                Debug.LogError("[MerchantPurchase] BlessingManager 不存在");
-            }
-            return;
-        }
-
-        // 上楼传送器
-        FloorUpTeleporter upTeleporter = item.prefab.GetComponent<FloorUpTeleporter>();
-        if (upTeleporter != null)
-        {
-            player.AddUpTeleporter(selling ? -amount : amount);
-            return;
-        }
-
-        // 下楼传送器
-        FloorDownTeleporter downTeleporter = item.prefab.GetComponent<FloorDownTeleporter>();
-        if (downTeleporter != null)
-        {
-            player.AddDownTeleporter(selling ? -amount : amount);
-            return;
-        }
-
-        Debug.LogWarning($"[MerchantPurchase] 未识别的道具类型：{item.prefab.name}");
+        purchasable.ApplyPurchase(player, item.quantity);
     }
 }

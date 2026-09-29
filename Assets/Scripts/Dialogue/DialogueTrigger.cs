@@ -25,7 +25,7 @@ public class DialogueEntryBranch
 /// 检测优先级高于 NPCController，确保对话NPC不会被当作商店打开。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class DialogueTrigger : MonoBehaviour
+public class DialogueTrigger : MonoBehaviour, IFloorEntity
 {
     [Header("对话数据")]
     [SerializeField] private DialogueLine[] dialogueLines;
@@ -52,6 +52,13 @@ public class DialogueTrigger : MonoBehaviour
 
     /// <summary>所属楼层编号（由MapGenerator在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     public DialogueLine[] Lines => dialogueLines;
     public List<DialogueEntryBranch> EntryBranches => entryBranches;

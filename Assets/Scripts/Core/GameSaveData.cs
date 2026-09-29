@@ -49,7 +49,19 @@ public class GameSaveData
     //  敌人减半道具
     // ============================================================
     public int enemyHalveItemCount;
-    public int pendingEnemyHalveBattles;
+
+    // 圣水是否已待生效（只作用于下一场，不累计场次）
+    public bool pendingEnemyHalve;
+
+    // ============================================================
+    //  麦酒 / 魔力精华
+    // ============================================================
+    public int aleCount;
+    public int manaEssenceCount;
+
+    // 已喝下、但还没兑现到战斗里的部分（下一场战斗生效）
+    public int pendingAleStacks;
+    public bool pendingManaEssence;
 
     // ============================================================
     //  特殊祝福效果（BlessingID → 层数）

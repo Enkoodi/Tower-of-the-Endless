@@ -6,7 +6,7 @@ using UnityEngine;
 /// 战斗流程与正常战斗完全一致（BattleManager），胜利后NPC被击败并消失，
 /// 记录楼层记忆，重返该楼层时不再生成。
 /// </summary>
-public class NpcBattler : MonoBehaviour
+public class NpcBattler : MonoBehaviour, IFloorEntity
 {
     [Header("敌人数据（与正常敌人Prefab配置方式一致，右键 Create → MagicTower → Enemy Stats）")]
     [SerializeField] private EnemyStats enemyStats;
@@ -19,6 +19,13 @@ public class NpcBattler : MonoBehaviour
 
     /// <summary>所属楼层编号</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     /// <summary>NPC被击败时触发，参数为被击败的NPC自身</summary>
     public event System.Action<NpcBattler> OnDefeated;

@@ -6,7 +6,7 @@ using UnityEngine;
 /// 玩家走到该格子时直接为 PlayerData 增加对应属性。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class StatBoostPickup : MonoBehaviour
+public class StatBoostPickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("数据引用")]
     [SerializeField] private StatBoostData data;
@@ -21,6 +21,32 @@ public class StatBoostPickup : MonoBehaviour
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：效果型道具，不能出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        Debug.LogWarning("[StatBoostPickup] 属性碎片是效果型道具，不能出售");
+        return false;
+    }
+
+
+    /// <summary>IPurchasable：按数量叠加属性增益。</summary>
+    public void ApplyPurchase(PlayerData player, int amount)
+    {
+        if (data == null)
+        {
+            Debug.LogWarning($"[StatBoostPickup] {name} 的 StatBoostData 未设置");
+            return;
+        }
+        player.ApplyStatBoost(data.boostType, data.value * Mathf.Abs(amount));
+    }
 
     void Awake()
     {

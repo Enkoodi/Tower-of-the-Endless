@@ -99,8 +99,12 @@ public class DropManager : MonoBehaviour
     // ========================================================================
 
     /// <summary>
-    /// 由 KeyPickup / StatBoostPickup / BlessingPickup 在拾取成功后调用。
+    /// 由**所有**拾取物脚本在拾取成功后调用（KeyPickup / StatBoostPickup / BlessingPickup /
+    /// 传送器 / 神圣盾 / 神圣剑 / 圣水 / 神圣火花 / 麦酒）。
     /// 从 FloorState 中移除该掉落记录，确保再次进入楼层时不会重复生成。
+    ///
+    /// 调用方传进来的 floor / gridPos 必须是 SetPickupInfo 写进去的那两个值 ——
+    /// 一旦是默认的 (0,0) / 0，移除的就是别处的记录，本层这条永远留着。
     /// </summary>
     public void MarkDropPickedUp(int floor, Vector2Int gridPos)
     {
@@ -139,25 +143,20 @@ public class DropManager : MonoBehaviour
         );
     }
 
-    /// <summary>给生成的掉落物补充楼层编号和网格坐标</summary>
+    /// <summary>
+    /// 给生成的拾取物写入楼层编号和网格坐标。
+    ///
+    /// 只按 IFloorPickup 接口取组件，不再逐个类型枚举。
+    /// 这里原先是一张手写的类型清单，新增拾取物时漏同步过 7 种（麦酒、神圣剑、神圣盾等），
+    /// 后果是 gridPosition / floorNumber 停在默认 (0,0) / 0 —— 拾取时清掉的是**第 0 层**的记录，
+    /// 本层 activeDropItems 永远清不掉 → 重返楼层重复刷出。
+    /// 现在新增拾取物只要实现 IFloorPickup，这里一行都不用改。
+    /// </summary>
     public static void SetPickupInfo(GameObject pickupObj, Vector2Int gridPos, int floor)
     {
         if (pickupObj == null) return;
 
-        if (pickupObj.TryGetComponent(out KeyPickup keyPickup))
-        {
-            keyPickup.floorNumber = floor;
-            keyPickup.gridPosition = gridPos;
-        }
-        else if (pickupObj.TryGetComponent(out StatBoostPickup statBoost))
-        {
-            statBoost.floorNumber = floor;
-            statBoost.gridPosition = gridPos;
-        }
-        else if (pickupObj.TryGetComponent(out BlessingPickup blessingPickup))
-        {
-            blessingPickup.floorNumber = floor;
-            blessingPickup.gridPosition = gridPos;
-        }
+        if (pickupObj.TryGetComponent(out IFloorPickup pickup))
+            pickup.SetFloorInfo(gridPos, floor);
     }
 }

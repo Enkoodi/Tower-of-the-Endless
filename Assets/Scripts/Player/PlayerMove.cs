@@ -103,7 +103,7 @@ public class PlayerMove : MonoBehaviour
         TrackKeyRelease(KeyCode.A, KeyCode.LeftArrow, Vector2.left);
         TrackKeyRelease(KeyCode.D, KeyCode.RightArrow, Vector2.right);
 
-        // 快速跳层：Q上楼梯，E下楼梯（需在楼梯9宫格内）
+        // 快速跳层：Q上楼梯，E下楼梯（需在楼梯十字五格内）
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryQuickFloorJump(true);
@@ -123,8 +123,19 @@ public class PlayerMove : MonoBehaviour
             TryUseDownTeleporter();
         }
 
-        // 敌人减半道具：V键使用（消耗数量，下一场战斗敌人血量减半）
-        if (Input.GetKeyDown(KeyCode.V))
+        // 战斗前消耗品：主键盘数字排 与 小键盘 都绑定，效果都只作用于下一场战斗
+        //   1 = 麦酒（每层攻 +1% / 防 -1%，最多 3 层）
+        //   2 = 魔力精华（战斗开始时魔力充能 +50，不叠加）
+        //   3 = 圣水（下一场战斗敌人血量减半）
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            TryUseAle();
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            TryUseManaEssence();
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
         {
             TryUseEnemyHalveItem();
         }
@@ -200,110 +211,15 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        // 检查 KeyPickup — 钥匙不阻挡，拾取后直接走到该格
-        KeyPickup key = hit.GetComponent<KeyPickup>();
-        if (key != null)
+        // 楼层拾取物：走上去即拾取，拾完继续走到该格。
+        // 统一按 IFloorPickup 取，不再逐个类型枚举 —— 钥匙 / 属性碎片 / 祝福 / 传送器 /
+        // 神圣剑 / 神圣盾 / 圣水 / 神圣火花 / 麦酒…… 新增拾取物只要实现该接口，这里不用改。
+        if (hit.TryGetComponent(out IFloorPickup pickup))
         {
             targetPosition = target;
             isMoving = true;
             if (playerData != null)
-                key.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 StatBoostPickup — 属性增益，拾取后直接走到该格
-        StatBoostPickup statBoost = hit.GetComponent<StatBoostPickup>();
-        if (statBoost != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                statBoost.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 BlessingPickup — 祝福选择，拾取后直接走到该格
-        BlessingPickup blessing = hit.GetComponent<BlessingPickup>();
-        if (blessing != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                blessing.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 FloorUpTeleporter — 上楼传送器，拾取后直接走到该格
-        FloorUpTeleporter upTeleporter = hit.GetComponent<FloorUpTeleporter>();
-        if (upTeleporter != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                upTeleporter.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 FloorDownTeleporter — 下楼传送器，拾取后直接走到该格
-        FloorDownTeleporter downTeleporter = hit.GetComponent<FloorDownTeleporter>();
-        if (downTeleporter != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                downTeleporter.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 AegisAmuletPickup — 护身符装备，拾取后直接走到该格
-        AegisAmuletPickup amulet = hit.GetComponent<AegisAmuletPickup>();
-        if (amulet != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                amulet.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 MagicAmplifierPickup — 魔力增幅器装备，拾取后直接走到该格
-        MagicAmplifierPickup amplifier = hit.GetComponent<MagicAmplifierPickup>();
-        if (amplifier != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                amplifier.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 EnemyHalveItemPickup — 敌人减半道具，拾取后直接走到该格
-        EnemyHalveItemPickup halveItem = hit.GetComponent<EnemyHalveItemPickup>();
-        if (halveItem != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                halveItem.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
-        }
-
-        // 检查 DivineSparkPickup — 神圣火花，拾取后 +1 并触发片尾 ED
-        DivineSparkPickup divineSpark = hit.GetComponent<DivineSparkPickup>();
-        if (divineSpark != null)
-        {
-            targetPosition = target;
-            isMoving = true;
-            if (playerData != null)
-                divineSpark.TryPickup(playerData);
+                pickup.TryPickup(playerData);
             StartCoroutine(SmoothMove());
             return;
         }
@@ -447,14 +363,14 @@ public class PlayerMove : MonoBehaviour
     }
 
     /// <summary>
-    /// 快速跳层：检测玩家是否在楼梯9宫格内，若是则跳到指定方向的已访问楼层。
+    /// 快速跳层：检测玩家是否在楼梯的十字五格内，若是则跳到指定方向的已访问楼层。
     /// </summary>
     /// <param name="goingUp">true=上楼(Q)，false=下楼(E)</param>
     private void TryQuickFloorJump(bool goingUp)
     {
         if (!IsNearStair())
         {
-            Debug.Log($"[QuickJump] 不在楼梯9宫格范围内，无法快速跳层");
+            Debug.Log($"[QuickJump] 不在楼梯十字五格范围内，无法快速跳层");
             return;
         }
 
@@ -554,6 +470,30 @@ public class PlayerMove : MonoBehaviour
         SaveManager.Instance?.SaveAutoGame();
     }
 
+    /// <summary>使用麦酒：下一场战斗攻击 +1% / 防御 -1%，最多叠 3 层（满层后再喝会被浪费）。</summary>
+    private void TryUseAle()
+    {
+        if (playerData == null)
+        {
+            Debug.LogError("[PlayerMove] 未找到 PlayerData，无法使用麦酒");
+            return;
+        }
+
+        playerData.UseAle();
+    }
+
+    /// <summary>使用魔力精华：下一场战斗开始时魔力充能 +50（不叠加、不累计场次）。</summary>
+    private void TryUseManaEssence()
+    {
+        if (playerData == null)
+        {
+            Debug.LogError("[PlayerMove] 未找到 PlayerData，无法使用魔力精华");
+            return;
+        }
+
+        playerData.UseManaEssence();
+    }
+
     /// <summary>使用敌人减半道具：消耗一个，下一场战斗敌人血量减半。</summary>
     private void TryUseEnemyHalveItem()
     {
@@ -569,14 +509,27 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    /// <summary>检测玩家周围9宫格内是否有楼梯</summary>
+    /// <summary>快速跳层范围：以楼梯所在格为中心的十字五格（楼梯格 + 上下左右各一格）</summary>
+    private const int QuickJumpRange = 1;
+
+    /// <summary>检测玩家是否在楼梯的十字五格内（以上/下楼梯所在格为中心）</summary>
     private bool IsNearStair()
     {
-        // 9宫格最大距离为 sqrt(2) ≈ 1.414，用 1.5f 覆盖
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 1.5f, stairLayer);
-        foreach (var hit in hits)
+        // 先放宽半径捞出附近的楼梯，再按格子曼哈顿距离精确判定十字范围。
+        // 不能直接拿 OverlapCircleAll 的半径当范围：楼梯碰撞体有半格宽，
+        // 半径 1.5 连距离 2 格的楼梯都算命中，实际覆盖外接 5×5（13 格菱形）。
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 2f, stairLayer);
+        foreach (Collider2D hit in hits)
         {
-            if (hit.GetComponent<StairController>() != null)
+            StairController stair = hit.GetComponent<StairController>();
+            if (stair == null) continue;
+
+            Vector3 delta = stair.transform.position - transform.position;
+            int dx = Mathf.RoundToInt(delta.x / moveDistance);
+            int dy = Mathf.RoundToInt(delta.y / moveDistance);
+
+            // 曼哈顿距离 ≤1 = 十字五格；斜角格距离为 2，不计入
+            if (Mathf.Abs(dx) + Mathf.Abs(dy) <= QuickJumpRange)
                 return true;
         }
         return false;

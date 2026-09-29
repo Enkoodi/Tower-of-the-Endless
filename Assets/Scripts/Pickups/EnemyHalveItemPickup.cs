@@ -6,7 +6,7 @@ using UnityEngine;
 /// 使用后下一场战斗（普通敌人与 NPC 敌人都生效）敌人血量减半。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
-public class EnemyHalveItemPickup : MonoBehaviour
+public class EnemyHalveItemPickup : MonoBehaviour, IFloorPickup, IPurchasable
 {
     [Header("显示")]
     [SerializeField] private Sprite pickupSprite;
@@ -18,6 +18,25 @@ public class EnemyHalveItemPickup : MonoBehaviour
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorPickup：写入所属楼层与网格坐标（由 MapGenerator / DropManager 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
+
+    /// <summary>IPurchasable：数量型道具，可出售。</summary>
+    public bool CanSell(PlayerData player, int sellAmount)
+    {
+        if (player.EnemyHalveItemCount >= sellAmount) return true;
+
+        Debug.LogWarning($"[EnemyHalveItemPickup] 圣水不足：需要出售 {sellAmount}，当前 {player.EnemyHalveItemCount}");
+        return false;
+    }
+
+    /// <summary>IPurchasable：发放（amount &gt; 0）或回收（amount &lt; 0）。</summary>
+    public void ApplyPurchase(PlayerData player, int amount) => player.AddEnemyHalveItem(amount);
 
     void Awake()
     {

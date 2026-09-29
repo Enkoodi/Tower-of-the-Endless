@@ -41,6 +41,21 @@ public class FloorState
 
     public bool IsEnemyDefeated(Vector2Int pos) => defeatedEnemies.Contains(pos);
     public bool IsItemPickedUp(Vector2Int pos) => pickedUpItems.Contains(pos);
+
+    /// <summary>
+    /// 该格子上的敌人 / NPC 是否已被清除 —— **查询敌人是否还在，一律用这个**。
+    ///
+    /// 普通敌人记进 defeatedEnemies，脚本敌人（对话触发的 NPC 战斗）记进 removedNpcs，
+    /// 这只是「同一件事的两种记法」，取决于当时走的是哪条代码路径。
+    /// 所以**必须两个集合都看**：只查其中一个，用另一种记法写下的格子就会被当成
+    /// 「还活着」而在重返楼层时复活。
+    ///
+    /// 历史事故：`Enemies/VampireLord/VampireLord.prefab` 放在 enemies 层，
+    /// 但挂的是 NpcBattler（记进 removedNpcs），而 SpawnEnemy 当时只查
+    /// IsEnemyDefeated → 击败后上下楼就复活。
+    /// </summary>
+    public bool IsEntityCleared(Vector2Int pos) =>
+        defeatedEnemies.Contains(pos) || removedNpcs.Contains(pos);
     public bool IsDoorOpened(Vector2Int pos) => openedDoors.Contains(pos);
     public bool IsBattleDoorOpened(Vector2Int pos) => openedBattleDoors.Contains(pos);
     public bool IsDropActive(Vector2Int pos) => activeDropItems.Contains(pos);

@@ -9,7 +9,7 @@ using UnityEngine;
 ///   4. 数量消耗门（healthCost == 0 && requiredKeyCount > 0 && consumeKey）：检测并消耗指定数量钥匙
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class DoorController : MonoBehaviour
+public class DoorController : MonoBehaviour, IFloorEntity
 {
     [Header("数据引用")]
     [SerializeField] private DoorData doorData;
@@ -26,6 +26,13 @@ public class DoorController : MonoBehaviour
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     void Awake()
     {

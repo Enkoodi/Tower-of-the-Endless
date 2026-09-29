@@ -6,7 +6,7 @@ using UnityEngine;
 /// 触发器不阻挡玩家通行（isTrigger = true），走过即触发。
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public class BattleTrigger : MonoBehaviour
+public class BattleTrigger : MonoBehaviour, IFloorEntity
 {
     [Header("生成的战斗门")]
     [Tooltip("要生成的战斗门 Prefab（需挂载 BattleDoorController）")]
@@ -19,7 +19,17 @@ public class BattleTrigger : MonoBehaviour
     private bool triggered = false;
 
     /// <summary>所属楼层编号（由 MapGenerator 在生成时设置）</summary>
+
+    /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
+    [HideInInspector] public Vector2Int gridPosition;
     [HideInInspector] public int floorNumber;
+
+    /// <summary>IFloorEntity：写入所属楼层与网格坐标（由 MapGenerator 调用）。</summary>
+    public void SetFloorInfo(Vector2Int gridPos, int floor)
+    {
+        gridPosition = gridPos;
+        floorNumber = floor;
+    }
 
     void Awake()
     {
