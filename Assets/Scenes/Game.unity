@@ -174,7 +174,7 @@ MonoBehaviour:
     displayName: "\u8349\u5730"
   - id: 7
     prefab: {fileID: 3774974605973376397, guid: 279d0de4c1adcdd44a3048cced871f70, type: 3}
-    displayName: "\u704C\u6728\u4E1B"
+    displayName: "\u5927\u7406\u77F3"
   - id: 8
     prefab: {fileID: 3774974605973376397, guid: 3a3d2613764605d49b4cdae9bde03bfd, type: 3}
     displayName: "\u79D8\u672F\u7816"
@@ -720,15 +720,15 @@ MonoBehaviour:
   - floorMin: 0
     floorMax: 10
     background: {fileID: 1102259951}
-  - floorMin: 16
+  - floorMin: 11
+    floorMax: 12
+    background: {fileID: 508398967}
+  - floorMin: 13
+    floorMax: 14
+    background: {fileID: 474063731}
+  - floorMin: 15
     floorMax: 31
     background: {fileID: 1102259951}
-  - floorMin: 11
-    floorMax: 13
-    background: {fileID: 508398967}
-  - floorMin: 14
-    floorMax: 15
-    background: {fileID: 474063731}
 --- !u!1 &451126016
 GameObject:
   m_ObjectHideFlags: 0
@@ -936,7 +936,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 5f6d01e651b4bcf48b35df248959226c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4ba449b59d9800b42af7badff5a3fcdf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1851,7 +1851,11 @@ MonoBehaviour:
   upTeleporterCount: 0
   downTeleporterCount: 0
   enemyHalveItemCount: 0
-  pendingEnemyHalveBattles: 0
+  aleCount: 0
+  manaEssenceCount: 0
+  pendingAleStacks: 0
+  pendingManaEssence: 0
+  pendingEnemyHalve: 0
 --- !u!114 &1606523441
 MonoBehaviour:
   m_ObjectHideFlags: 0
