@@ -46,6 +46,19 @@ public class MapGenerator : MonoBehaviour
     /// <summary>当前楼层编号（-1 表示未加载）</summary>
     public int CurrentFloor => CurrentMap?.floor ?? -1;
 
+    /// <summary>
+    /// 世界坐标是否落在冰面上。
+    /// 冰面砖块没有碰撞体（与墙共用一层，物理查询区分不出来），只能按格坐标查。
+    /// </summary>
+    public bool IsIceAt(Vector3 worldPos)
+    {
+        if (CurrentMap == null) return false;
+
+        int gx = Mathf.RoundToInt(worldPos.x - offsetX);
+        int gy = Mathf.RoundToInt(offsetY - worldPos.y);   // y 轴是翻转的
+        return iceCells.Contains(new Vector2Int(gx, gy));
+    }
+
     // ID → PrefabEntry 运行时查找表（由数组构建）
     private Dictionary<int, PrefabEntry> terrainMap;
     private Dictionary<int, PrefabEntry> objectMap;
@@ -58,6 +71,13 @@ public class MapGenerator : MonoBehaviour
 
     /// <summary>本次加载的进入方向（决定出生在哪个楼梯）</summary>
     private EntryDirection entryDirection;
+
+    /// <summary>当前楼层所有冰面格（地形预制体上挂 IceTile 标记的格子）</summary>
+    private readonly HashSet<Vector2Int> iceCells = new HashSet<Vector2Int>();
+
+    /// <summary>当前楼层的地图原点偏移 —— 世界坐标与网格坐标互转用，必须存字段</summary>
+    private float offsetX;
+    private float offsetY;
 
     // ========================================================================
     //  Unity 生命周期
@@ -203,8 +223,8 @@ public class MapGenerator : MonoBehaviour
         ClearMap();
         CurrentMap = data;
 
-        float offsetX = -(data.width  - 1) / 2f;
-        float offsetY =  (data.height - 1) / 2f;
+        offsetX = -(data.width  - 1) / 2f;
+        offsetY =  (data.height - 1) / 2f;
 
         // 逐格生成四层内容
         int floor = data.floor;
@@ -357,7 +377,13 @@ public class MapGenerator : MonoBehaviour
 
         GameObject obj = SpawnFromMap(terrainMap, id, pos);
         if (obj != null)
+        {
             terrainObjects[gridPos] = obj;
+
+            // 冰面：由预制体上的 IceTile 标记声明，登记格坐标供玩家滑行查询
+            if (obj.GetComponent<IceTile>() != null)
+                iceCells.Add(gridPos);
+        }
     }
 
     private void SpawnObject(int id, Vector3 worldPos, Vector2Int gridPos, int floor)
@@ -602,8 +628,6 @@ public class MapGenerator : MonoBehaviour
             return;
         }
 
-        float offsetX = -(CurrentMap.width - 1) / 2f;
-        float offsetY = (CurrentMap.height - 1) / 2f;
         Vector3 worldPos = new Vector3(gridPos.x + offsetX, -gridPos.y + offsetY, 0f);
 
         GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity, mapContainer);
@@ -713,6 +737,7 @@ public class MapGenerator : MonoBehaviour
         }
 
         terrainObjects.Clear();
+        iceCells.Clear();
         Debug.Log("[MapGenerator] 地图已清空");
     }
 

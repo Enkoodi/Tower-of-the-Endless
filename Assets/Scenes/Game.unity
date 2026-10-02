@@ -185,7 +185,7 @@ MonoBehaviour:
     prefab: {fileID: 3774974605973376397, guid: 8469b5a978ba8514f966dedd2cfb3f68, type: 3}
     displayName: "\u51B0\u9762"
   - id: 11
-    prefab: {fileID: 3774974605973376397, guid: 56d741425a9a2c841b0d7c92589d6f9e, type: 3}
+    prefab: {fileID: 5290137791613218716, guid: 6e4735080d92324449dd5ab23fef745b, type: 3}
     displayName: "\u51B0\u5757"
   objectPrefabs:
   - id: 1
@@ -727,6 +727,9 @@ MonoBehaviour:
     floorMax: 14
     background: {fileID: 474063731}
   - floorMin: 15
+    floorMax: 18
+    background: {fileID: 1407596754}
+  - floorMin: 19
     floorMax: 31
     background: {fileID: 1102259951}
 --- !u!1 &451126016
@@ -1573,7 +1576,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1407596754}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -1607,7 +1610,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 36e2ff260bd5e0d428c310191855c561, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 910b8967ff5c858469a9f4e6be69e9f5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

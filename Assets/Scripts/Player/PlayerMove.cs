@@ -21,6 +21,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private LayerMask npcLayer;
     [SerializeField] private float checkRadius = 0.4f;
 
+    [Header("冰面滑行")]
+    [SerializeField] private int maxSlideSteps = 200;
+
     private bool isMoving = false;
     private bool isInBattle = false;
     private bool isChoosingBlessing = false;
@@ -31,6 +34,12 @@ public class PlayerMove : MonoBehaviour
     private Vector2 battleDirection;
     private float lastMoveTime = 0f;
     private List<Vector2> keyStack = new List<Vector2>();
+
+    // 冰面滑行状态
+    private bool isSliding = false;
+    private Vector2 slideDirection;
+    private int slideFloor = int.MinValue;
+    private MapGenerator mapGenCache;
 
     void Start()
     {
@@ -81,10 +90,10 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isViewingManual;
+        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isViewingManual || isSliding;
 
-        // 怪物手册快捷键 — 战斗/祝福/NPC/对话时禁用；手册打开时仍允许再次按 Tab 关闭
-        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue;
+        // 怪物手册快捷键 — 战斗/祝福/NPC/对话/滑行时禁用；手册打开时仍允许再次按 Tab 关闭
+        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isSliding;
         if (!manualShortcutLocked && Input.GetKeyDown(KeyCode.Tab))
         {
             MonsterManualUI manual = FindAnyObjectByType<MonsterManualUI>();
@@ -167,6 +176,16 @@ public class PlayerMove : MonoBehaviour
 
     private void TryMove(Vector2 direction)
     {
+        ResolveMove(direction, false);
+    }
+
+    /// <summary>
+    /// 解析一次移动：撞到东西就分流，能走就启动位移动画。
+    /// sliding = true 表示这是冰面滑行中的一步（撞到 NPC 只停下、不弹交互界面）。
+    /// 返回 true 表示已经启动了一次位移动画（isMoving 已置位）。
+    /// </summary>
+    private bool ResolveMove(Vector2 direction, bool sliding)
+    {
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
         // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC，按组件类型分流
@@ -186,7 +205,7 @@ public class PlayerMove : MonoBehaviour
                 blockingDoor.TryOpen(playerData, playerData);
             else
                 Debug.LogError("[PlayerMove] playerData 为 null，无法开门");
-            return;
+            return false;   // 停在门前：有钥匙会顺手开门，没钥匙就干停着
         }
 
         // 战斗门触发器不阻挡通行、走过即激活，且不参与下面的占位物分流 ——
@@ -207,8 +226,8 @@ public class PlayerMove : MonoBehaviour
         {
             targetPosition = target;
             isMoving = true;
-            StartCoroutine(SmoothMove());
-            return;
+            StartCoroutine(SmoothMove(direction, !sliding));
+            return true;
         }
 
         // 楼层拾取物：走上去即拾取，拾完继续走到该格。
@@ -220,8 +239,8 @@ public class PlayerMove : MonoBehaviour
             isMoving = true;
             if (playerData != null)
                 pickup.TryPickup(playerData);
-            StartCoroutine(SmoothMove());
-            return;
+            StartCoroutine(SmoothMove(direction, !sliding));   // 道具不终止滑行
+            return true;
         }
 
         // 再检查 EnemyController
@@ -239,53 +258,65 @@ public class PlayerMove : MonoBehaviour
             {
                 Debug.LogError("[PlayerMove] playerData 或 BattleManager 为 null，无法战斗");
             }
-            return;
+            StopSliding();
+            return false;
         }
 
         // 检查 StairController — 楼梯切换楼层
         StairController stair = hit.GetComponent<StairController>();
         if (stair != null)
         {
+            StopSliding();   // 踩到楼梯直接上下楼，滑行到此为止
             targetPosition = target;
             isMoving = true;
             StartCoroutine(SmoothMoveToStair(stair));
-            return;
+            return true;
         }
 
         // 检查 DialogueTrigger — 对话NPC，不移动，触发对话
         DialogueTrigger dialogue = hit.GetComponent<DialogueTrigger>();
         if (dialogue != null)
         {
-            DialogueUI dialogueUI = FindAnyObjectByType<DialogueUI>();
-            if (dialogueUI != null)
+            StopSliding();
+            if (!sliding)   // 滑行中和撞墙同款：只停住，不弹对话
             {
-                dialogueUI.OpenDialogue(dialogue);
+                DialogueUI dialogueUI = FindAnyObjectByType<DialogueUI>();
+                if (dialogueUI != null)
+                {
+                    dialogueUI.OpenDialogue(dialogue);
+                }
+                else
+                {
+                    Debug.LogWarning("[PlayerMove] 未找到 DialogueUI，无法打开对话");
+                }
             }
-            else
-            {
-                Debug.LogWarning("[PlayerMove] 未找到 DialogueUI，无法打开对话");
-            }
-            return;
+            return false;
         }
 
-        // 检查 NPCController — 停止移动，打开NPC交互界面
+        // 检查 NPCController — 停止移动，打开NPC交互界面（滑行中只停住）
         NPCController npc = hit.GetComponent<NPCController>();
         if (npc != null)
         {
-            NPCInteractionUI npcUI = FindAnyObjectByType<NPCInteractionUI>();
-            if (npcUI != null)
+            StopSliding();
+            if (!sliding)   // 滑行中和撞墙同款：只停住，不弹交互界面
             {
-                npcUI.OpenInteraction(npc, playerData);
+                NPCInteractionUI npcUI = FindAnyObjectByType<NPCInteractionUI>();
+                if (npcUI != null)
+                {
+                    npcUI.OpenInteraction(npc, playerData);
+                }
+                else
+                {
+                    Debug.LogWarning("[PlayerMove] 未找到 NPCInteractionUI，无法与NPC交互");
+                }
             }
-            else
-            {
-                Debug.LogWarning("[PlayerMove] 未找到 NPCInteractionUI，无法与NPC交互");
-            }
-            return;
+            return false;
         }
 
         // 没找到任何组件 → 当墙处理
         Debug.Log($"[PlayerMove] 前方是墙（{hit.name}），无法通行");
+        StopSliding();
+        return false;
     }
 
     private void OnBattleEnd(bool won)
@@ -296,14 +327,15 @@ public class PlayerMove : MonoBehaviour
         {
             targetPosition = transform.position + (Vector3)battleDirection * moveDistance;
             isMoving = true;
-            StartCoroutine(SmoothMove());
+            StartCoroutine(SmoothMove(battleDirection, false));   // 战斗打断滑行，不续滑
         }
     }
 
     /// <summary>移动与占位检测用的层：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC</summary>
     private LayerMask ObstacleMask => doorLayer | wallLayer | enemyLayer | itemLayer | stairLayer | npcLayer;
 
-    private IEnumerator SmoothMove()
+    /// <summary>位移动画；allowSlide = 落点是冰面时是否接着滑行。</summary>
+    private IEnumerator SmoothMove(Vector2 direction, bool allowSlide)
     {
         Vector3 start = transform.position;
         float elapsed = 0f;
@@ -325,6 +357,10 @@ public class PlayerMove : MonoBehaviour
 
         // 夹击检测
         PincerAttack.CheckPincerFormation(playerData);
+
+        // 踩到冰面 → 沿本次移动方向开始滑行
+        if (allowSlide && !isSliding && IsOnIce())
+            StartSlide(direction);
     }
 
     /// <summary>激活指定格上的战斗门触发器（没有则什么都不做）。</summary>
@@ -336,6 +372,75 @@ public class PlayerMove : MonoBehaviour
             BattleTrigger trigger = c.GetComponent<BattleTrigger>();
             if (trigger != null) trigger.Trigger();
         }
+    }
+
+    // ========================================================================
+    //  冰面滑行
+    // ========================================================================
+
+    /// <summary>当前是否站在冰面上。</summary>
+    private bool IsOnIce()
+    {
+        MapGenerator mapGen = FindMapGenerator();
+        return mapGen != null && mapGen.IsIceAt(transform.position);
+    }
+
+    /// <summary>开始滑行：锁定方向，清掉按住的键，之后交给 SlideRoutine 推进。</summary>
+    private void StartSlide(Vector2 direction)
+    {
+        if (isSliding) return;
+
+        isSliding = true;
+        slideDirection = direction;
+        keyStack.Clear();
+        Debug.Log($"[PlayerMove] 踩上冰面，沿 {direction} 开始滑行");
+        StartCoroutine(SlideRoutine());
+    }
+
+    /// <summary>结束滑行，把控制权交回玩家。</summary>
+    private void StopSliding()
+    {
+        isSliding = false;
+    }
+
+    /// <summary>
+    /// 滑行主循环：每步先看脚下是不是冰面，再沿锁定方向滑一格。
+    /// 撞到东西（ResolveMove 返回 false）、踩楼梯换层、或滑上非冰面就结束。
+    /// </summary>
+    private IEnumerator SlideRoutine()
+    {
+        MapGenerator mapGen = FindMapGenerator();
+        slideFloor = mapGen != null ? mapGen.CurrentFloor : int.MinValue;
+
+        int steps = 0;
+        while (isSliding)
+        {
+            // 等上一步的位移动画播完
+            while (isMoving) yield return null;
+            if (!isSliding) break;
+
+            if (++steps > maxSlideSteps)
+            {
+                Debug.LogWarning($"[PlayerMove] 冰面滑行超过 {maxSlideSteps} 步，强制结束");
+                break;
+            }
+
+            mapGen = FindMapGenerator();
+            if (mapGen == null || mapGen.CurrentFloor != slideFloor) break;   // 踩楼梯换层了
+            if (!mapGen.IsIceAt(transform.position)) break;                   // 滑到非冰面上了
+
+            if (!ResolveMove(slideDirection, true)) break;                    // 撞到东西了
+            yield return null;
+        }
+
+        isSliding = false;
+    }
+
+    private MapGenerator FindMapGenerator()
+    {
+        if (mapGenCache == null)
+            mapGenCache = FindAnyObjectByType<MapGenerator>();
+        return mapGenCache;
     }
 
     /// <summary>
