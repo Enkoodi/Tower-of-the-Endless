@@ -135,9 +135,24 @@ public class BlessingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 根据存档数据恢复特殊祝福（清空现有并重建）。
+    /// 获取需要持久化的祝福运行时状态（BlessingID 名称 → 状态值），用于存档。
+    /// 只有 HasPersistentState 为真的效果才会被收集（如卡巴拉生命之树的剩余触发次数）。
     /// </summary>
-    public void RestoreEffects(Dictionary<string, int> effects)
+    public Dictionary<string, int> GetActiveEffectStates()
+    {
+        var result = new Dictionary<string, int>();
+        foreach (var kv in activeEffects)
+            if (kv.Value.HasPersistentState)
+                result[kv.Key] = kv.Value.GetPersistentState();
+        return result;
+    }
+
+    /// <summary>
+    /// 根据存档数据恢复特殊祝福（清空现有并重建）。
+    /// states = 持久运行时状态（BlessingID 名称 → 状态值）；旧存档为 null 时，
+    /// 效果保持「未初始化」语义（如卡巴拉生命之树回退到按 Level 算满次数）。
+    /// </summary>
+    public void RestoreEffects(Dictionary<string, int> effects, Dictionary<string, int> states = null)
     {
         activeEffects.Clear();
 
@@ -159,6 +174,11 @@ public class BlessingManager : MonoBehaviour
             }
 
             effect.SetLevel(kv.Value);
+
+            // 恢复持久运行时状态（旧档缺这个键 → 不调用，保持子类的「未初始化」默认）
+            if (states != null && states.TryGetValue(kv.Key, out int state))
+                effect.RestorePersistentState(state);
+
             activeEffects[kv.Key] = effect;
         }
 

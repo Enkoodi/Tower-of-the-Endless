@@ -38,8 +38,15 @@ public class SimBattleUnit : IBattleUnit
         Speed = speed;
     }
 
-    public static SimBattleUnit FromPlayer(PlayerData p) => new SimBattleUnit(
-        p.HP, p.Attack, p.Defense, p.AttackCount, p.LifeSteal, p.ReflectDamage,
+    public static SimBattleUnit FromPlayer(PlayerData p) => FromPlayer(p, 0, 0);
+
+    /// <summary>
+    /// 带装备加成的副本 —— 给「衔尾之十字」这类**战斗开始时**才生效的效果用：
+    /// 图鉴在战斗外打开，那些效果不会自动生效，所以由调用方先算好加成再传进来。
+    /// </summary>
+    public static SimBattleUnit FromPlayer(PlayerData p, int lifeStealBonus, int reflectDamageBonus) => new SimBattleUnit(
+        p.HP, p.Attack, p.Defense, p.AttackCount,
+        p.LifeSteal + lifeStealBonus, p.ReflectDamage + reflectDamageBonus,
         p.DamageReduction, p.ManaCharge, p.ManaMax, p.Speed);
 
     public static SimBattleUnit FromEnemyStats(EnemyStats e) => new SimBattleUnit(
@@ -56,6 +63,18 @@ public class SimBattleUnit : IBattleUnit
         HP -= reduced;
         if (HP < 0) HP = 0;
         return reduced;
+    }
+
+    /// <summary>
+    /// 真实伤害：无视防御与减伤，可以致死。返回实际扣掉的 HP。
+    /// 与 ReceiveDamage 的唯一区别就是不过减伤（撕裂 Rend 用）。
+    /// </summary>
+    public int ReceiveTrueDamage(int amount)
+    {
+        if (amount <= 0) return 0;
+        int actual = System.Math.Min(amount, HP);
+        HP -= actual;
+        return actual;
     }
 
     /// <summary>精确回血，不乘任何系数。</summary>

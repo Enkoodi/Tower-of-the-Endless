@@ -64,6 +64,25 @@ public class GameSaveData
     public bool pendingManaEssence;
 
     // ============================================================
+    //  装备效果（神圣剑 / 神圣盾 / 利维坦之髓）
+    //
+    //  这三样是运行时 AddComponent 挂到玩家身上的组件，**不属于 PlayerData 字段**，
+    //  所以必须单独存档 —— 否则读档后装备会静默消失：
+    //  楼层记忆里道具已标记「已拾取」，地图上不再刷出，效果也没了，等于白捡。
+    // ============================================================
+    public bool hasHolySword;
+    public int holySwordMultiplierPercent = 200;
+    public bool hasHolyShield;
+    public bool hasLeviathansMarrow;
+    public int leviathansMarrowInterval = 5;
+    public bool hasBehemothsFang;
+    public int fangStacksPerAttack = 1;
+    public int fangMaxStacks = 10;
+    public int fangPercentPerStack = 1;
+    public bool hasOuroborosCrucifix;
+    public int ouroborosPercentOfHigher = 50;
+
+    // ============================================================
     //  特殊祝福效果（BlessingID → 层数）
     // ============================================================
     public Dictionary<string, int> specialBlessings = new Dictionary<string, int>();
@@ -75,6 +94,16 @@ public class GameSaveData
     //  这份是「获得清单」，读档后不会因为祝福叠加而丢失历史。
     // ============================================================
     public Dictionary<string, int> obtainedBlessings = new Dictionary<string, int>();
+
+    // ============================================================
+    //  特殊祝福的持久运行时状态（BlessingID → 状态值）
+    //
+    //  存「跨战斗累计」的计数，目前只有卡巴拉生命之树（value = 剩余触发次数）。
+    //  这类状态不属于 Level，也不能每场战斗重置 —— 不单独存就会「读档/打完仗后
+    //  次数回满 → 反复触发」。纯战斗内状态（回合计数等）不写这里。
+    //  旧存档没有这个键 → 效果保持「未初始化」语义（回退到 Level）。
+    // ============================================================
+    public Dictionary<string, int> blessingStates = new Dictionary<string, int>();
 
     // ============================================================
     //  商店购买次数（所有商店共通的全局计数，决定下一次购买价格）
@@ -105,8 +134,15 @@ public class GameSaveData
 
     // ============================================================
     //  当前楼层
+    //
+    //  ⚠️ 哨兵值不能用 -1：地下负层（floor_-01 ~ floor_-07）是**合法的真实楼层编号**，
+    //  与 -1 撞车会导致「在负层读档时被判为无楼层 → 整张地图不生成、只剩 Unity 默认蓝底」。
+    //  全工程统一用 NoFloor 表示「当前没有加载任何楼层」。
     // ============================================================
-    public int currentFloor = -1;
+    public int currentFloor = NoFloor;
+
+    /// <summary>「当前未加载任何楼层」的哨兵值。不能用 -1（-1 是真实的第 -1 层）。</summary>
+    public const int NoFloor = int.MinValue;
 }
 
 /// <summary>

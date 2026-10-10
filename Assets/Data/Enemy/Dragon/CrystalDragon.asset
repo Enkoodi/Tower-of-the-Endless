@@ -15,11 +15,11 @@ MonoBehaviour:
   enemyName: "\u68F1\u955C\u9F99"
   enemySprite: {fileID: 21300000, guid: dcbad329a78d59d4f90a2b1e126cf83e, type: 3}
   hp: 1500
-  attack: 850
-  defense: 200
+  attack: 1000
+  defense: 300
   attackCount: 1
   lifeSteal: 0
-  reflectDamage: 50
+  reflectDamage: 75
   damageReduction: 30
   manaCharge: 1000
   manaMax: 100

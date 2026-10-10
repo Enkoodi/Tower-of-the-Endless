@@ -20,11 +20,49 @@ public enum BattleEndReason
     Stalemate,         // 到回合上限仍未分出胜负
 }
 
+/// <summary>
+/// 战斗行动的类型 —— **冻结只封锁主动行动，被动效果照常**。
+/// 玩家与敌人共用同一套战斗模板，将来双方的被动技能都归到 Passive 一侧。
+/// </summary>
+public enum BattleActionKind
+{
+    None,      // 非行动步骤（回合开始 / 回合结束）
+    Active,    // 主动攻击：普通攻击（物理 + 魔力），以及未来的主动技能
+    Passive,   // 被动效果：反伤、吸血等，以及未来的被动技能 —— 冻结不影响
+}
+
+/// <summary>
+/// 撕裂（Rend）参数 —— 由装备「贝希摩斯之牙」的效果组件提供。
+/// 全 0（`default`）= 没有这件装备，整套机制不启用。
+/// </summary>
+public struct RendSpec
+{
+    /// <summary>每次主动攻击叠加的层数</summary>
+    public int StacksPerAttack;
+    /// <summary>层数上限</summary>
+    public int MaxStacks;
+    /// <summary>每层按「施加者实时攻击力」的百分之几结算伤害</summary>
+    public int PercentPerStack;
+}
+
 /// <summary>刚推进的那一步发生了什么，供表现层演出。</summary>
 public struct BattleStep
 {
     public BattleStepKind Kind;
     public int Turn;
+
+    /// <summary>这一步的行动类型（冻结只封锁 Active）</summary>
+    public BattleActionKind ActionKind;
+
+    /// <summary>这一步的出手方被冻结，主动攻击被跳过（被动效果照常）</summary>
+    public bool AttackerFrozen;
+
+    /// <summary>这一步叠加的撕裂层数（&gt;0 = 本次主动攻击给敌人上了撕裂）</summary>
+    public int RendStacksAdded;
+    /// <summary>这一步结束时敌人身上的撕裂层数</summary>
+    public int RendStacks;
+    /// <summary>这一步由撕裂造成的真实伤害</summary>
+    public int RendDamage;
 
     /// <summary>这一步敌人实际掉了多少血（已过敌人减伤）</summary>
     public int DamageToEnemy;
@@ -74,6 +112,7 @@ public class BattleResolver
     private readonly IBattleUnit player;
     private readonly IBattleUnit enemy;
     private readonly int magicPercent;   // 神圣剑倍率，100 = 无增幅
+    private readonly RendSpec rendSpec;  // 贝希摩斯之牙的撕裂参数（default = 未装备）
 
     // ------------------------------------------------------------
     //  可选挂钩。不设则跳过（图鉴就是这么用的）。
@@ -85,6 +124,21 @@ public class BattleResolver
     public System.Action<int> OnEnemyTakeDamage;
     public System.Action<int> OnEnemyDealDamage;
     public System.Action<int> OnPlayerTakeDamage;
+
+    // ------------------------------------------------------------
+    //  行动封锁挂钩：返回该回合该单位能否进行**主动攻击**。
+    //  参数 = 本回合序号（从 1 开始）；不设则一律可行动。
+    //  只封锁主动攻击（物理 + 魔力）—— 反伤 / 吸血等被动效果不经过这里，
+    //  所以「冻结敌人」时敌人照样能反伤。玩家与敌人共用同一套机制，将来双方都能被冻结。
+    // ------------------------------------------------------------
+    public System.Func<int, bool> PlayerCanAct;
+    public System.Func<int, bool> EnemyCanAct;
+
+    /// <summary>本回合玩家能否主动攻击（未设挂钩 = 可以）</summary>
+    public bool PlayerCanActThisTurn => PlayerCanAct?.Invoke(turnCount) ?? true;
+
+    /// <summary>本回合敌人能否主动攻击（未设挂钩 = 可以）</summary>
+    public bool EnemyCanActThisTurn => EnemyCanAct?.Invoke(turnCount) ?? true;
 
     // ------------------------------------------------------------
     //  本回合的中间量（也对外暴露，供「无法破防」那条日志显示伤害构成）
@@ -107,6 +161,20 @@ public class BattleResolver
 
     /// <summary>敌人速度更高 → 会先偷袭一次</summary>
     public bool WillSneak { get; }
+
+    // ------------------------------------------------------------
+    //  撕裂（Rend）—— 装备「贝希摩斯之牙」时启用（构造时由 rendSpec 决定）。
+    //  玩家每次**主动攻击**（不论是否破防）给敌人叠 StacksPerAttack 层，上限 MaxStacks；
+    //  每回合开始时，敌人受到「玩家实时攻击力 × 层数 × PercentPerStack / 100」的**真实伤害**
+    //  （无视防御 / 无视减伤 / 不触发反伤 / 可以致死）。
+    //  参数在构造时定格（与 magicPercent 同一套路），所以「伤不到敌人」的判定也能算上撕裂。
+    // ------------------------------------------------------------
+
+    /// <summary>撕裂是否启用（每次攻击叠层 &gt; 0 且层数上限 &gt; 0）</summary>
+    private bool RendEnabled => rendSpec.StacksPerAttack > 0 && rendSpec.MaxStacks > 0;
+
+    /// <summary>敌人当前身上的撕裂层数（供表现层显示 / 日志）</summary>
+    public int EnemyRendStacks { get; private set; }
 
     /// <summary>
     /// 玩家有没有办法伤到敌人（否则提前收场判负，对应实战的 damageToEnemy &lt;= 0 分支）。
@@ -139,11 +207,13 @@ public class BattleResolver
     private int turnCount = 1;
     private Phase phase;
 
-    public BattleResolver(IBattleUnit player, IBattleUnit enemy, int magicAmplifierPercent)
+    public BattleResolver(IBattleUnit player, IBattleUnit enemy, int magicAmplifierPercent,
+                          RendSpec rendSpec = default)
     {
         this.player = player;
         this.enemy = enemy;
         magicPercent = magicAmplifierPercent;
+        this.rendSpec = rendSpec;
 
         WillSneak = enemy.Speed > player.Speed;
 
@@ -153,7 +223,9 @@ public class BattleResolver
         // 定格「还有没有办法伤到敌人」—— 之后每回合重算 damageToEnemy 都不再影响这个判断。
         // 自己打不出伤害时，反伤是一条独立的路（敌人每回合必反击 → 玩家的反伤必然被触发）。
         ReflectToEnemy = ComputeReflectToEnemy();
-        CanDamageEnemy = damageToEnemy > 0 || ReflectToEnemy > 0;
+        // 撕裂也算一条「伤得到敌人」的路：无视防御/减伤的真伤迟早会磨死它。
+        bool rendCanDamage = RendEnabled && rendSpec.PercentPerStack > 0 && player.Attack > 0;
+        CanDamageEnemy = damageToEnemy > 0 || ReflectToEnemy > 0 || rendCanDamage;
 
         // ⚠️ 这里**不能**因为「伤不到敌人」就直接判结束 ——
         // 旧实现的顺序是「先挨偷袭，再收场」，提前判会凭空少掉偷袭那一次伤害。
@@ -247,13 +319,32 @@ public class BattleResolver
 
     private void DoSneak()
     {
+        // 偷袭也是敌人的一次**主动攻击** → 被冻结时不发生。
+        // （冻结间隔 ≥ 2 时第 1 回合永远不会冻结，这条只是让模型自洽。）
+        if (!EnemyCanActThisTurn)
+        {
+            LastStep = new BattleStep
+            {
+                Kind = BattleStepKind.Sneak,
+                Turn = turnCount,
+                ActionKind = BattleActionKind.Active,
+                AttackerFrozen = true,
+            };
+            return;
+        }
+
         int sneakDamage = enemyDamageToPlayer * 2;
         int actual = player.ReceiveDamage(sneakDamage);
+
+        // 偷袭也是「玩家受到伤害」→ 回调给祝福（工匠的濒死回复要在这里也能生效，
+        // 否则被偷袭秒杀时祝福救不了，与「敌人反击」那条路不对称）。
+        OnPlayerTakeDamage?.Invoke(actual);
 
         LastStep = new BattleStep
         {
             Kind = BattleStepKind.Sneak,
             Turn = turnCount,
+            ActionKind = BattleActionKind.Active,
             DamageToPlayer = actual,
             PlayerDied = player.HP <= 0,
         };
@@ -273,7 +364,21 @@ public class BattleResolver
         // LastStep 是自动属性，直接写 LastStep.EnemyDied 会报 CS1612（属性返回的是副本）
         BattleStep s = new BattleStep { Kind = BattleStepKind.TurnStart, Turn = turnCount };
 
-        // 深渊/静默可能直接把敌人打死
+        // 撕裂（Rend）：每回合开始时结算真伤。放在祝福之后 —— 玩家攻击力可能被
+        // 回合开始的祝福改过，这里要用**实时值**。
+        // 真实伤害：无视防御 / 无视减伤 / 不触发反伤，**可以致死**（下面的死亡判定会接住）。
+        if (RendEnabled && EnemyRendStacks > 0 && enemy.HP > 0 && rendSpec.PercentPerStack > 0)
+        {
+            // 取整偏向玩家（Ceil）：这是玩家的收益
+            int rendDamage = Mathf.CeilToInt(player.Attack * EnemyRendStacks * rendSpec.PercentPerStack / 100f);
+            if (rendDamage > 0)
+            {
+                s.RendDamage = enemy.ReceiveTrueDamage(rendDamage);
+                s.RendStacks = EnemyRendStacks;
+            }
+        }
+
+        // 深渊/静默/撕裂可能直接把敌人打死
         if (enemy.HP <= 0)
         {
             s.EnemyDied = true;
@@ -285,15 +390,28 @@ public class BattleResolver
 
     private void DoPlayerAttack()
     {
+        bool canAct = PlayerCanActThisTurn;
+
         BattleStep s = new BattleStep
         {
             Kind = BattleStepKind.PlayerAttack,
             Turn = turnCount,
-            AttackerAttackCount = player.AttackCount,
-            AttackerPhysical = playerPhysical,
-            AttackerManaCost = manaCost,
-            AttackerRawDamage = damageToEnemy,
+            ActionKind = BattleActionKind.Active,
+            AttackerFrozen = !canAct,
         };
+
+        // 被冻结 → 跳过**主动攻击**。被动（反伤等）照常，但没有攻击发生，
+        // 所以不消耗魔力、不吸血，也不会触发敌人反伤。
+        if (!canAct)
+        {
+            LastStep = s;
+            return;
+        }
+
+        s.AttackerAttackCount = player.AttackCount;
+        s.AttackerPhysical = playerPhysical;
+        s.AttackerManaCost = manaCost;
+        s.AttackerRawDamage = damageToEnemy;
 
         // 玩家攻击
         s.DamageToEnemy = enemy.ReceiveDamage(damageToEnemy);
@@ -319,6 +437,20 @@ public class BattleResolver
             if (reflect > 0) s.DamageToPlayer += player.ReceiveDamage(reflect);
         }
 
+        // 反伤也是「玩家受到伤害」→ 回调给祝福（工匠的濒死回复要在这里也能生效）。
+        // ⚠️ 必须在下面的 PlayerDied 判定之前，否则被反伤打死时祝福来不及救。
+        OnPlayerTakeDamage?.Invoke(s.DamageToPlayer);
+
+        // 撕裂（Rend）：每次主动攻击都叠层 —— **不论是否破防**（DamageToEnemy 为 0 也照样叠）。
+        // 敌人已被这一击打死就不用叠了（战斗马上结束）。
+        if (RendEnabled && enemy.HP > 0)
+        {
+            int before = EnemyRendStacks;
+            EnemyRendStacks = Mathf.Min(rendSpec.MaxStacks, EnemyRendStacks + rendSpec.StacksPerAttack);
+            s.RendStacksAdded = EnemyRendStacks - before;
+            s.RendStacks = EnemyRendStacks;
+        }
+
         ComputeRound();
 
         s.EnemyDied = enemy.HP <= 0;
@@ -333,15 +465,28 @@ public class BattleResolver
 
     private void DoEnemyCounter()
     {
+        bool canAct = EnemyCanActThisTurn;
+
         BattleStep s = new BattleStep
         {
             Kind = BattleStepKind.EnemyCounter,
             Turn = turnCount,
-            AttackerAttackCount = enemy.AttackCount,
-            AttackerPhysical = enemyPhysical,
-            AttackerManaCost = enemyManaCost,
-            AttackerRawDamage = enemyDamageToPlayer,
+            ActionKind = BattleActionKind.Active,
+            AttackerFrozen = !canAct,
         };
+
+        // 被冻结 → 跳过敌人的**主动攻击**（也就不消耗魔力）。
+        // 敌人的反伤是被动效果、只在「敌人被攻击」时触发（见 DoPlayerAttack），不受影响。
+        if (!canAct)
+        {
+            LastStep = s;
+            return;
+        }
+
+        s.AttackerAttackCount = enemy.AttackCount;
+        s.AttackerPhysical = enemyPhysical;
+        s.AttackerManaCost = enemyManaCost;
+        s.AttackerRawDamage = enemyDamageToPlayer;
 
         // 敌人反击
         s.DamageToPlayer = player.ReceiveDamage(enemyDamageToPlayer);

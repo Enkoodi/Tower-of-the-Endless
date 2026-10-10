@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 5129926343278377020}
   - component: {fileID: 3013410102031519395}
   - component: {fileID: -2069880403602973534}
-  - component: {fileID: 3086429035218338403}
   - component: {fileID: -778101899729320852}
+  - component: {fileID: 7284763092175641203}
   m_Layer: 11
-  m_Name: 19F Shop 2
+  m_Name: 17F Shop 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,23 +146,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u5C0F\u9B3C\uFF0C\u8FC7\u6765\u8FC7\u6765"
-    showChoices: 0
-    nextLineIndex: -1
-  - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u9B54\u529B\u7CBE\u534E800\u91D1\u5E01\u4E00\u5757\uFF0C\u4E70\u4E0D\u4E70\uFF0C\u8FD9\u53EF\u662F\u8FDD\u7981\u54C1\uFF0C\u5356\u8FD9\u4E48\u8D35\u4E0D\u662F\u5F88\u6B63\u5E38\u5417\uFF1F"
+  - speakerName: "\u8D4C\u573A\u8001\u677F"
+    content: "\u8981\u4E0D\u8981\u6765\u4E00\u628A\uFF0C\u73A9\u6CD5\u662F\u8FD9\u6837\u7684\uFF0C\u6211\u4F1A\u7ED9\u4F60\u4E24\u4E2A\u9009\u9879\uFF0C\u6BCF\u4E2A\u9009\u9879\u53C8\u4E09\u90E8\u5206\u7EC4\u6210\uFF0C\u7B2C\u4E00\u90E8\u5206\u662F\u6982\u7387\uFF0C\u7B2C\u4E8C\u90E8\u5206\u662F\u8F93\u8D62\uFF0C\u7B2C\u4E09\u90E8\u5206\u662F\u91D1\u989D\uFF0C\u4E00\u5207\u968F\u673A\u4E0D\u53EF\u53CD\u6094\uFF0C\u6765\u4E00\u628A\u8BD5\u8BD5\u5427\uFF01"
     showChoices: 1
-    nextLineIndex: -1
+    nextLineIndex: -2
+  - speakerName: "\u8D4C\u573A\u8001\u677F"
+    content: "\u6709\u53E5\u8BDD\u8BF4\u7684\u597D\uFF0C\u53EB\u4E0D\u6562\u8D4C\u7684\u4EBA\u90FD\u662F\u5728\u8D4C\u81EA\u5DF1\u4F1A\u8F93"
+    showChoices: 0
+    nextLineIndex: -2
   entryBranches: []
-  choice1Text: "\u8D2D\u4E70"
-  choice2Text: "\u79BB\u5F00"
+  choice1Text: "\u6765\u4E00\u628A\uFF01"
+  choice2Text: "\u9003\u8DD1"
   onChoice1:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3086429035218338403}
-        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
-        m_MethodName: TryPurchase
+      - m_Target: {fileID: 7284763092175641203}
+        m_TargetAssemblyTypeName: Shop3Gamble, Assembly-CSharp
+        m_MethodName: OpenGamble
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -176,25 +176,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   choice1NextLineIndex: -1
-  choice2NextLineIndex: -1
+  choice2NextLineIndex: 1
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
---- !u!114 &3086429035218338403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6395233593365337873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  goldCost: 800
-  items:
-  - prefab: {fileID: 1979639868013418241, guid: 705b05c5ddfbcf449a6179e1f995d84f, type: 3}
-    quantity: 1
 --- !u!95 &-778101899729320852
 Animator:
   serializedVersion: 5
@@ -216,3 +200,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7284763092175641203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb42e7c75394889b8c617f3034572a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

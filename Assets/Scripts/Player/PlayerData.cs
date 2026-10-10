@@ -85,8 +85,9 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     // ============================================================
     //  公开只读属性
     //
-    //  Attack / Defense / AttackCount / DamageReduction 在战斗中返回「战斗时实时值」
-    //  （战斗前快照 + 战斗内修正层），战斗外返回真实字段。规则见下方「战斗内属性修正层」。
+    //  Attack / Defense / AttackCount / DamageReduction / LifeSteal / ReflectDamage
+    //  在战斗中返回「战斗时实时值」（战斗前快照 + 战斗内修正层），战斗外返回真实字段。
+    //  规则见下方「战斗内属性修正层」。
     //
     //  取整口径（2026-09-20 定稿）：**取整方向一律偏向玩家**。
     //    · 加成（有符号增量，可能是正也可能为负）→ Mathf.CeilToInt：
@@ -106,8 +107,8 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         : defense;
     public int HP            => hp;
     public int AttackCount   => inBattle ? battleBaseAttackCount + battleFlatAttackCount : attackCount;
-    public int LifeSteal     => lifeSteal;
-    public int ReflectDamage => reflectDamage;
+    public int LifeSteal     => inBattle ? battleBaseLifeSteal + battleFlatLifeSteal : lifeSteal;
+    public int ReflectDamage => inBattle ? battleBaseReflectDamage + battleFlatReflectDamage : reflectDamage;
     public int DamageReduction => inBattle ? battleBaseDamageReduction + battleFlatDamageReduction : damageReduction;
     public int ManaCharge    { get => manaCharge; set => manaCharge = value; }
     public int ManaMax       => manaMax;
@@ -162,12 +163,18 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     private int battleBaseDefense;
     private int battleBaseAttackCount;
     private int battleBaseDamageReduction;
+    private int battleBaseLifeSteal;
+    private int battleBaseReflectDamage;
+    // 魔力充能不在修正层里（它是直接改真实字段的），所以单独快照一份供复活回退用。
+    private int battleBaseManaCharge;
 
     // 战斗内修正
     private int battleFlatAttack;
     private int battleFlatDefense;
     private int battleFlatAttackCount;
     private int battleFlatDamageReduction;
+    private int battleFlatLifeSteal;
+    private int battleFlatReflectDamage;
     private int battlePercentAttack;
     private int battlePercentDefense;
 
@@ -182,6 +189,8 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     public int BaseDefense         => defense;
     public int BaseAttackCount     => attackCount;
     public int BaseDamageReduction => damageReduction;
+    public int BaseLifeSteal       => lifeSteal;
+    public int BaseReflectDamage   => reflectDamage;
 
     /// <summary>
     /// 冻结战斗前数值并清空修正层。
@@ -195,21 +204,48 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         battleBaseDefense         = defense;
         battleBaseAttackCount     = attackCount;
         battleBaseDamageReduction = damageReduction;
+        battleBaseLifeSteal       = lifeSteal;
+        battleBaseReflectDamage   = reflectDamage;
+        // 取的是 OnBattleStart / 待生效消耗品之前的原始值 ——
+        // 真理的 ×1.25 与魔力精华 +50 都不在里面，复活回到的就是「进战前」的裸值。
+        battleBaseManaCharge      = manaCharge;
 
-        battleFlatAttack = battleFlatDefense = battleFlatAttackCount = battleFlatDamageReduction = 0;
-        battlePercentAttack = battlePercentDefense = 0;
+        ClearBattleModifiers();
 
         Debug.Log($"[PlayerData] 战斗快照：攻{battleBaseAttack} 防{battleBaseDefense} " +
-                  $"段{battleBaseAttackCount} 减伤{battleBaseDamageReduction}%");
+                  $"段{battleBaseAttackCount} 减伤{battleBaseDamageReduction}% " +
+                  $"吸血{battleBaseLifeSteal} 反伤{battleBaseReflectDamage} 魔力{battleBaseManaCharge}");
     }
 
     /// <summary>清空修正层，属性回到战斗前的数值。</summary>
     public void EndBattleStats()
     {
         inBattle = false;
+        ClearBattleModifiers();
+    }
 
+    /// <summary>清空战斗内修正层（攻/防/段数/减伤/吸血/反伤回到战斗前基准）。</summary>
+    private void ClearBattleModifiers()
+    {
         battleFlatAttack = battleFlatDefense = battleFlatAttackCount = battleFlatDamageReduction = 0;
+        battleFlatLifeSteal = battleFlatReflectDamage = 0;
         battlePercentAttack = battlePercentDefense = 0;
+    }
+
+    /// <summary>
+    /// 复活等场合：把战斗状态整体回退到「进入战斗时」的快照 ——
+    /// 魔力充能回快照值、战斗内修正层清空（开场/累计的战斗加成全部消失）。
+    ///
+    /// ⚠️ 刻意**不**重新触发开场祝福（不调 BeginBattleStats，也不调 BlessingManager.OnBattleStart）：
+    ///    重跑一遍会让真理的祝福再 ×1.25、异乡人再叠一次减伤。
+    /// HP 不在这里处理 —— 由调用方决定回多少。
+    /// </summary>
+    public void RestoreBattleEntryState()
+    {
+        if (!inBattle) return;
+
+        manaCharge = battleBaseManaCharge;
+        ClearBattleModifiers();
     }
 
     /// <summary>战斗中：攻击力 +固定值（不乘攻击系数）。</summary>
@@ -252,6 +288,20 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     {
         if (!RequireBattle(nameof(AddBattleDamageReductionFlat))) return;
         battleFlatDamageReduction += amount;
+    }
+
+    /// <summary>战斗中：吸血 +固定值（衔尾之十字用）。</summary>
+    public void AddBattleLifeStealFlat(int amount)
+    {
+        if (!RequireBattle(nameof(AddBattleLifeStealFlat))) return;
+        battleFlatLifeSteal += amount;
+    }
+
+    /// <summary>战斗中：反伤 +固定值（衔尾之十字用）。</summary>
+    public void AddBattleReflectDamageFlat(int amount)
+    {
+        if (!RequireBattle(nameof(AddBattleReflectDamageFlat))) return;
+        battleFlatReflectDamage += amount;
     }
 
     // ============================================================
@@ -662,6 +712,12 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     /// </summary>
     int IBattleUnit.ReceiveDamage(int amount) => SubtractHP(amount);
 
+    /// <summary>
+    /// IBattleUnit 实现：真实伤害 —— 无视防御与减伤，也不触发反伤，**可以致死**。
+    /// 与 SubtractRawHPKeepAlive 的区别就在这里：那个保底留 1 点，这个能打死人。
+    /// </summary>
+    int IBattleUnit.ReceiveTrueDamage(int amount) => SubtractRawHP(amount);
+
     /// <summary>直接设置生命值（用于濒死回复等机制）。</summary>
     public void SetHP(int value)
     {
@@ -689,6 +745,18 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     {
         int maxLoss = Mathf.Max(0, hp - 1);
         int actual = Mathf.Min(amount, maxLoss);
+        hp -= actual;
+        return actual;
+    }
+
+    /// <summary>
+    /// 直接扣血：无视防御与减伤，**可以致死**。返回实际扣除的 HP（不超过剩余血量）。
+    /// 用于撕裂（Rend）这类真实持续伤害 —— 与 SubtractRawHPKeepAlive 的区别是不保底 1 点。
+    /// </summary>
+    public int SubtractRawHP(int amount)
+    {
+        if (amount <= 0) return 0;
+        int actual = Mathf.Min(amount, hp);
         hp -= actual;
         return actual;
     }

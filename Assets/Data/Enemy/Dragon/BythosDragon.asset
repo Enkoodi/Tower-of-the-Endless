@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65efdeb95c281447aeec194344fa547, type: 3}
+  m_Name: BythosDragon
+  m_EditorClassIdentifier: 
+  enemyName: "\u6DF1\u6E0A\u4E4B\u9F99"
+  enemySprite: {fileID: 21300000, guid: b88c40ab4e7056e459dc5b0a913c91ad, type: 3}
+  hp: 100000
+  attack: 10000
+  defense: 5000
+  attackCount: 10
+  lifeSteal: 30
+  reflectDamage: 50
+  damageReduction: 85
+  manaCharge: 100000
+  manaMax: 2000
+  speed: 300
+  goldReward: 2000
+  specialEnemyId: BythosDragon

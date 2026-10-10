@@ -90,6 +90,12 @@ reasonix.toml
 /.workbuddy/
 /.workbuddy-ai/
 
+# === 剧情 / 设定文档（含剧透，不上传 git） ===
+/*剧情*.md
+/*故事线*.md
+/*剧情*.txt
+/*故事线*.txt
+
 # === IDE / Editor ===
 .vscode/
 .idea/

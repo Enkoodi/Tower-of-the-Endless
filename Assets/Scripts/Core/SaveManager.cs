@@ -109,8 +109,8 @@ public class SaveManager : MonoBehaviour
             attack = player.BaseAttack,
             defense = player.BaseDefense,
             attackCount = player.BaseAttackCount,
-            lifeSteal = player.LifeSteal,
-            reflectDamage = player.ReflectDamage,
+            lifeSteal = player.BaseLifeSteal,
+            reflectDamage = player.BaseReflectDamage,
             damageReduction = player.BaseDamageReduction,
             manaCharge = player.ManaCharge,
             manaMax = player.ManaMax,
@@ -138,6 +138,30 @@ public class SaveManager : MonoBehaviour
             playerZ = player.transform.position.z
         };
 
+        // 装备效果（运行时 AddComponent 的组件，不在 PlayerData 字段里，不单独存就会在读档后消失）
+        HolySwordEffect holySword = player.GetComponent<HolySwordEffect>();
+        data.hasHolySword = holySword != null;
+        if (holySword != null) data.holySwordMultiplierPercent = holySword.MultiplierPercent;
+
+        data.hasHolyShield = player.GetComponent<HolyShieldEffect>() != null;
+
+        LeviathansMarrowEffect marrow = player.GetComponent<LeviathansMarrowEffect>();
+        data.hasLeviathansMarrow = marrow != null;
+        if (marrow != null) data.leviathansMarrowInterval = marrow.FreezeInterval;
+
+        BehemothsFangEffect fang = player.GetComponent<BehemothsFangEffect>();
+        data.hasBehemothsFang = fang != null;
+        if (fang != null)
+        {
+            data.fangStacksPerAttack = fang.StacksPerAttack;
+            data.fangMaxStacks = fang.MaxStacks;
+            data.fangPercentPerStack = fang.PercentPerStack;
+        }
+
+        OuroborosCrucifixEffect ouroboros = player.GetComponent<OuroborosCrucifixEffect>();
+        data.hasOuroborosCrucifix = ouroboros != null;
+        if (ouroboros != null) data.ouroborosPercentOfHigher = ouroboros.PercentOfHigher;
+
         // 特殊祝福效果
         data.specialBlessings = BlessingManager.Instance != null
             ? BlessingManager.Instance.GetActiveEffectLevels()
@@ -146,6 +170,11 @@ public class SaveManager : MonoBehaviour
         // 本局已获得的祝福记录（含 DirectBonus 型，specialBlessings 覆盖不到）
         data.obtainedBlessings = BlessingManager.Instance != null
             ? BlessingManager.Instance.GetObtainedBlessings()
+            : new Dictionary<string, int>();
+
+        // 祝福的持久运行时状态（跨战斗累计的计数，如卡巴拉生命之树的剩余触发次数）
+        data.blessingStates = BlessingManager.Instance != null
+            ? BlessingManager.Instance.GetActiveEffectStates()
             : new Dictionary<string, int>();
 
         // 商店购买次数（影响下一次购买价格）
@@ -158,7 +187,7 @@ public class SaveManager : MonoBehaviour
 
         // 楼层状态
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
-        data.currentFloor = mapGen != null ? mapGen.CurrentFloor : -1;
+        data.currentFloor = mapGen != null ? mapGen.CurrentFloor : GameSaveData.NoFloor;
         data.floorStates = FloorMemoryManager.Instance != null
             ? FloorMemoryManager.Instance.GetAllFloorEntries()
             : null;
@@ -296,6 +325,9 @@ public class SaveManager : MonoBehaviour
             player.SetManaEssenceCount(data.manaEssenceCount);
             player.SetPendingAleStacks(data.pendingAleStacks);
             player.SetPendingManaEssence(data.pendingManaEssence);
+
+            // 装备效果（运行时组件，按存档重新挂/摘 —— 不恢复就会「捡过的东西读档后消失」）
+            RestoreEquipment(player, data);
             // aeonKeys 从全局存档覆盖
         }
         else
@@ -308,9 +340,11 @@ public class SaveManager : MonoBehaviour
         ApplyGlobalDivineSpark();
 
         // 2.5. 恢复特殊祝福效果
+        //      ⚠️ 必须连 blessingStates 一起恢复：卡巴拉生命之树的「剩余触发次数」
+        //      就存在这里，不恢复会导致读档后次数回满 → 反复触发 30 层（2026-10-05 修复）。
         if (BlessingManager.Instance != null && data.specialBlessings != null)
         {
-            BlessingManager.Instance.RestoreEffects(data.specialBlessings);
+            BlessingManager.Instance.RestoreEffects(data.specialBlessings, data.blessingStates);
         }
 
         // 2.55. 恢复已获得祝福记录（必须在 RestoreEffects 之外单独恢复：
@@ -344,8 +378,11 @@ public class SaveManager : MonoBehaviour
         }
 
         // 4. 重新加载楼层
+        //    ⚠️ 必须用 NoFloor 哨兵判断，不能写 >= 0：
+        //    地下负层（floor_-01 ~ floor_-07）是合法楼层，>= 0 会把负层当成「无楼层」跳过加载，
+        //    地图整张不生成 → 只剩 Unity 默认蓝底（2026-10-05 修复）。
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
-        if (mapGen != null && data.currentFloor >= 0)
+        if (mapGen != null && data.currentFloor != GameSaveData.NoFloor)
         {
             mapGen.LoadFloor(data.currentFloor);
         }
@@ -357,6 +394,84 @@ public class SaveManager : MonoBehaviour
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// 读档恢复装备效果（神圣剑 / 神圣盾 / 利维坦之髓 / 贝希摩斯之牙 / 衔尾之十字）。
+    ///
+    /// 这些都是运行时 `AddComponent` 挂到玩家身上的组件，**不在 PlayerData 字段里**，
+    /// 所以必须在这里按存档重新挂 / 摘：
+    ///   · 不恢复 → 读档后装备静默消失。而楼层记忆已经把道具标记成「已拾取」，
+    ///     地图上不再刷出，等于白捡（2026-10-04 实测踩到：利维坦之髓捡过、读档后就没了）。
+    ///   · 不摘掉存档里没有的 → 读旧档会留下本不该有的装备。
+    /// </summary>
+    private static void RestoreEquipment(PlayerData player, GameSaveData data)
+    {
+        // 神圣剑（魔力伤害倍率）
+        HolySwordEffect sword = player.GetComponent<HolySwordEffect>();
+        if (data.hasHolySword)
+        {
+            if (sword == null) sword = player.gameObject.AddComponent<HolySwordEffect>();
+            sword.MultiplierPercent = data.holySwordMultiplierPercent > 0 ? data.holySwordMultiplierPercent : 200;
+        }
+        else if (sword != null)
+        {
+            UnityEngine.Object.Destroy(sword);
+        }
+
+        // 神圣盾（免疫魔力光环 / 夹击）
+        HolyShieldEffect shield = player.GetComponent<HolyShieldEffect>();
+        if (data.hasHolyShield)
+        {
+            if (shield == null) player.gameObject.AddComponent<HolyShieldEffect>();
+        }
+        else if (shield != null)
+        {
+            UnityEngine.Object.Destroy(shield);
+        }
+
+        // 利维坦之髓（每隔 N 回合冻结敌人）
+        LeviathansMarrowEffect marrow = player.GetComponent<LeviathansMarrowEffect>();
+        if (data.hasLeviathansMarrow)
+        {
+            if (marrow == null) marrow = player.gameObject.AddComponent<LeviathansMarrowEffect>();
+            marrow.FreezeInterval = data.leviathansMarrowInterval > 0 ? data.leviathansMarrowInterval : 5;
+        }
+        else if (marrow != null)
+        {
+            UnityEngine.Object.Destroy(marrow);
+        }
+
+        // 贝希摩斯之牙（每次攻击叠撕裂）
+        BehemothsFangEffect fang = player.GetComponent<BehemothsFangEffect>();
+        if (data.hasBehemothsFang)
+        {
+            if (fang == null) fang = player.gameObject.AddComponent<BehemothsFangEffect>();
+            fang.StacksPerAttack = data.fangStacksPerAttack > 0 ? data.fangStacksPerAttack : 1;
+            fang.MaxStacks = data.fangMaxStacks > 0 ? data.fangMaxStacks : 10;
+            fang.PercentPerStack = data.fangPercentPerStack > 0 ? data.fangPercentPerStack : 1;
+        }
+        else if (fang != null)
+        {
+            UnityEngine.Object.Destroy(fang);
+        }
+
+        // 衔尾之十字（战斗开始时补齐吸血/反伤）
+        OuroborosCrucifixEffect ouroboros = player.GetComponent<OuroborosCrucifixEffect>();
+        if (data.hasOuroborosCrucifix)
+        {
+            if (ouroboros == null) ouroboros = player.gameObject.AddComponent<OuroborosCrucifixEffect>();
+            ouroboros.PercentOfHigher = data.ouroborosPercentOfHigher > 0 ? data.ouroborosPercentOfHigher : 50;
+        }
+        else if (ouroboros != null)
+        {
+            UnityEngine.Object.Destroy(ouroboros);
+        }
+
+        Debug.Log($"[SaveManager] 装备恢复：神圣剑={data.hasHolySword}(×{data.holySwordMultiplierPercent}%) " +
+                  $"神圣盾={data.hasHolyShield} 利维坦之髓={data.hasLeviathansMarrow}(每{data.leviathansMarrowInterval}回合) " +
+                  $"贝希摩斯之牙={data.hasBehemothsFang}({data.fangStacksPerAttack}层/攻,上限{data.fangMaxStacks}) " +
+                  $"衔尾之十字={data.hasOuroborosCrucifix}({data.ouroborosPercentOfHigher}%)");
     }
 
     /// <summary>清除自动存档（auto_save.json），不影响主动存档。静态方法，无需实例。</summary>

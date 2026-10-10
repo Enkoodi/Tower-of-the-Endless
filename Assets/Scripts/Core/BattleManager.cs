@@ -153,6 +153,11 @@ public class BattleManager : MonoBehaviour
         // 必须在 BlessingManager.OnBattleStart 之前 —— 战斗开始触发的祝福（如异乡人）也要写进修正层。
         playerData.BeginBattleStats();
 
+        // 衔尾之十字：战斗开始时比较吸血与反伤，较低的一项补上较高一项的一半。
+        // 加成走战斗内修正层 → EndBattleStats 整体清零，出战即恢复原样（和大部分祝福一致）。
+        // ⚠️ 必须在 BeginBattleStats 之后（否则会被清零）、在 OpenBattle 之前（面板要显示加成后的值）。
+        string ouroborosLog = ApplyOuroborosCrucifix(playerData);
+
         // 动画/特效倍速与日志节奏保持一致（正常=1、两倍=2、四倍=4）
         battleUI.PlaybackSpeed = PlaybackSpeed;
         // 跳过档不打开战斗窗口：下面的日志/面板更新会照常写进没显示的 UI，不影响结算结果
@@ -162,6 +167,8 @@ public class BattleManager : MonoBehaviour
             battleUI.OpenBattle(playerData, enemy);
         if (enemyHalved)
             battleUI.AddLog($"<color=#FFCC66>敌人血量减半</color>：{enemy.EnemyName} 生命值减半");
+        if (ouroborosLog != null)
+            battleUI.AddLog(ouroborosLog);
         battleUI.UpdateTurn(turnCount);
         BlessingManager.Instance?.OnBattleStart(playerData, enemy, battleUI);
 
@@ -176,6 +183,33 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(BattleCoroutine(playerData, enemy, playerManaSnapshot, enemyManaSnapshot));
     }
 
+    /// <summary>
+    /// 衔尾之十字：战斗开始时把「吸血 / 反伤」里较低的一项补上较高一项的一半。
+    /// 返回要写进战斗日志的文案；没这件装备 / 两项相等 / 加成算出来是 0 时返回 null。
+    /// </summary>
+    private static string ApplyOuroborosCrucifix(PlayerData playerData)
+    {
+        OuroborosCrucifixEffect effect = playerData.GetComponent<OuroborosCrucifixEffect>();
+        if (effect == null) return null;
+
+        int lifeSteal = playerData.LifeSteal;           // 战斗内 = 快照值（修正层刚清零）
+        int reflectDamage = playerData.ReflectDamage;
+
+        effect.ComputeBonus(lifeSteal, reflectDamage, out int bonusLs, out int bonusRf);
+
+        if (bonusLs > 0)
+        {
+            playerData.AddBattleLifeStealFlat(bonusLs);
+            return $"<color=#CC66FF>衔尾之十字</color>：吸血 +{bonusLs}（{lifeSteal} → {lifeSteal + bonusLs}）";
+        }
+        if (bonusRf > 0)
+        {
+            playerData.AddBattleReflectDamageFlat(bonusRf);
+            return $"<color=#CC66FF>衔尾之十字</color>：反伤 +{bonusRf}（{reflectDamage} → {reflectDamage + bonusRf}）";
+        }
+        return null;
+    }
+
     private IEnumerator BattleCoroutine(PlayerData playerData, EnemyController enemy,
                                         int playerManaSnapshot, int enemyManaSnapshot)
     {
@@ -183,10 +217,18 @@ public class BattleManager : MonoBehaviour
         HolySwordEffect amp = playerData.GetComponent<HolySwordEffect>();
         int magicPercent = amp != null ? amp.MultiplierPercent : 100;
 
+        // 贝希摩斯之牙：撕裂（Rend）。参数在**构造时**交给内核 —— 这样「伤不到敌人」的判定
+        // 也能把撕裂这条路算进去，否则打不出普通伤害时会被提前判负。
+        BehemothsFangEffect fang = playerData.GetComponent<BehemothsFangEffect>();
+        RendSpec rendSpec = fang != null ? fang.ToRendSpec() : default;
+        if (fang != null)
+            Debug.Log($"[BattleManager] 贝希摩斯之牙生效：每次攻击叠 {fang.StacksPerAttack} 层撕裂" +
+                      $"（上限 {fang.MaxStacks} 层），每层按实时攻击力 {fang.PercentPerStack}% 结算真伤");
+
         // 结算内核 —— 实战与图鉴共用同一份，这里只负责把每一步「演」出来。
         // 祝福必须挂在回调里、由内核在正确时机调用，不能挪到表现层：
         // 工匠的濒死回复要在死亡判定之前生效。
-        BattleResolver resolver = new BattleResolver(playerData, enemy, magicPercent)
+        BattleResolver resolver = new BattleResolver(playerData, enemy, magicPercent, rendSpec)
         {
             OnTurnStart        = () => BlessingManager.Instance?.OnTurnStart(playerData, enemy, battleUI),
             OnTurnEnd          = () => BlessingManager.Instance?.OnTurnEnd(playerData, enemy, battleUI),
@@ -197,8 +239,20 @@ public class BattleManager : MonoBehaviour
             OnPlayerTakeDamage = d => BlessingManager.Instance?.OnPlayerTakeDamage(playerData, enemy, battleUI, d),
         };
 
+        // 利维坦之髓：持有时每隔若干回合冻结敌人一回合。
+        // 只封锁敌人的**主动攻击**，反伤等被动效果照常（见 BattleResolver 的行动封锁挂钩）。
+        LeviathansMarrowEffect marrow = playerData.GetComponent<LeviathansMarrowEffect>();
+        if (marrow != null)
+        {
+            resolver.EnemyCanAct = turn => !marrow.FreezesOnTurn(turn);
+            Debug.Log($"[BattleManager] 利维坦之髓生效：每隔 {marrow.FreezeInterval} 回合冻结敌人一回合（第 " +
+                      $"{marrow.FreezeInterval}、{marrow.FreezeInterval * 2}…回合）");
+        }
+
         // —— 先手偷袭 ——（伤害在内核的 Sneak 步里结算，这里先播一句预告）
-        if (resolver.WillSneak)
+        // 偷袭也是敌人的一次主动攻击：被冻结时连偷袭都不发生，
+        // 此时内核那一步会被主循环静默消费（主循环没有 Sneak 分支）。
+        if (resolver.WillSneak && resolver.EnemyCanActThisTurn)
         {
             battleUI.AddLog($"受到<color=#779977>{enemy.EnemyName}</color>偷袭！");
             if (!silentBattle) yield return new WaitForSeconds(logDelay);
@@ -242,7 +296,13 @@ public class BattleManager : MonoBehaviour
             {
                 case BattleStepKind.TurnStart:
                     // 回合开始本身没有演出，也不停顿 —— 停了每回合会平白多出两拍。
-                    // 只有被深渊/静默提前打死时才说一句。
+                    // 只有撕裂真伤、或被深渊/静默/撕裂提前打死时才说一句。
+                    if (step.RendDamage > 0)
+                    {
+                        battleUI.AddLog($"<color=#CC66FF>撕裂</color>：造成 <color=#FF4444>{step.RendDamage}</color> 点真实伤害（{step.RendStacks} 层）");
+                        battleUI.UpdateEnemyPanel(enemy);
+                        if (!silentBattle) yield return new WaitForSeconds(logDelay);
+                    }
                     if (step.EnemyDied)
                     {
                         battleUI.AddLog($"<color=#779977>{enemy.EnemyName}</color> 被击败！");
@@ -309,12 +369,24 @@ public class BattleManager : MonoBehaviour
 
     private void PlayPlayerAttack(BattleStep step, PlayerData playerData, EnemyController enemy)
     {
+        // 被冻结：跳过主动攻击 —— 没有伤害、没有动画（反伤等被动效果不受影响）
+        if (step.AttackerFrozen)
+        {
+            battleUI.AddLog($"<color=#7799CC>玩家</color>被<color=#66CCFF>冻结</color>，本回合无法行动");
+            battleUI.UpdatePlayerPanel(playerData);
+            return;
+        }
+
         playerData.PlayAttackAnimation();
         // 敌人受击表现：等头像冲到敌人面前才抖一下并叠出斩击（时序在 BattleUI 内控制）
         if (step.DamageToEnemy > 0)
             battleUI.PlayEnemyHit(playerData.AttackCount);
         battleUI.AddLog($"<color=#7799CC>玩家</color>攻击，造成 <color=#FF4444>{step.DamageToEnemy} </color>点伤害");
         battleUI.UpdateEnemyPanel(enemy);
+
+        // 撕裂：不论是否破防都会叠层
+        if (step.RendStacksAdded > 0)
+            battleUI.AddLog($"<color=#CC66FF>撕裂</color> +{step.RendStacksAdded} 层（当前 {step.RendStacks} 层）");
 
         if (!step.ManaConsumed)
             battleUI.AddLog($"<color=#88CCFF>灵知的祝福</color>：本回合不消耗魔力充能");
@@ -324,6 +396,14 @@ public class BattleManager : MonoBehaviour
 
     private void PlayEnemyCounter(BattleStep step, PlayerData playerData, EnemyController enemy)
     {
+        // 被冻结：敌人跳过主动攻击 —— 没有伤害、没有动画（敌人反伤等被动效果不受影响）
+        if (step.AttackerFrozen)
+        {
+            battleUI.AddLog($"<color=#66CCFF>利维坦之髓</color>：冻结敌人一回合");
+            battleUI.UpdateEnemyPanel(enemy);
+            return;
+        }
+
         // 被反击算受伤
         if (!silentBattle && step.DamageToPlayer > 0)
             playerData.PlayHurtAnimation();

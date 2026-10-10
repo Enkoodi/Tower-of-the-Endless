@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 36
   blessingName: "\u566C\u8840"
-  description: "\u751F\u547D\u5077\u53D6+6"
+  description: "\u5438\u8840+6"
   rarity: 2
   backgroundSprite: {fileID: 21300000, guid: 7904e25be8fedd342b6f11ff9e5471f3, type: 3}
   type: 0

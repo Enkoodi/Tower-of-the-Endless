@@ -43,8 +43,8 @@ public class MapGenerator : MonoBehaviour
     /// <summary>当前已加载的地图数据（只读）</summary>
     public MapData CurrentMap { get; private set; }
 
-    /// <summary>当前楼层编号（-1 表示未加载）</summary>
-    public int CurrentFloor => CurrentMap?.floor ?? -1;
+    /// <summary>当前楼层编号（GameSaveData.NoFloor 表示未加载；负数是合法楼层，别拿 -1 判断）</summary>
+    public int CurrentFloor => CurrentMap?.floor ?? GameSaveData.NoFloor;
 
     /// <summary>
     /// 世界坐标是否落在冰面上。

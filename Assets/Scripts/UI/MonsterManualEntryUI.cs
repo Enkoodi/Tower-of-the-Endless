@@ -96,15 +96,32 @@ public class MonsterManualEntryUI : MonoBehaviour
         if (player == null || enemy == null) return result;
 
         // 纯数据副本 —— 图鉴绝不能碰到玩家或敌人的真身
-        SimBattleUnit simPlayer = SimBattleUnit.FromPlayer(player);
+        // 衔尾之十字：它只在**战斗开始时**生效，图鉴在战斗外打开 → 这里先算出加成再建副本
+        int ouroborosLifeSteal = 0, ouroborosReflect = 0;
+        OuroborosCrucifixEffect ouroboros = player.GetComponent<OuroborosCrucifixEffect>();
+        if (ouroboros != null)
+            ouroboros.ComputeBonus(player.LifeSteal, player.ReflectDamage,
+                                   out ouroborosLifeSteal, out ouroborosReflect);
+
+        SimBattleUnit simPlayer = SimBattleUnit.FromPlayer(player, ouroborosLifeSteal, ouroborosReflect);
         SimBattleUnit simEnemy  = SimBattleUnit.FromEnemyStats(enemy);
 
         // 神圣剑：图鉴在战斗外打开，直接读玩家身上的组件
         HolySwordEffect amplifier = player.GetComponent<HolySwordEffect>();
         int magicPercent = amplifier != null ? amplifier.MultiplierPercent : 100;
 
-        // 与实战同一份内核；挂钩一个都不设 → 不跑祝福
-        BattleResolver resolver = new BattleResolver(simPlayer, simEnemy, magicPercent);
+        // 贝希摩斯之牙：撕裂（Rend）参数与实战同一份
+        BehemothsFangEffect fang = player.GetComponent<BehemothsFangEffect>();
+        RendSpec rendSpec = fang != null ? fang.ToRendSpec() : default;
+
+        // 与实战同一份内核；祝福挂钩一个都不设 → 不跑祝福
+        BattleResolver resolver = new BattleResolver(simPlayer, simEnemy, magicPercent, rendSpec);
+
+        // 装备类效果与实战同步（神圣剑已在上面读取）：利维坦之髓每隔若干回合冻结敌人
+        LeviathansMarrowEffect marrow = player.GetComponent<LeviathansMarrowEffect>();
+        if (marrow != null)
+            resolver.EnemyCanAct = turn => !marrow.FreezesOnTurn(turn);
+
         resolver.RunToEnd();
 
         result.CanWin = resolver.EndReason == BattleEndReason.EnemyDefeated;

@@ -31,6 +31,13 @@ public interface IBattleUnit
     /// <summary>按减伤系数结算伤害，返回实际扣掉的 HP。</summary>
     int ReceiveDamage(int amount);
 
+    /// <summary>
+    /// 真实伤害：**无视防御、无视减伤**，也**不触发反伤**，且**可以致死**。
+    /// 用于撕裂（Rend）这类「直接扣血」的持续伤害 —— 与 ReceiveDamage 的区别就在这三条。
+    /// 返回实际扣掉的 HP（不会超过剩余 HP）。
+    /// </summary>
+    int ReceiveTrueDamage(int amount);
+
     /// <summary>精确回血：加多少就是多少，不乘任何系数。</summary>
     void HealRaw(int amount);
 }

@@ -55,6 +55,23 @@ public abstract class BlessingEffect
 
     public bool HasLevel(int minLevel) => Level >= minLevel;
 
+    // ============================================================
+    //  跨存档持久状态（默认无）
+    //
+    //  只有「触发次数跨战斗累计」的祝福才需要重写（如卡巴拉生命之树）。
+    //  纯战斗内状态（每场战斗自己重置的 turnCount / 回合计数等）**不要**走这里 ——
+    //  那些在 OnBattleStart 里重置即可，写进存档反而会让读档后的战斗带上上一场的进度。
+    // ============================================================
+
+    /// <summary>是否要把 <see cref="GetPersistentState"/> 的结果写进存档（默认 false）。</summary>
+    public virtual bool HasPersistentState => false;
+
+    /// <summary>需要跨存档保留的运行时状态（默认 0，仅 HasPersistentState 为真时被读取）。</summary>
+    public virtual int GetPersistentState() => 0;
+
+    /// <summary>读档时恢复持久状态。旧存档缺该字段时**不会被调用**，子类应保持「未初始化」语义。</summary>
+    public virtual void RestorePersistentState(int state) { }
+
     public abstract float GetEffectValue();
     public abstract string GetEffectDescription();
 

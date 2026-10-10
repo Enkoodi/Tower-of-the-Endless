@@ -148,7 +148,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drops:
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
-    offset: {x: 0, y: 2}
+    offset: {x: 1, y: 1}
+  - prefab: {fileID: 904655309459682807, guid: d7fb0bf4ff8a28e42809be383059b871, type: 3}
+    offset: {x: 1, y: -1}
+  - prefab: {fileID: 6369049314569992081, guid: 3e7479d9ac7589d44a31979e81612102, type: 3}
+    offset: {x: -1, y: 1}
+  - prefab: {fileID: 1222045284370309947, guid: 5b1e91cde744f344aa0bef5c8499000d, type: 3}
+    offset: {x: -1, y: -1}
 --- !u!114 &2892441728354112936
 MonoBehaviour:
   m_ObjectHideFlags: 0

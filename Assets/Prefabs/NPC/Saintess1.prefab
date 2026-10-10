@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: ef67fd851e542c9429fcac51e1f8be27, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c12e2bba682e0e7408218b6c8ccf6cc6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcName: NPC
-  npcSprite: {fileID: 21300000, guid: 9b921814d8fcbc2439534fce6b8ad5e0, type: 3}
+  npcSprite: {fileID: 21300000, guid: c12e2bba682e0e7408218b6c8ccf6cc6, type: 3}
   hpPercent: 5
   atkPercent: 5
   defPercent: 5

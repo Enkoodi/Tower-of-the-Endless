@@ -29,6 +29,7 @@ public class PlayerMove : MonoBehaviour
     private bool isChoosingBlessing = false;
     private bool isInteractingWithNPC = false;
     private bool isInDialogue = false;
+    private bool isGambling = false;
     private bool isViewingManual = false;
     private Vector3 targetPosition;
     private Vector2 battleDirection;
@@ -72,6 +73,13 @@ public class PlayerMove : MonoBehaviour
         };
         DialogueUI.OnPanelClose += () => isInDialogue = false;
 
+        GambleChoiceUI.OnPanelOpen += () =>
+        {
+            isGambling = true;
+            keyStack.Clear();
+        };
+        GambleChoiceUI.OnPanelClose += () => isGambling = false;
+
         // 战斗事件（覆盖对话触发的战斗，正常战斗 TryMove 也会自行设置 isInBattle）
         BattleManager.OnBattleOpen += () =>
         {
@@ -90,10 +98,10 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isViewingManual || isSliding;
+        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isGambling || isViewingManual || isSliding;
 
-        // 怪物手册快捷键 — 战斗/祝福/NPC/对话/滑行时禁用；手册打开时仍允许再次按 Tab 关闭
-        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isSliding;
+        // 怪物手册快捷键 — 战斗/祝福/NPC/对话/赌博/滑行时禁用；手册打开时仍允许再次按 Tab 关闭
+        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isGambling || isSliding;
         if (!manualShortcutLocked && Input.GetKeyDown(KeyCode.Tab))
         {
             MonsterManualUI manual = FindAnyObjectByType<MonsterManualUI>();

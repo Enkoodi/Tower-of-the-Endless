@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcName: NPC
-  npcSprite: {fileID: 21300000, guid: 9b921814d8fcbc2439534fce6b8ad5e0, type: 3}
+  npcSprite: {fileID: 21300000, guid: c12e2bba682e0e7408218b6c8ccf6cc6, type: 3}
   hpPercent: 10
   atkPercent: 10
   defPercent: 10

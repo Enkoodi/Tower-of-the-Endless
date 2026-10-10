@@ -144,6 +144,19 @@ public class EnemyController : MonoBehaviour, IFloorEntity, IBattleUnit
     /// </summary>
     int IBattleUnit.ReceiveDamage(int amount) => TakeRawDamage(amount);
 
+    /// <summary>
+    /// IBattleUnit 实现：真实伤害 —— 无视防御与减伤、不触发反伤、**可以致死**。
+    /// 语义与本类的 `SubtractHP` 相同，区别只是这里夹一次「实际扣掉的 HP」，
+    /// 供撕裂（Rend）日志显示真实数值（`SubtractHP` 会原样返回传入值）。
+    /// </summary>
+    int IBattleUnit.ReceiveTrueDamage(int amount)
+    {
+        if (amount <= 0) return 0;
+        int actual = Mathf.Min(amount, hp);
+        hp -= actual;
+        return actual;
+    }
+
     public void Defeat()
     {
         if (isDefeated) return;

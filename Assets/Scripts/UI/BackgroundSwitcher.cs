@@ -29,7 +29,7 @@ public class BackgroundSwitcher : MonoBehaviour
         {
             mapGenerator.onFloorLoaded.AddListener(OnFloorLoaded);
 
-            if (mapGenerator.CurrentFloor != -1)
+            if (mapGenerator.CurrentFloor != GameSaveData.NoFloor)
                 SwitchBackground(mapGenerator.CurrentFloor);
         }
     }

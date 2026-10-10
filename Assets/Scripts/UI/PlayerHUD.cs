@@ -13,6 +13,9 @@ using UnityEngine;
 /// RightPanel：FloorText 当前楼层 / YellowKeyText / BlueKeyText / RedKeyText / AeonKeyText /
 ///             AleText（麦酒）/ ManaEssenceText（魔力精华）/
 ///             UpTeleporterText / DownTeleporterText / EnemyHalveItemText（圣水）
+///             以及装备图标（Image 节点，拾取后点亮）：
+///             Leviathan's Marrow（利维坦之髓）/ Behemoth's Fang（贝希摩斯之牙，
+///             节点名过渡期同时认「Tooth of Behemoth」）/ Ouroboros Crucifix（衔尾之十字）
 /// </summary>
 public class PlayerHUD : MonoBehaviour
 {
@@ -40,6 +43,14 @@ public class PlayerHUD : MonoBehaviour
     private TMPro.TextMeshProUGUI upTeleporterText;
     private TMPro.TextMeshProUGUI downTeleporterText;
     private TMPro.TextMeshProUGUI enemyHalveItemText;
+
+    // 右面板：装备图标。节点上的 Image 默认关着（m_Enabled = 0），拾取到才点亮。
+    private UnityEngine.UI.Image marrowIcon;
+    private LeviathansMarrowEffect marrowEffect;   // 懒解析：拾取后才会挂到玩家身上
+    private UnityEngine.UI.Image fangIcon;
+    private BehemothsFangEffect fangEffect;        // 同上
+    private UnityEngine.UI.Image ouroborosIcon;
+    private OuroborosCrucifixEffect ouroborosEffect;   // 同上
 
     private PlayerData playerData;
     private MapGenerator mapGenerator;
@@ -71,6 +82,9 @@ public class PlayerHUD : MonoBehaviour
         upTeleporterText    = FindText(rightPanel, "UpTeleporterText");
         downTeleporterText  = FindText(rightPanel, "DownTeleporterText");
         enemyHalveItemText  = FindText(rightPanel, "EnemyHalveItemText");
+        marrowIcon          = FindImage(rightPanel, "Leviathan's Marrow");
+        fangIcon            = FindImage(rightPanel, "Behemoth's Fang", "Tooth of Behemoth");
+        ouroborosIcon       = FindImage(rightPanel, "Ouroboros Crucifix");
 
         playerData = FindFirstObjectByType<PlayerData>();
         mapGenerator = FindFirstObjectByType<MapGenerator>();
@@ -116,7 +130,26 @@ public class PlayerHUD : MonoBehaviour
         SetNumber(downTeleporterText, playerData.DownTeleporterCount);
         SetNumber(enemyHalveItemText, playerData.EnemyHalveItemCount);
 
+        RefreshEquipmentIcons();
         RefreshFloor();
+    }
+
+    /// <summary>
+    /// 装备图标：拿到对应的效果组件才点亮。图标节点上的 Image 默认是关着的，
+    /// 所以「拾取成功」在界面上直接可见（没亮 = 没捡到）。
+    /// </summary>
+    void RefreshEquipmentIcons()
+    {
+        if (marrowEffect == null)
+            marrowEffect = playerData.GetComponent<LeviathansMarrowEffect>();
+        if (fangEffect == null)
+            fangEffect = playerData.GetComponent<BehemothsFangEffect>();
+        if (ouroborosEffect == null)
+            ouroborosEffect = playerData.GetComponent<OuroborosCrucifixEffect>();
+
+        SetIcon(marrowIcon, marrowEffect != null);
+        SetIcon(fangIcon, fangEffect != null);
+        SetIcon(ouroborosIcon, ouroborosEffect != null);
     }
 
     /// <summary>
@@ -129,7 +162,7 @@ public class PlayerHUD : MonoBehaviour
         if (floorText == null || mapGenerator == null) return;
 
         MapData map = mapGenerator.CurrentMap;
-        if (map == null) return;   // 楼层尚未加载（CurrentFloor == -1），保持占位文本
+        if (map == null) return;   // 楼层尚未加载，保持占位文本
 
         string label = string.IsNullOrEmpty(map.name) ? $"第{map.floor}层" : map.name;
         if (floorText.text != label)
@@ -160,6 +193,42 @@ public class PlayerHUD : MonoBehaviour
             Debug.LogWarning($"[PlayerHUD] {parent.name}/{nodeName} 上没有 TextMeshProUGUI 组件");
 
         return text;
+    }
+
+    /// <summary>
+    /// 按节点名取图片组件（装备图标用）。可以传多个候选名 —— 装备改名过渡期两个都认。
+    /// 与 FindText 同一套容错：找不到只警告、返回 null，不让整块 HUD 崩掉。
+    /// </summary>
+    UnityEngine.UI.Image FindImage(Transform parent, params string[] nodeNames)
+    {
+        string joined = string.Join(" / ", nodeNames);
+
+        if (parent == null)
+        {
+            Debug.LogWarning($"[PlayerHUD] 找不到面板，无法绑定 {joined}");
+            return null;
+        }
+
+        foreach (string nodeName in nodeNames)
+        {
+            Transform node = parent.Find(nodeName);
+            if (node == null) continue;
+
+            UnityEngine.UI.Image image = node.GetComponent<UnityEngine.UI.Image>();
+            if (image != null) return image;
+
+            Debug.LogWarning($"[PlayerHUD] {parent.name}/{nodeName} 上没有 Image 组件");
+        }
+
+        Debug.LogWarning($"[PlayerHUD] {parent.name} 下找不到节点 {joined}，该图标不会显示");
+        return null;
+    }
+
+    /// <summary>点亮 / 熄灭一个图标。值没变就不写，避免每帧无谓地标脏 UI。</summary>
+    void SetIcon(UnityEngine.UI.Image image, bool visible)
+    {
+        if (image == null) return;
+        if (image.enabled != visible) image.enabled = visible;
     }
 
     void SetLabel(TMPro.TextMeshProUGUI text, string label, int value)
