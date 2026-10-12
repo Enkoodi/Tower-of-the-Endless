@@ -26,6 +26,9 @@ public class AlePickup : MonoBehaviour, IFloorPickup, IPurchasable
         floorNumber = floor;
     }
 
+    /// <summary>玩家日志中的显示名。</summary>
+    public string LogName => "麦酒";
+
     /// <summary>IPurchasable：数量型道具，可出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {

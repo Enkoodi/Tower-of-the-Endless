@@ -81,6 +81,10 @@ public class BattleManager : MonoBehaviour
     private int turnCount = 1;
     private System.Action<bool> onBattleEnd;
 
+    // 玩家日志：战斗前的 HP / 金币快照，战斗结束时算差值用
+    private int logHpBefore;
+    private int logGoldBefore;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -141,6 +145,10 @@ public class BattleManager : MonoBehaviour
         silentBattle = IsSkipMode;   // 跳过档：只结算，不打开界面、不播动画
         turnCount = 1;
         onBattleEnd = callback;
+
+        // 玩家日志：战前快照，战斗结束时算 HP / 金币差
+        logHpBefore = playerData.HP;
+        logGoldBefore = playerData.Gold;
 
         // 快照战斗前魔力，战斗中消耗，战斗结束后恢复。
         // ⚠️ 必须在 BeginBattleStats / BlessingManager.OnBattleStart 之前取：
@@ -449,6 +457,14 @@ public class BattleManager : MonoBehaviour
         else
         {
             battleUI.AddLog("战斗失败...");
+        }
+
+        // 玩家日志：这一场的结果。战斗内逐回合战报不写（太长），只要结果与血/钱的变化
+        if (enemy != null)
+        {
+            string gold = won ? $"，金币 +{playerData.Gold - logGoldBefore}" : "";
+            PlayerLog.Note($"战斗 {enemy.EnemyName} ({enemy.gridPosition.x},{enemy.gridPosition.y})"
+                         + $" → {(won ? "胜利" : "失败")}（HP {logHpBefore}→{playerData.HP}{gold}）");
         }
 
         StartCoroutine(CloseAfterDelay(won));

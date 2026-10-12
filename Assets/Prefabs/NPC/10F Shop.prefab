@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - speakerName: "\u9152\u4FDD"
+  - speakerName: "\u9152\u9986\u8001\u677F"
     content: "\u8981\u6765\u4E00\u676F\u5417\u5144\u5F1F\uFF0C\u5F88\u4FBF\u5B9C\u7684\uFF0C\u4E00\u676F\u53EA\u6536100\u91D1\u5E01"
     showChoices: 1
     nextLineIndex: -1

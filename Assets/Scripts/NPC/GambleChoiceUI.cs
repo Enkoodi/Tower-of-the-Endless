@@ -101,6 +101,7 @@ public class GambleChoiceUI : MonoBehaviour
             firstLabel.text = "关闭";
         }
         Debug.Log($"[Shop3Gamble] {DescribeAmount(actual)}（当前金币 {player.Gold}）");
+        PlayerLog.Note($"赌博 {DescribeAmount(actual)}（现 {player.Gold} 金币）");
     }
 
     private void Close()

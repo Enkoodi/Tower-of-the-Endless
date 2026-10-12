@@ -20,6 +20,12 @@ public interface IFloorPickup
     void SetFloorInfo(Vector2Int gridPos, int floor);
 
     /// <summary>
+    /// 玩家日志里显示的名字（如「黄钥匙」「攻击力 +5」）。新增拾取物必须一并实现 ——
+    /// 靠编译器强制，避免「新道具没名字」这种静默缺失。
+    /// </summary>
+    string LogName { get; }
+
+    /// <summary>
     /// 由 PlayerMove 在玩家走到该格时调用。返回是否拾取成功。
     /// </summary>
     bool TryPickup(PlayerData playerData);

@@ -150,7 +150,7 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u65C1\u8FB9\u95E8\u7684\u94A5\u5319\u6211\u5C31\u653E\u5728\u95E8\u8FB9\u4E0A\uFF0C\u4F60\u76F4\u63A5\u62FF\u53BB\u7528\u5427"
+    content: "\u95E8\u7684\u94A5\u5319\u6211\u5C31\u653E\u5728\u95E8\u8FB9\u4E0A\uFF0C\u4F60\u76F4\u63A5\u62FF\u53BB\u7528\u5427"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"

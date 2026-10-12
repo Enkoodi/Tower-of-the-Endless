@@ -181,17 +181,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"
-    content: "\u4F60\u662F...144\u53F7"
+    content: "\u5F88\u4E45\u6CA1\u6709\u4EBA\u80FD\u5230\u8FBE\u8FD9\u91CC\u4E86\uFF0C\u5355\u9760\u86EE\u529B\u662F\u65E0\u6CD5\u7A81\u7834\u4ED6\u4EEC\u7684\u5B88\u536B\u7684\uFF0C\u60F3\u5FC5\u4F60\u4E5F\u5B9E\u529B\u975E\u51E1"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u9B54\u5BFC\u5E08Zeno"
-    content: "\u65E2\u7136\u4F60\u90FD\u80FD\u6765\u5230\u8FD9\u91CC\u4E86\uFF0C\u90A3\u4E48\u4E0D\u5E9F\u8BDD\u76F4\u63A5\u5F00\u59CB\u5427"
+    content: "\u90A3\u4E48\u522B\u5E9F\u8BDD\u76F4\u63A5\u5F00\u59CB\u5427"
     showChoices: 1
     nextLineIndex: -2
-  - speakerName: "\u9B54\u5BFC\u5E08Zeno"
-    content: "\u4E00\u5B9A\u8981\u6709\u4E00\u4F4D..."
-    showChoices: 1
-    nextLineIndex: -1
   entryBranches: []
   choice1Text: "\u6218\u6597"
   choice2Text: "\u6218\u6597"

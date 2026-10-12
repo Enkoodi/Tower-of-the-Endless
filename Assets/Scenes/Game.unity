@@ -695,6 +695,9 @@ MonoBehaviour:
   - id: 74
     prefab: {fileID: 3606647484800872793, guid: 57674153074c9314e90cff871f8f2e09, type: 3}
     displayName: "\u5C0F\u5077"
+  - id: 75
+    prefab: {fileID: 3606647484800872793, guid: 2d74c28371605a840ace6bb607dee89a, type: 3}
+    displayName: "\u5C0F\u5077"
   - id: 91
     prefab: {fileID: 3729011368856514771, guid: 438747a85e19ab341980c9aff0dde4dd, type: 3}
     displayName: "\u5438\u8840\u9B3C\u9886\u4E3B"
@@ -2254,6 +2257,10 @@ PrefabInstance:
     - target: {fileID: 1695285063570732304, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
       propertyPath: m_Name
       value: DialogueCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067376295499240457, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: charsPerSecond
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7133706067755293021, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
       propertyPath: m_Pivot.x

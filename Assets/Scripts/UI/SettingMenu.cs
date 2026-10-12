@@ -258,6 +258,9 @@ public class SettingMenu : MonoBehaviour
         SaveManager.ClearAutoSave();
         SaveManager.LoadAutoSaveOnStart = false;
 
+        // 新一局：清空玩家日志缓冲区。主动存档的日志文件保留 —— 它对应的 game_save.json 也保留。
+        PlayerLog.Reset();
+
         // 新游戏：重置楼层记忆与特殊敌人击败信号（字典记忆）
         FloorMemoryManager.Instance?.ResetAll();
         SpecialEnemyManager.Instance?.ResetAll();

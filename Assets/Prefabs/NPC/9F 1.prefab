@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8697663452727498261}
   - component: {fileID: -7309191790382007140}
   - component: {fileID: 3683812192655683322}
+  - component: {fileID: 4071850813549883894}
   - component: {fileID: 4253030719672511154}
   m_Layer: 11
   m_Name: 9F 1
@@ -148,12 +149,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u5C0F\u5077"
-    content: "\u4F60\u662F\u60F3\u8981\u8FDB\u5C45\u4F4F\u533A\u5417\uFF0C\u95E8\u53E3\u7684\u5B88\u536B\u5F88\u9EBB\u70E6\u5427"
+    content: "\u4F60\u60F3\u8981\u8FDB\u5C45\u4F4F\u533A\u5417\uFF0C\u95E8\u53E3\u7684\u5B88\u536B\u5F88\u9EBB\u70E6\u5427"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u8FD9\u662F\u6211\u5E38\u7528\u7684\u5C0F\u8DEF\uFF0C\u53EF\u4EE5\u5E2E\u4F60\u8EB2\u8FC7\u95E8\u53E3\u7684\u5B88\u536B"
-    showChoices: 1
+    content: "\u8FD9\u662F\u6211\u5E38\u7528\u7684\u5C0F\u8DEF\uFF0C\u53EF\u4EE5\u5E2E\u4F60\u7ED5\u8FC7\u95E8\u53E3\u7684\u5B88\u536B"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u5C0F\u5077"
+    content: "\u62A5\u916C\uFF1F\u8FD9\u5C31\u4E0D\u7528\u4E86\uFF0C\u4EA4\u4E2A\u670B\u53CB"
+    showChoices: 0
     nextLineIndex: -1
   entryBranches: []
   choice1Text: "\u63A5\u53D7"
@@ -176,6 +181,18 @@ MonoBehaviour:
       - m_Target: {fileID: 3683812192655683322}
         m_TargetAssemblyTypeName: WallRemover, Assembly-CSharp
         m_MethodName: RemoveWalls
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4071850813549883894}
+        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
+        m_MethodName: TryPurchase
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -221,6 +238,20 @@ MonoBehaviour:
   floorNumber: 9
   wallPositions:
   - {x: 1, y: 4}
+--- !u!114 &4071850813549883894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606647484800872793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCost: 100
+  items: []
 --- !u!95 &4253030719672511154
 Animator:
   serializedVersion: 5

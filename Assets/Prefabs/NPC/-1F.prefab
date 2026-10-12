@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
-  - component: {fileID: 7013060878051944798}
+  - component: {fileID: 6758906220803973567}
   m_Layer: 11
-  m_Name: 26F
+  m_Name: -1F
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,11 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u8001\u8005"
-    content: "\u6839\u636E\u6211\u7684\u60C5\u62A5\uFF0C\u516C\u4E3B\u4F3C\u4E4E\u5F88\u4E45\u4EE5\u524D\u5C31\u88AB\u56DA\u7981\u5728\u67D0\u5C42\uFF0C\u4F46\u90A3\u5DF2\u7ECF\u662F\u5F88\u4E45\u4EE5\u524D\u7684\u4E8B\u4E86"
-    showChoices: 0
-    nextLineIndex: -1
-  - speakerName: "\u8001\u8005"
-    content: "\u8BF4\u8D77\u6765\uFF0C\u5DF2\u7ECF\u6709\u4E00\u6BB5\u65F6\u95F4\u6CA1\u542C\u5230\u5173\u4E8E\u516C\u4E3B\u7684\u6D88\u606F\u4E86"
+    content: .....
     showChoices: 0
     nextLineIndex: -1
   entryBranches: []
@@ -162,9 +158,11 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
---- !u!95 &7013060878051944798
+--- !u!95 &6758906220803973567
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0

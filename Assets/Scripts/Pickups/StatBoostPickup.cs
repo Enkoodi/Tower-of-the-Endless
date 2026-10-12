@@ -29,6 +29,9 @@ public class StatBoostPickup : MonoBehaviour, IFloorPickup, IPurchasable
         floorNumber = floor;
     }
 
+    /// <summary>玩家日志中的显示名（用 StatBoostData 里配的名字，如「攻击力 +5」）。</summary>
+    public string LogName => data != null && !string.IsNullOrEmpty(data.displayName) ? data.displayName : "属性碎片";
+
     /// <summary>IPurchasable：效果型道具，不能出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {

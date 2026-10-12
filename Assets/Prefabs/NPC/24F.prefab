@@ -166,11 +166,7 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u8001\u8005"
-    content: "\u76F4\u5230\u9B54\u738B\u5E26\u7740\u516C\u4E3B\u53BB\u4F4E\u5C42\u540E\uFF0C\u9891\u7387\u624D\u5F00\u59CB\u653E\u7F13"
-    showChoices: 0
-    nextLineIndex: -1
-  - speakerName: "\u8001\u8005"
-    content: "\u4F60\u4EEC\u7A76\u7ADF\u4ECE\u4F55\u800C\u6765\uFF0C\u53C8\u6709\u4EC0\u4E48\u76EE\u7684"
+    content: "\u76F4\u5230\u9B54\u738B\u5E26\u7740\u516C\u4E3B\u524D\u5F80\u4F4E\u5C42\u540E\uFF0C\u4E0D\u77E5\u9053\u505A\u4E86\u4EC0\u4E48\uFF0C\u5728\u90A3\u4E4B\u540E\u6311\u6218\u7684\u4EBA\u5C31\u53D8\u5C11\u4E86\uFF0C\u4F46\u518D\u4E5F\u6CA1\u4EBA\u89C1\u8FC7\u516C\u4E3B"
     showChoices: 0
     nextLineIndex: -1
   entryBranches: []
@@ -182,6 +178,8 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!95 &-1615403906397964930

@@ -36,6 +36,9 @@ public class BehemothsFangPickup : MonoBehaviour, IFloorPickup, IPurchasable
         floorNumber = floor;
     }
 
+    /// <summary>玩家日志中的显示名。</summary>
+    public string LogName => "贝希摩斯之牙";
+
     /// <summary>IPurchasable：效果型道具，不能出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {

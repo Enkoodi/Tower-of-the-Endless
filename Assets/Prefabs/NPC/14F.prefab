@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8697663452727498261}
   - component: {fileID: -6612769980229159066}
   - component: {fileID: -410012860953756329}
+  - component: {fileID: 9167577198591934141}
   - component: {fileID: 4998140528940154985}
   m_Layer: 11
   m_Name: 14F
@@ -156,11 +157,15 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u6211\u5728\u63A2\u7D22\u8FD9\u7247\u533A\u57DF\u7684\u65F6\u5019\u53D1\u73B0\u8FD9\u5899\u540E\u9762\u4F3C\u4E4E\u6709\u4E1C\u897F\uFF0C\u6211\u53EF\u4EE5\u5E2E\u4F60\u6316\u5F00\u770B\u770B\uFF0C\u52A0\u4E0A\u8FD9\u4EF6\u4E8B\u4F60\u5C31\u6B20\u6211\u4E24\u4E2A\u4EBA\u60C5\u4E86\u54E6"
+    content: "\u8FD9\u5899\u540E\u9762\u4F3C\u4E4E\u6709\u628A\u6B66\u5668\uFF0C\u8FD9\u6B66\u5668\u6211\u4E5F\u7528\u4E0D\u4E0A\uFF0C\u672C\u6765\u6253\u7B97\u76F4\u63A5\u79BB\u5F00\u7684"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u5F00\u73A9\u7B11\u7684\u5566\uFF0C\u6211\u4EEC\u662F\u670B\u53CB\u5BF9\u5427\uFF0C\u90A3\u8FD9\u5C31\u662F\u670B\u53CB\u4E4B\u95F4\u7684\u4E92\u5E2E\u4E92\u52A9"
+    content: "\u4F46\u521A\u597D\u4F60\u8FC7\u6765\u4E86\uFF0C\u6211\u53EF\u4EE5\u5E2E\u4F60\u6316\u5F00\u770B\u770B\uFF0C\u52A0\u4E0A\u8FD9\u4EF6\u4E8B\u4F60\u5C31\u6B20\u6211\u4E24\u4E2A\u4EBA\u60C5\u4E86\u54E6"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u5C0F\u5077"
+    content: "\u5F00\u73A9\u7B11\u7684\uFF0C\u6211\u4EEC\u662F\u670B\u53CB\u5BF9\u5427"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -184,6 +189,18 @@ MonoBehaviour:
       - m_Target: {fileID: -410012860953756329}
         m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
         m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 9167577198591934141}
+        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
+        m_MethodName: TryPurchase
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -229,6 +246,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
+--- !u!114 &9167577198591934141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606647484800872793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCost: 100
+  items: []
 --- !u!95 &4998140528940154985
 Animator:
   serializedVersion: 5

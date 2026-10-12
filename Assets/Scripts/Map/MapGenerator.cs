@@ -258,6 +258,11 @@ public class MapGenerator : MonoBehaviour
         }
 
         Debug.Log($"[MapGenerator] 地图加载完成：{data.name}（{data.width}×{data.height}，楼层 {data.floor}）");
+
+        // 玩家日志：楼层段标题。必须排在下面的夹击扫描之前 ——
+        // 进楼层时被夹击扣掉的血要记在这一段里面。
+        PlayerLog.Section($"进入 {data.floor}F");
+
         onFloorLoaded?.Invoke(data);
 
         // 标记楼层为已访问（用于快速跳层功能）

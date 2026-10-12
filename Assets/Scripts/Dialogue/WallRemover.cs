@@ -38,5 +38,8 @@ public class WallRemover : MonoBehaviour
         }
 
         Debug.Log($"[WallRemover] 已移除第 {floorNumber} 层的 {wallPositions.Length} 堵墙");
+        PlayerLog.Note(wallPositions.Length == 1
+            ? $"墙消失 ({wallPositions[0].x},{wallPositions[0].y})"
+            : $"墙消失 {wallPositions.Length} 面");
     }
 }

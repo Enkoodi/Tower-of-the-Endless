@@ -26,6 +26,9 @@ public class BlessingPickup : MonoBehaviour, IFloorPickup, IPurchasable
         floorNumber = floor;
     }
 
+    /// <summary>玩家日志中的显示名（选中的祝福由 BlessingManager 单独记）。</summary>
+    public string LogName => "祝福";
+
     /// <summary>IPurchasable：效果型道具，不能出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {

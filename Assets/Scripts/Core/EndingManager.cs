@@ -10,6 +10,7 @@ public static class EndingManager
     public static void Trigger()
     {
         Debug.Log("[EndingManager] 触发真结局片尾 ED");
+        PlayerLog.Note("触发真结局");
 
         // 通过 ScreenFader 完成淡出 → 加载 → 淡入的过场
         ScreenFader.FadeToScene("Ending");

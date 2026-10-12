@@ -394,6 +394,7 @@ public class BlessingManager : MonoBehaviour
         {
             currentPlayerData.ApplyBlessing(chosen);
             Debug.Log($"[BlessingManager] 选择了祝福：{chosen.blessingName}");
+            PlayerLog.Note($"选择祝福 {chosen.blessingName}");
         }
 
         Cleanup();

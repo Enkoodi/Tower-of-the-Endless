@@ -21,6 +21,9 @@ public class DoorController : MonoBehaviour, IFloorEntity
 
     public bool IsOpened => isOpened;
 
+    /// <summary>玩家日志里的门名（优先用 DoorData 里配的名字）。</summary>
+    private string DoorLabel => doorData != null && !string.IsNullOrEmpty(doorData.doorName) ? doorData.doorName : name;
+
     /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
     [HideInInspector] public Vector2Int gridPosition;
 
@@ -79,6 +82,7 @@ public class DoorController : MonoBehaviour, IFloorEntity
             playerHealth.SubtractHP(doorData.healthCost);
             Open();
             Debug.Log($"[Door] {name} 消耗 {doorData.healthCost} 生命值，已打开！");
+            PlayerLog.Note($"开门 {DoorLabel} ({gridPosition.x},{gridPosition.y})，消耗 {doorData.healthCost} HP");
             return true;
         }
 
@@ -104,6 +108,10 @@ public class DoorController : MonoBehaviour, IFloorEntity
 
                 Open();
                 Debug.Log($"[Door] {name} 钥匙数量满足（需要 {doorData.requiredKeyCount}，当前 {count}），已打开！");
+                PlayerLog.Note($"开门 {DoorLabel} ({gridPosition.x},{gridPosition.y})，"
+                             + (doorData.consumeKey
+                                ? $"消耗 {doorData.requiredKeyCount} 把{PlayerLog.KeyName(doorData.requiredKeyType)}"
+                                : $"需持有 {doorData.requiredKeyCount} 把{PlayerLog.KeyName(doorData.requiredKeyType)}（不消耗）"));
                 return true;
             }
 
@@ -120,6 +128,10 @@ public class DoorController : MonoBehaviour, IFloorEntity
 
             Open();
             Debug.Log($"[Door] {name} 已打开！");
+            PlayerLog.Note($"开门 {DoorLabel} ({gridPosition.x},{gridPosition.y})，"
+                         + (doorData.consumeKey
+                            ? $"消耗 {PlayerLog.KeyName(doorData.requiredKeyType)}×1"
+                            : $"需持有 {PlayerLog.KeyName(doorData.requiredKeyType)}（不消耗）"));
             return true;
         }
 

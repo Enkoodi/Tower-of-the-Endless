@@ -245,8 +245,8 @@ public class PlayerMove : MonoBehaviour
         {
             targetPosition = target;
             isMoving = true;
-            if (playerData != null)
-                pickup.TryPickup(playerData);
+            if (playerData != null && pickup.TryPickup(playerData))
+                PlayerLog.Note($"拾取 {pickup.LogName}");
             StartCoroutine(SmoothMove(direction, !sliding));   // 道具不终止滑行
             return true;
         }
@@ -505,6 +505,7 @@ public class PlayerMove : MonoBehaviour
 
         EntryDirection entryDir = goingUp ? EntryDirection.FromBelow : EntryDirection.FromAbove;
         Debug.Log($"[QuickJump] 快速跳层：第 {currentFloor} 层 → 第 {targetFloor} 层（{entryDir}）");
+        PlayerLog.Note($"快速跳层 {currentFloor}F → {targetFloor}F");
         mapGen.LoadFloor(targetFloor, entryDir);
 
         // 快速跳层后自动存档

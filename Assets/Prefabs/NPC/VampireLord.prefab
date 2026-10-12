@@ -151,6 +151,8 @@ MonoBehaviour:
     offset: {x: 1, y: 1}
   - prefab: {fileID: 7426012651065657000, guid: b9062143b7612f94a9af21bbcb710402, type: 3}
     offset: {x: -1, y: 1}
+  - prefab: {fileID: 1979639868013418241, guid: 371038bd22a045545b7131383f43f656, type: 3}
+    offset: {x: 0, y: 0}
 --- !u!114 &-2454841182457994963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,19 +167,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
-    content: "......\u8FD9\u662F\u7B2C\u51E0\u6B21\u4E86"
-    showChoices: 0
-    nextLineIndex: -1
-  - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
-    content: "\u4F60\u7684\u4EFB\u52A1\u662F\u6740\u6B7B\u9B54\u738B\uFF0C\u7136\u540E\u8FDB\u5165\u79FB\u6D8C\u4E4B\u95E8\uFF0C\u8FD9\u5F88\u7B80\u5355\u5BF9\u5427"
-    showChoices: 0
-    nextLineIndex: -1
-  - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
     content: ...
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
-    content: "\u4F60\u600E\u4E48\u8FD8\u5728\uFF0C\u662F\u60F3\u8981\u6311\u6218\u6211\u5417\uFF1F"
+    content: "\u6218\u80DC\u6211\uFF0C\u4F60\u4F1A\u77E5\u9053\u4F60\u60F3\u77E5\u9053\u7684\u4E00\u5207"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -201,6 +195,8 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-3616625670769001871

@@ -80,6 +80,7 @@ public class MerchantPurchase : MonoBehaviour
         }
 
         Debug.Log($"[MerchantPurchase] 交易成功（金币变动 {goldCost}，当前 {player.Gold}）");
+        PlayerLog.Note(DescribeTrade(player));
         return true;
     }
 
@@ -133,5 +134,42 @@ public class MerchantPurchase : MonoBehaviour
         }
 
         purchasable.ApplyPurchase(player, item.quantity);
+    }
+
+    /// <summary>
+    /// 玩家日志：这笔交易「得到了什么、交出了什么、金币变了多少」。
+    /// quantity 正=发放给玩家，负=从玩家手里回收（出售）。
+    /// </summary>
+    private string DescribeTrade(PlayerData player)
+    {
+        string gains = "";
+        string costs = "";
+
+        if (items != null)
+        {
+            foreach (PurchaseItem item in items)
+            {
+                if (item == null || item.prefab == null || item.quantity == 0) continue;
+
+                string name = item.prefab.TryGetComponent(out IPurchasable p) ? p.LogName : item.prefab.name;
+                if (item.quantity > 0) gains = AppendItem(gains, name, item.quantity);
+                else costs = AppendItem(costs, name, -item.quantity);
+            }
+        }
+
+        string body = gains.Length > 0 ? $"获得 {gains}" : "";
+        if (costs.Length > 0) body += (body.Length > 0 ? "，" : "") + $"交出 {costs}";
+        if (body.Length == 0) body = "无道具";
+
+        string gold = goldCost > 0 ? $"-{goldCost} 金币"
+                    : goldCost < 0 ? $"+{-goldCost} 金币"
+                    : "金币不变";
+
+        return $"交易 {body}（{gold}，现有 {player.Gold}）";
+    }
+
+    private static string AppendItem(string list, string name, int amount)
+    {
+        return list.Length == 0 ? $"{name}×{amount}" : $"{list}、{name}×{amount}";
     }
 }

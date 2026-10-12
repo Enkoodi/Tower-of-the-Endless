@@ -483,6 +483,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         if (upTeleporterCount <= 0) return false;
         upTeleporterCount--;
         Debug.Log($"[PlayerData] 使用上楼传送器（剩余 {upTeleporterCount}）");
+        PlayerLog.Note($"使用 上楼传送器（剩 {upTeleporterCount}）");
         return true;
     }
 
@@ -492,6 +493,7 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         if (downTeleporterCount <= 0) return false;
         downTeleporterCount--;
         Debug.Log($"[PlayerData] 使用下楼传送器（剩余 {downTeleporterCount}）");
+        PlayerLog.Note($"使用 下楼传送器（剩 {downTeleporterCount}）");
         return true;
     }
 
@@ -525,11 +527,13 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         if (pendingEnemyHalve)
         {
             Debug.LogWarning($"[PlayerData] 圣水已待生效，本次使用被浪费（剩余 {enemyHalveItemCount}）");
+            PlayerLog.Note("使用 圣水（白喝了：上一瓶还没用掉）");
             return true;
         }
 
         pendingEnemyHalve = true;
         Debug.Log($"[PlayerData] 使用圣水（剩余 {enemyHalveItemCount}，下一场战斗敌人血量减半）");
+        PlayerLog.Note($"使用 圣水（剩 {enemyHalveItemCount}，下场战斗敌人血量减半）");
         return true;
     }
 
@@ -583,11 +587,13 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         if (pendingAleStacks >= AleMaxStacks)
         {
             Debug.LogWarning($"[PlayerData] 麦酒已叠满 {AleMaxStacks} 层，本次饮用被浪费（剩余 {aleCount}）");
+            PlayerLog.Note($"饮用 麦酒（白喝了：已叠满 {AleMaxStacks} 层）");
             return true;
         }
 
         pendingAleStacks++;
         Debug.Log($"[PlayerData] 饮用麦酒（剩余 {aleCount}，已叠 {pendingAleStacks}/{AleMaxStacks} 层，下一场战斗生效）");
+        PlayerLog.Note($"饮用 麦酒（{pendingAleStacks}/{AleMaxStacks} 层，剩 {aleCount}）");
         return true;
     }
 
@@ -631,11 +637,13 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         if (pendingManaEssence)
         {
             Debug.LogWarning($"[PlayerData] 魔力精华已待生效，本次使用被浪费（剩余 {manaEssenceCount}）");
+            PlayerLog.Note("使用 魔力精华（白用了：上一瓶还没用掉）");
             return true;
         }
 
         pendingManaEssence = true;
         Debug.Log($"[PlayerData] 使用魔力精华（剩余 {manaEssenceCount}，下一场战斗魔力充能 +{ManaEssenceChargeBonus}）");
+        PlayerLog.Note($"使用 魔力精华（剩 {manaEssenceCount}，下场战斗魔力充能 +{ManaEssenceChargeBonus}）");
         return true;
     }
 

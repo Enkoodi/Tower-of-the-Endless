@@ -164,6 +164,7 @@ public class NPCInteractionUI : MonoBehaviour
         NPCController.IncrementPurchaseCount();
 
         Debug.Log($"[商店] 生命值 +{currentNPC.HpPercent}%（=+{actualGain}，含生命系数 {currentPlayer.HPMultiplier}%），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
+        PlayerLog.Note($"商店购买 生命 +{currentNPC.HpPercent}%（+{actualGain} HP，-{cost} 金币）");
         RefreshShopUI();
     }
 
@@ -180,6 +181,7 @@ public class NPCInteractionUI : MonoBehaviour
         NPCController.IncrementPurchaseCount();
 
         Debug.Log($"[商店] 攻击力 +{currentNPC.AtkPercent}%（=+{actualGain}，含攻击系数 {currentPlayer.AttackMultiplier}%），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
+        PlayerLog.Note($"商店购买 攻击 +{currentNPC.AtkPercent}%（+{actualGain}，-{cost} 金币）");
         RefreshShopUI();
     }
 
@@ -196,6 +198,7 @@ public class NPCInteractionUI : MonoBehaviour
         NPCController.IncrementPurchaseCount();
 
         Debug.Log($"[商店] 防御力 +{currentNPC.DefPercent}%（=+{actualGain}，含防御系数 {currentPlayer.DefenseMultiplier}%），消耗 {cost} 金币（总购买次数 {NPCController.GetGlobalPurchaseCount()}）");
+        PlayerLog.Note($"商店购买 防御 +{currentNPC.DefPercent}%（+{actualGain}，-{cost} 金币）");
         RefreshShopUI();
     }
 
@@ -210,6 +213,7 @@ public class NPCInteractionUI : MonoBehaviour
         if (!currentPlayer.SpendGold(cost)) return;
 
         Debug.Log($"[商店] 购买了随机祝福，消耗 {cost} 金币");
+        PlayerLog.Note($"商店购买 随机祝福（-{cost} 金币）");
         NPCController.IncrementPurchaseCount();
 
         waitingForBlessing = true;

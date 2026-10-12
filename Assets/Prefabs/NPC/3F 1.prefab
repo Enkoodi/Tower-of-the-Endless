@@ -148,11 +148,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u8001\u8005"
-    content: "\u9B54\u738B\u4F3C\u4E4E\u5728\u8FDB\u884C\u8FD9\u67D0\u9879\u5F88\u5371\u9669\u7684\u7814\u7A76\uFF0C\u6211\u5C31\u662F\u8BD5\u56FE\u8C03\u67E5\u771F\u76F8\u624D\u88AB\u6293\u8FDB\u6765\u7684"
+    content: "\u8C22\u8C22\u4F60\u6551\u4E86\u6211\uFF0C\u9B54\u738B\u4F3C\u4E4E\u5728\u8FDB\u884C\u8FD9\u67D0\u9879\u5F88\u5371\u9669\u7684\u7814\u7A76\uFF0C\u6211\u8BD5\u56FE\u8C03\u67E5\u771F\u76F8\u7ED3\u679C\u88AB\u6293\u8FDB\u6765\u4E86"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u8001\u8005"
-    content: "\u8C22\u8C22\u4F60\u6551\u4E86\u6211\uFF0C\u8FD9\u662F\u6211\u6361\u5230\u7684\u5B9D\u7269\uFF0C\u53EF\u80FD\u5BF9\u4F60\u6709\u5E2E\u52A9"
+    content: "\u8FD9\u662F\u6211\u5728\u8C03\u67E5\u4E2D\u53D1\u73B0\u7684\u5B9D\u7269\uFF0C\u4EA4\u7ED9\u4F60\u4E86"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -188,6 +188,8 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &4547991480576706202

@@ -118,7 +118,17 @@ public class DialogueUI : MonoBehaviour
         }
 
         DialogueLine[] lines = (DialogueLine[])trigger.Lines.Clone();
-        OpenLines(trigger, lines, ResolveStartIndex(trigger, lines));
+        int startIndex = ResolveStartIndex(trigger, lines);
+
+        // 玩家日志：同一个 NPC 只记一次（反复撞对话会刷屏）
+        if (startIndex < lines.Length
+            && !string.IsNullOrEmpty(lines[startIndex].speakerName)
+            && PlayerLog.FirstTime($"dialog:{trigger.GetInstanceID()}"))
+        {
+            PlayerLog.Note($"对话 {lines[startIndex].speakerName}");
+        }
+
+        OpenLines(trigger, lines, startIndex);
     }
 
     /// <summary>载入一段对话并显示。trigger 允许为 null（战后续接时 NPC 可能已被销毁）</summary>
@@ -438,6 +448,10 @@ public class DialogueUI : MonoBehaviour
 
         int followUp = choiceIndex == 1 ? choice1NextLineCache : choice2NextLineCache;
         bool hasFollowUp = followUp >= 0 && followUp < currentLines.Length;
+
+        // 玩家日志：玩家选了哪个选项（选项文案更有用，取不到时退化为序号）
+        string choiceText = choiceIndex == 1 ? choice1TextCache : choice2TextCache;
+        PlayerLog.Note($"对话选项 {choiceIndex}：{(string.IsNullOrEmpty(choiceText) ? "（未命名）" : choiceText)}");
 
         // 待续接状态必须赶在执行选项之前摆好：跳过档下整场战斗会在下面这一行同步打完，
         // 战斗结束回调当场就会读它。面板也先收起，免得和战斗界面叠在一起。

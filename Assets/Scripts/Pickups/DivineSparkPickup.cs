@@ -21,6 +21,9 @@ public class DivineSparkPickup : MonoBehaviour, IFloorPickup, IPurchasable
         floorNumber = floor;
     }
 
+    /// <summary>玩家日志中的显示名。</summary>
+    public string LogName => "神圣火花";
+
     /// <summary>IPurchasable：效果型道具，不能出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {

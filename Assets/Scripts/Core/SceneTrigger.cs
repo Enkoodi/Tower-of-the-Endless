@@ -77,6 +77,7 @@ public class SceneTrigger : MonoBehaviour
         if (oneShot) hasTriggered = true;
 
         Debug.Log($"[SceneTrigger] 玩家到达第 {targetFloor} 层 ({targetGridPos.x}, {targetGridPos.y})，跳转场景 '{sceneName}'");
+        PlayerLog.Note($"触发场景跳转 → {sceneName}");
 
         // 通过 ScreenFader 完成淡出 → 加载 → 淡入的过场
         ScreenFader.FadeToScene(sceneName);

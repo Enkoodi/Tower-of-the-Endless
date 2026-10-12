@@ -81,17 +81,17 @@ public class SaveManager : MonoBehaviour
     /// <summary>保存主动存档（P 键 / 未来 UI 按钮），写入 game_save.json。</summary>
     public void SaveGame()
     {
-        SaveGameTo(gameSavePath);
+        SaveGameTo(gameSavePath, PlayerLogSlot.Manual);
     }
 
     /// <summary>保存自动存档，写入 auto_save.json（不覆盖主动存档）。</summary>
     public void SaveAutoGame()
     {
-        SaveGameTo(autoSavePath);
+        SaveGameTo(autoSavePath, PlayerLogSlot.Auto);
     }
 
-    /// <summary>将当前游戏状态写入指定存档文件。</summary>
-    private void SaveGameTo(string path)
+    /// <summary>将当前游戏状态写入指定存档文件。写盘成功后，同步把玩家日志落盘到同槽位的文件。</summary>
+    private void SaveGameTo(string path, PlayerLogSlot slot)
     {
         PlayerData player = FindAnyObjectByType<PlayerData>();
         if (player == null)
@@ -195,10 +195,14 @@ public class SaveManager : MonoBehaviour
             ? FloorMemoryManager.Instance.GetVisitedFloors()
             : null;
 
-        WriteJson(path, data);
+        // 只有真的写盘成功才落盘玩家日志 —— 写失败时日志必须保持原样，
+        // 否则「没存档的操作不进日志」这条规则会被破掉。
+        bool written = WriteJson(path, data);
 
         // 同时保存全局存档
         SaveGlobal();
+
+        if (written) PlayerLog.Commit(slot);
 
         Debug.Log($"[SaveManager] 存档已保存 → {path}");
     }
@@ -273,17 +277,17 @@ public class SaveManager : MonoBehaviour
     /// <summary>读取主动存档（O 键），从 game_save.json。</summary>
     public void LoadGame()
     {
-        LoadGameFrom(gameSavePath);
+        LoadGameFrom(gameSavePath, PlayerLogSlot.Manual);
     }
 
     /// <summary>读取自动存档，从 auto_save.json。返回是否成功读取。</summary>
     public bool LoadAutoGame()
     {
-        return LoadGameFrom(autoSavePath);
+        return LoadGameFrom(autoSavePath, PlayerLogSlot.Auto);
     }
 
     /// <summary>从指定存档文件读取游戏状态。返回是否成功读取。</summary>
-    private bool LoadGameFrom(string path)
+    private bool LoadGameFrom(string path, PlayerLogSlot slot)
     {
         GameSaveData data = ReadJson<GameSaveData>(path);
         if (data == null)
@@ -293,6 +297,10 @@ public class SaveManager : MonoBehaviour
         }
 
         Debug.Log($"[SaveManager] 存档已读取 ← {path}");
+
+        // 世界即将退回这份存档的状态 → 玩家日志也整份退回（用该槽位的日志文件回填缓冲区），
+        // 之后新产生的操作才接在后面。必须放在下面 LoadFloor 之前 —— 它要写「进入 N 层」段标题。
+        PlayerLog.Adopt(slot);
 
         // 1. 恢复玩家属性
         PlayerData player = FindAnyObjectByType<PlayerData>();
@@ -489,6 +497,9 @@ public class SaveManager : MonoBehaviour
         {
             Debug.Log("[SaveManager] 自动存档不存在，无需清除");
         }
+
+        // 日志与存档同生共死
+        PlayerLog.Delete(PlayerLogSlot.Auto);
     }
 
     // ============================================================
@@ -585,16 +596,19 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    private void WriteJson<T>(string path, T data)
+    /// <summary>写 JSON。返回是否写盘成功 —— SaveGameTo 据此决定要不要落盘玩家日志。</summary>
+    private bool WriteJson<T>(string path, T data)
     {
         try
         {
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
             File.WriteAllText(path, json);
+            return true;
         }
         catch (System.Exception e)
         {
             Debug.LogError($"[SaveManager] 写入存档失败：{path}\n{e}");
+            return false;
         }
     }
 

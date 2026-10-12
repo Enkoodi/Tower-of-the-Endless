@@ -18,6 +18,11 @@ using UnityEngine;
 public interface IPurchasable
 {
     /// <summary>
+    /// 玩家日志里显示的名字（如「黄钥匙」「圣水」）。
+    /// 实现方基本都同时实现 IFloorPickup，共用一个 <c>LogName</c> 属性即可。
+    /// </summary>
+    string LogName { get; }
+    /// <summary>
     /// 出售前的持有量校验 —— 只在 quantity 为负的交易里被调用，sellAmount 恒为正。
     /// 数量不足、或该道具根本不可出售，都返回 false；**具体原因由实现自己 LogWarning**，
     /// 因为只有它自己知道「钥匙不足」和「祝福不可出售」的区别。

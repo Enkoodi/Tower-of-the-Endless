@@ -26,6 +26,9 @@ public class KeyPickup : MonoBehaviour, IFloorPickup, IPurchasable
         floorNumber = floor;
     }
 
+    /// <summary>玩家日志中的显示名。</summary>
+    public string LogName => PlayerLog.KeyName(KeyType);
+
     /// <summary>IPurchasable：钥匙是数量型道具，可出售。</summary>
     public bool CanSell(PlayerData player, int sellAmount)
     {

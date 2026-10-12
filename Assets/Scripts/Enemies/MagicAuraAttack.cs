@@ -58,12 +58,15 @@ public class MagicAuraAttack : MonoBehaviour
 
         // 造成伤害（不消耗魔力充能，无限次数）
         int damage = enemyController.ManaMax * damagePercent / 100;
+        int hpBefore = player.HP;
         int actual = player.SubtractHP(damage);
         // 魔力光环算受伤
         if (actual > 0)
             player.PlayHurtAnimation();
         Debug.Log($"[MagicAura] {enemyController.EnemyName} 的魔力攻击对玩家造成 {actual} 点伤害！" +
                   $"（魔力上限={enemyController.ManaMax}，倍率={damagePercent}%）");
+        if (actual > 0)
+            PlayerLog.Note($"魔力光环 {enemyController.EnemyName}，HP {hpBefore}→{player.HP}");
     }
 
     /// <summary>检查玩家是否在上下左右四个相邻格子之一</summary>

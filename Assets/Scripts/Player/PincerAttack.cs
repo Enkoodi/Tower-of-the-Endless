@@ -251,6 +251,8 @@ public class PincerAttack : MonoBehaviour
         if (actual > 0)
             player.PlayHurtAnimation();
         Debug.Log($"[夹击] {pattern} 形成！玩家生命值减少50%（-{actual}，HP {hpBefore} → {player.HP}）");
+        if (actual > 0)
+            PlayerLog.Note($"被夹击（{pattern}），HP {hpBefore}→{player.HP}");
     }
 
     /// <summary>
@@ -270,6 +272,7 @@ public class PincerAttack : MonoBehaviour
         int damage = Mathf.FloorToInt(hpBefore * 0.5f);   // 刻意 floor：保证不致死
         enemy.SubtractHP(damage);
         Debug.Log($"[夹击] {pattern} 形成！{enemy.EnemyName} 生命值减少50%（伤害 {damage}，HP {hpBefore} → {enemy.HP}）");
+        PlayerLog.Note($"夹击 {enemy.EnemyName} ({enemy.gridPosition.x},{enemy.gridPosition.y})，HP {hpBefore}→{enemy.HP}");
 
         // 兜底：在 floor 之下这里其实永远到不了，留着是防止以后有人改动上面的取整方式
         // 或把夹击改成固定伤害 —— 那时这条分支就是最后一道保险。

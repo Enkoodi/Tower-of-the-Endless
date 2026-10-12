@@ -29,6 +29,7 @@ public class NpcRemover : MonoBehaviour, IFloorEntity
         state?.MarkNpcRemoved(gridPosition);
 
         Debug.Log($"[NpcRemover] 已移除NPC（第 {floorNumber} 层，坐标 ({gridPosition.x}, {gridPosition.y})）");
+        PlayerLog.Note($"NPC 消失 ({gridPosition.x},{gridPosition.y})");
         Destroy(gameObject);
     }
 
