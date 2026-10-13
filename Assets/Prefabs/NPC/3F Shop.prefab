@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3013410102031519395}
   - component: {fileID: -2069880403602973534}
   - component: {fileID: 1268248325942084111}
+  - component: {fileID: 4889585681121801887}
   - component: {fileID: 3377912295460275577}
   m_Layer: 11
   m_Name: 3F Shop
@@ -168,9 +169,28 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 4889585681121801887}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 3Fshop
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &1268248325942084111
@@ -193,6 +213,20 @@ MonoBehaviour:
     quantity: 1
   - prefab: {fileID: 9082593690080390034, guid: 1c26c32e61e1f1a47b7ee9d1b3192dfe, type: 3}
     quantity: 1
+--- !u!114 &4889585681121801887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6395233593365337873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16044851492cf3142a1a14dbb6035942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPosition: {x: 0, y: 0}
+  floorNumber: 0
 --- !u!95 &3377912295460275577
 Animator:
   serializedVersion: 5

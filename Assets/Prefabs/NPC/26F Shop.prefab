@@ -157,12 +157,20 @@ MonoBehaviour:
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
     content: "\u8FD9\u628A\u84DD\u94A5\u5319\u4E5F\u7528\u4E0D\u4E0A\u4E86\uFF0C\u9001\u7ED9\u60A8\u4E86"
-    showChoices: 1
+    showChoices: 0
     nextLineIndex: -1
   entryBranches: []
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:
+    m_PersistentCalls:
+      m_Calls: []
+  onChoice2:
+    m_PersistentCalls:
+      m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
+  onDialogueEnd:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 3221084027521959861}
@@ -189,9 +197,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onChoice2:
-    m_PersistentCalls:
-      m_Calls: []
+  endActionAfterChoice: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &3221084027521959861

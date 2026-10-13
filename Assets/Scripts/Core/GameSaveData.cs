@@ -116,6 +116,11 @@ public class GameSaveData
     public List<string> defeatedSpecialEnemies = new List<string>();
 
     // ============================================================
+    //  对话标记（DialogueTrigger.endFlagId，记录收尾逻辑已结算过）
+    // ============================================================
+    public List<string> dialogueFlags = new List<string>();
+
+    // ============================================================
     //  楼层状态（序列化格式）
     // ============================================================
     public List<FloorStateEntry> floorStates = new List<FloorStateEntry>();

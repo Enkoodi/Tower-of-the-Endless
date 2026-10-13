@@ -185,6 +185,9 @@ public class SaveManager : MonoBehaviour
             ? SpecialEnemyManager.Instance.GetDefeatedIds()
             : new List<string>();
 
+        // 对话标记（NPC 收尾逻辑已结算过）
+        data.dialogueFlags = DialogueFlags.GetIds();
+
         // 楼层状态
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();
         data.currentFloor = mapGen != null ? mapGen.CurrentFloor : GameSaveData.NoFloor;
@@ -372,6 +375,9 @@ public class SaveManager : MonoBehaviour
 
         // 2.6. 恢复特殊敌人击败信号
         SpecialEnemyManager.Instance?.RestoreDefeated(data.defeatedSpecialEnemies);
+
+        // 2.65. 恢复对话标记（旧存档没有该字段 → null，Restore 内部当作空集合）
+        DialogueFlags.Restore(data.dialogueFlags);
 
         // 3. 恢复楼层记忆
         if (FloorMemoryManager.Instance != null && data.floorStates != null)

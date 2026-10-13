@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u8001\u8005"
-    content: "\u9F99\u662F\u4E00\u4E2A\u975E\u5E38\u9AD8\u8D35\u7684\u79CD\u65CF\uFF0C\u6BCF\u79CD\u9F99\u53EA\u4F1A\u5B58\u5728\u4E00\u53EA\uFF0C\u4F20\u8BF4\u5728\u8FD9\u5EA7\u5854\u4E2D\u6816\u606F\u7740\u4E00\u53EA\u9EC4\u91D1\u9F99\uFF0C\u5B83\u6536\u96C6\u4E86\u5927\u91CF\u7684\u5B9D\u85CF"
+    content: "\u9F99\u662F\u4E00\u4E2A\u975E\u5E38\u9AD8\u8D35\u7684\u79CD\u65CF\uFF0C\u6BCF\u79CD\u9F99\u53EA\u4F1A\u5B58\u5728\u4E00\u53EA\uFF0C\u4F20\u8BF4\u5728\u8FD9\u5EA7\u5854\u4E2D\u6816\u606F\u7740\u4E00\u53EA{S}\u9EC4\u91D1\u9F99{S}\uFF0C\u5B83\u6536\u96C6\u4E86\u5927\u91CF\u7684\u5B9D\u85CF"
     showChoices: 0
     nextLineIndex: -1
   entryBranches: []
@@ -158,6 +158,13 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!95 &1055950936336161820

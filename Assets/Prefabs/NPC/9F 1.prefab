@@ -178,6 +178,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onChoice2:
+    m_PersistentCalls:
+      m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls:
       - m_Target: {fileID: 3683812192655683322}
         m_TargetAssemblyTypeName: WallRemover, Assembly-CSharp
         m_MethodName: RemoveWalls
@@ -202,11 +210,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onChoice2:
-    m_PersistentCalls:
-      m_Calls: []
-  choice1NextLineIndex: -1
-  choice2NextLineIndex: -1
+      - m_Target: {fileID: -7309191790382007140}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  endActionAfterChoice: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-7309191790382007140

@@ -167,11 +167,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
-    content: ...
+    content: "\u53C8\u662F\u4E00\u4F4D\u65B0\u7684\u6311\u6218\u8005"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5438\u8840\u9B3C\u9886\u4E3B"
-    content: "\u6218\u80DC\u6211\uFF0C\u4F60\u4F1A\u77E5\u9053\u4F60\u60F3\u77E5\u9053\u7684\u4E00\u5207"
+    content: "\u6218\u80DC\u6211\uFF0C\u4F60\u53EF\u4EE5\u77E5\u9053\u4F60\u60F3\u77E5\u9053\u7684\u4E00\u5207"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -197,6 +197,10 @@ MonoBehaviour:
       m_Calls: []
   choice1NextLineIndex: -1
   choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-3616625670769001871

@@ -151,7 +151,7 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u9B54\u529B\u7CBE\u534E800\u91D1\u5E01\u4E00\u5757\uFF0C\u4E70\u4E0D\u4E70\uFF0C\u8FD9\u53EF\u662F\u8FDD\u7981\u54C1\uFF0C\u5356\u8FD9\u4E48\u8D35\u4E0D\u662F\u5F88\u6B63\u5E38\u5417\uFF1F"
+    content: "\u9B54\u529B\u7CBE\u534E600\u91D1\u5E01\u4E00\u5757\uFF0C\u4E70\u4E0D\u4E70\uFF0C\u8FD9\u53EF\u662F\u8FDD\u7981\u54C1\uFF0C\u5356\u8FD9\u4E48\u8D35\u4E0D\u662F\u5F88\u6B63\u5E38\u5417\uFF1F"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -177,6 +177,10 @@ MonoBehaviour:
       m_Calls: []
   choice1NextLineIndex: -1
   choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &3086429035218338403
@@ -191,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldCost: 800
+  goldCost: 600
   items:
   - prefab: {fileID: 1979639868013418241, guid: 705b05c5ddfbcf449a6179e1f995d84f, type: 3}
     quantity: 1

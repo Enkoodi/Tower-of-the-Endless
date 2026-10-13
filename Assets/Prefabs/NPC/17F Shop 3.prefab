@@ -180,7 +180,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   choice1NextLineIndex: -1
-  choice2NextLineIndex: 1
+  choice2NextLineIndex: 2
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!95 &-778101899729320852

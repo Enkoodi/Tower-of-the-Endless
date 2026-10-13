@@ -637,10 +637,10 @@ MonoBehaviour:
     displayName: "\u8001\u8005"
   - id: 20
     prefab: {fileID: 4536551978282006036, guid: 168e87ce97e719a469e65850d387d3a4, type: 3}
-    displayName: "\u8001\u8005"
+    displayName: "\u7CBE\u7075"
   - id: 21
     prefab: {fileID: 4536551978282006036, guid: b97cb44c2e9866d4c98082791eb77609, type: 3}
-    displayName: "\u8001\u8005"
+    displayName: "\u7CBE\u7075"
   - id: 31
     prefab: {fileID: 6395233593365337873, guid: 0cf6ee470cdc576458fb75408b45e531, type: 3}
     displayName: "\u795E\u79D8\u5546\u4EBA"
@@ -768,6 +768,11 @@ MonoBehaviour:
   - floorMin: 19
     floorMax: 31
     background: {fileID: 1102259951}
+--- !u!1 &272347918 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2709955313860992345, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+  m_PrefabInstance: {fileID: 1701914532898964265}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &451126016
 GameObject:
   m_ObjectHideFlags: 0
@@ -2259,8 +2264,24 @@ PrefabInstance:
       value: DialogueCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 5067376295499240457, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: panelRoot
+      value: 
+      objectReference: {fileID: 272347918}
+    - target: {fileID: 5067376295499240457, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: scatterSeed
+      value: 1314520
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067376295499240457, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: scatterWave
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067376295499240457, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
+      propertyPath: scatterJitter
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067376295499240457, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
       propertyPath: charsPerSecond
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7133706067755293021, guid: 1ea1241e4fd5c8846b0c90c127b6e196, type: 3}
       propertyPath: m_Pivot.x

@@ -166,29 +166,25 @@ MonoBehaviour:
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
     content: "\u5F00\u73A9\u7B11\u7684\uFF0C\u6211\u4EEC\u662F\u670B\u53CB\u5BF9\u5427"
-    showChoices: 1
+    showChoices: 0
     nextLineIndex: -1
   entryBranches: []
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:
     m_PersistentCalls:
+      m_Calls: []
+  onChoice2:
+    m_PersistentCalls:
+      m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: -6612769980229159066}
         m_TargetAssemblyTypeName: WallRemover, Assembly-CSharp
         m_MethodName: RemoveWalls
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: -410012860953756329}
-        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
-        m_MethodName: RemoveSelf
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -210,11 +206,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onChoice2:
-    m_PersistentCalls:
-      m_Calls: []
-  choice1NextLineIndex: -1
-  choice2NextLineIndex: -1
+      - m_Target: {fileID: -410012860953756329}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  endActionAfterChoice: 0
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &-6612769980229159066

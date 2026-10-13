@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: 1a8424ff45d465c4d830a3c1d362a03e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5fc476405547d8b4aabeab39278f6c39, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -145,21 +145,66 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - speakerName: "\u8001\u8005"
-    content: .....
+  - speakerName: "\u7CBE\u7075"
+    content: "\u6765\u4EBA\u4E86\u6765\u4EBA\u4E86\uFF01\u7EC8\u4E8E\u6765\u4EBA\u4E86\uFF01\uFF01"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u542C\u597D\u4E86\uFF01\u8FD9\u91CC\u662F<b>\u300E\u6C38\u6052\u4E4B\u5854\u300F</b>\uFF01"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u4E00\u5C42\u3001\u4E24\u5C42\u3001\u4E09\u5C42\u2026\u2026\u4E00\u8DEF\u5F80\u4E0A\uFF0C\u6700\u9AD8\u4E09\u5341\u5C42\u3002"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u8DEF\u600E\u4E48\u8D70\uFF1F\u95E8\u600E\u4E48\u5F00\uFF1F\u94A5\u5319\uFF01\u9EC4\u94A5\u5319\u3001\u84DD\u94A5\u5319\u3001\u7EA2\u94A5\u5319\uFF0C\u4E00\u79CD\u94A5\u5319\u5F00\u4E00\u79CD\u95E8\uFF0C\u522B\u62FF\u9519\uFF01"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u8FD8\u6709\u2014\u2014\u522B\u4E71\u649E\u95E8\uFF01\u8EAB\u4E0A\u6709\u94A5\u5319\u7684\u8BDD\uFF0C\u649E\u4E0A\u53BB\u5B83\u81EA\u5DF1\u5C31\u5F00\u4E86"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u8FD8\u6709\u4E00\u79CD\u9ED1\u6F06\u6F06\u7684\u95E8\uFF0C\u649E\u4E0A\u53BB\u53EF\u75BC\u4E86\uFF01"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u6253\u67B6\u600E\u4E48\u529E\uFF1F\u7528\u529B\u6253\u5C31\u884C\u4E86\uFF0C\u529B\u6C14\u8D8A\u5927\u6253\u4EBA\u8D8A\u75BC\uFF01"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u5730\u4E0A\u90A3\u4E9B\u95EA\u95EA\u7684\"\u788E\u7247\"\uFF0C\u6361\u7684\u8D8A\u591A\u8D8A\u5F3A\uFF0C\u770B\u5230\u5C31\u8D76\u7D27\u6361\u8D77\u6765\uFF01"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u8FD8\u6709\u8FD8\u6709......"
+    showChoices: 1
+    nextLineIndex: -2
+  - speakerName: "\u7CBE\u7075"
+    content: "\u5514..."
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "<b><color=red>\u9B54\u738B\u662F\u4E0D\u6B7B\u7684\uFF0C\u4E0D\u8981\u5984\u60F3\u6740\u6B7B\u9B54\u738B</color></b>"
     showChoices: 0
     nextLineIndex: -1
   entryBranches: []
-  choice1Text: "\u9009\u98791"
-  choice2Text: "\u9009\u98792"
+  choice1Text: "\u6253\u65AD"
+  choice2Text: "\u4F60\u80FD\u4E0D\u80FD\u8BF4\u70B9\u6709\u7528\u7684"
   onChoice1:
     m_PersistentCalls:
       m_Calls: []
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
-  choice1NextLineIndex: -1
-  choice2NextLineIndex: -1
+  choice1NextLineIndex: 9
+  choice2NextLineIndex: 9
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!95 &6758906220803973567
@@ -172,7 +217,7 @@ Animator:
   m_GameObject: {fileID: 4536551978282006036}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2206555fcedbdec4c93a4412e4ea1fae, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

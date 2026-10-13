@@ -265,6 +265,9 @@ public class SettingMenu : MonoBehaviour
         FloorMemoryManager.Instance?.ResetAll();
         SpecialEnemyManager.Instance?.ResetAll();
 
+        // 新游戏：清空对话标记（静态状态，不清会把上一局的「已结算」带进来）
+        DialogueFlags.Clear();
+
         // 新游戏：清零商店购买次数、清空祝福状态与获得记录
         // （都是静态/单例状态，不重置会把上一局的涨价和祝福带进新游戏）
         NPCController.ResetPurchaseCount();

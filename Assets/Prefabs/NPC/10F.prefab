@@ -148,16 +148,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u201C\u5BCC\u6709\u201D\u7684\u8001\u8005"
-    content: "\u6709\u53EA\u53F2\u83B1\u59C6\u5377\u8D70\u4E86\u6211\u6240\u6709\u5BB6\u4EA7\uFF0C\u4F60\u82E5\u662F\u80FD\u51FB\u8D25\u5B83\uFF0C\u6211\u4F1A\u652F\u4ED8\u76F8\u5E94\u62A5\u916C\u7684"
+    content: "\u6709\u53EA<b>\u53F2\u83B1\u59C6</b>\u5377\u8D70\u4E86\u6211\u6240\u6709\u5BB6\u4EA7\uFF0C\u4F60\u82E5\u662F\u80FD\u51FB\u8D25\u5B83\uFF0C\u6211\u4F1A\u652F\u4ED8\u76F8\u5E94\u62A5\u916C\u7684"
     showChoices: 0
     nextLineIndex: -2
   - speakerName: "\u201C\u5BCC\u6709\u201D\u7684\u8001\u8005"
-    content: "\u5C31\u662F\u8FD9\u53EA\u53F2\u83B1\u59C6\uFF0C\u4F60\u5C45\u7136\u771F\u7684\u6253\u8D25\u5B83\u4E86\uFF0C\u6309\u7167\u7EA6\u5B9A\uFF0C\u8FD9\u662F\u7ED9\u4F60\u7684\u62A5\u916C"
+    content: "\u5C31\u662F\u8FD9\u53EA<b>\u53F2\u83B1\u59C6</b>\uFF0C\u4F60\u5C45\u7136\u771F\u7684\u6253\u8D25\u5B83\u4E86\uFF0C\u6309\u7167\u7EA6\u5B9A\uFF0C\u8FD9\u662F\u7ED9\u4F60\u7684\u62A5\u916C"
     showChoices: 1
     nextLineIndex: -1
   entryBranches:
   - specialEnemyId: Slime
     requireDefeated: 1
+    endFlagCondition: 0
     startLineIndex: 1
   choice1Text: "\u63A5\u53D7"
   choice2Text: "\u62D2\u7EDD"
@@ -193,6 +194,11 @@ MonoBehaviour:
       m_Calls: []
   choice1NextLineIndex: -1
   choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!95 &1245346782203046143

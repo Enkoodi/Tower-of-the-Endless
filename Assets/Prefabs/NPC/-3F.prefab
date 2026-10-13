@@ -150,7 +150,7 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u8FD9\u91CC\u6709\u7740\u5F88\u591A\u9B54\u6CD5\u5080\u5121\uFF0C\u4ED6\u4EEC\u4F3C\u4E4E\u90FD\u662FZeno\u7684\u66FF\u4EE3\u54C1\uFF0CZeno\u4F3C\u4E4E\u5C31\u662F\u9760\u7740\u4ED6\u4EEC\u5B9E\u73B0\u4E86\u6C38\u751F\u4E0D\u6B7B"
+    content: "\u8FD9\u91CC\u6709\u7740\u5F88\u591A<b>\u9B54\u6CD5\u5080\u5121</b>\uFF0C\u4ED6\u4EEC\u4F3C\u4E4E\u90FD\u662FZeno\u7684\u66FF\u4EE3\u54C1\uFF0C<b>Zeno</b>\u4F3C\u4E4E\u5C31\u662F\u9760\u7740\u4ED6\u4EEC\u5B9E\u73B0\u4E86\u6C38\u751F\u4E0D\u6B7B"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
@@ -168,6 +168,11 @@ MonoBehaviour:
       m_Calls: []
   choice1NextLineIndex: -1
   choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!95 &4253030719672511154

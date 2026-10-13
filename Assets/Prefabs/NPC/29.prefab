@@ -148,7 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u4F60"
-    content: "\u516C\u4E3B\u5C45\u7136\u662F\u53EA\u53F2\u83B1\u59C6\uFF0C\u88AB\u9A97\u4E86\u5417"
+    content: "<b>\u516C\u4E3B</b>\u5C45\u7136\u662F\u53EA\u53F2\u83B1\u59C6\uFF0C\u88AB\u9A97\u4E86\u5417"
     showChoices: 1
     nextLineIndex: -1
   entryBranches: []
@@ -184,6 +184,13 @@ MonoBehaviour:
   onChoice2:
     m_PersistentCalls:
       m_Calls: []
+  choice1NextLineIndex: -1
+  choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &3531502297363944772

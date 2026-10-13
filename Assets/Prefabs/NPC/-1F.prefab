@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 6860744320342681592}
   - component: {fileID: 3768833028585892296}
   - component: {fileID: 4851131179987850505}
-  - component: {fileID: 6758906220803973567}
+  - component: {fileID: -6779544064861904075}
+  - component: {fileID: -379278894802666156}
   m_Layer: 11
   m_Name: -1F
   m_TagString: Untagged
@@ -76,7 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: 1a8424ff45d465c4d830a3c1d362a03e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f8dcfb2ee31210844906fd65ac1277c8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -145,13 +146,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - speakerName: "\u8001\u8005"
-    content: .....
+  - speakerName: "\u7CBE\u7075"
+    content: "\u6B22\u8FCE\u6765\u5230<b>\u300E\u6C38\u6052\u4E4B\u5854\u300F</b>"
     showChoices: 0
     nextLineIndex: -1
-  entryBranches: []
-  choice1Text: "\u9009\u98791"
-  choice2Text: "\u9009\u98792"
+  - speakerName: "\u7CBE\u7075"
+    content: "\u8FD9\u662F\u4F60\u6BCF\u4F4D\u6311\u6218\u8005\u7684\u521D\u59CB\u9053\u5177"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u7528\u4E0D\u4E86\u7684\u8BDD\u4E5F\u4E0D\u8981\u7D27\uFF0C\u7559\u5728\u8EAB\u4E0A\u603B\u4F1A\u7528\u4E0A\u7684"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "{S}\u54EA\u6015<color=red>\u6B7B\u4E86</color>\u4E5F\u80FD\u9020\u798F\u5176\u4ED6\u6311\u6218\u8005\u5462\uFF0C\u563B\u563B{S}"
+    showChoices: 0
+    nextLineIndex: -1
+  - speakerName: "\u7CBE\u7075"
+    content: "\u5173\u4E8E\u6C38\u6052\u4E4B\u5854\u7684\u89C4\u5219\u548C\u8BF4\u660E\u53EF\u4EE5\u53BB\u95EE\u65C1\u8FB9\u90A3\u4E2A\u5435\u4E2A\u6CA1\u505C\u7684\u201C\u5C0F\u4ED9\u5B50\u201D"
+    showChoices: 0
+    nextLineIndex: -1
+  entryBranches:
+  - specialEnemyId: fairy
+    requireDefeated: 0
+    endFlagCondition: 1
+    startLineIndex: 5
+  choice1Text: "\u9886\u53D6"
+  choice2Text: "\u79BB\u5F00"
   onChoice1:
     m_PersistentCalls:
       m_Calls: []
@@ -160,9 +181,42 @@ MonoBehaviour:
       m_Calls: []
   choice1NextLineIndex: -1
   choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -6779544064861904075}
+        m_TargetAssemblyTypeName: MerchantPurchase, Assembly-CSharp
+        m_MethodName: TryPurchase
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  endActionAfterChoice: 0
+  endFlagId: fairy
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
---- !u!95 &6758906220803973567
+--- !u!114 &-6779544064861904075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536551978282006036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCost: 0
+  items:
+  - prefab: {fileID: 7426012651065657000, guid: 03c14667a48a40649abdef81b891a13e, type: 3}
+    quantity: 1
+--- !u!95 &-379278894802666156
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
@@ -172,7 +226,7 @@ Animator:
   m_GameObject: {fileID: 4536551978282006036}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fdd62dae5a3aecd4dbee056fc7278291, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2206555fcedbdec4c93a4412e4ea1fae, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

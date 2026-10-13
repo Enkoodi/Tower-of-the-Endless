@@ -171,11 +171,11 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u4E3A\u4EC0\u4E48\u8981\u865A\u6784\u516C\u4E3B\uFF1F"
+    content: "\u4E3A\u4EC0\u4E48\u8981\u865A\u6784<b>\u516C\u4E3B</b>\uFF1F"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u8FD9\u6837\u624D\u80FD\u5438\u5F15\u771F\u6B63\u7684\u5F3A\u8005\u6765\u561B\uFF0C\u800C\u4E14\u516C\u4E3B\u662F\u771F\u5B9E\u5B58\u5728\u7684\u54E6"
+    content: "\u8FD9\u6837\u624D\u80FD\u5438\u5F15\u771F\u6B63\u7684\u5F3A\u8005\u6765\u561B\uFF0C\u800C\u4E14<b>\u516C\u4E3B</b>\u662F\u771F\u5B9E\u5B58\u5728\u7684\u54E6"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
@@ -199,7 +199,7 @@ MonoBehaviour:
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u5C0F\u5077"
-    content: "\u6211\u7684\u52C7\u8005\u5927\u4EBA"
+    content: "<b>\u6211\u7684\u52C7\u8005\u5927\u4EBA</b>"
     showChoices: 0
     nextLineIndex: -1
   entryBranches: []
@@ -225,6 +225,23 @@ MonoBehaviour:
       m_Calls: []
   choice1NextLineIndex: -1
   choice2NextLineIndex: 5
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7293887726164692908}
+        m_TargetAssemblyTypeName: NpcRemover, Assembly-CSharp
+        m_MethodName: RemoveSelf
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  endActionAfterChoice: 1
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &7293887726164692908

@@ -147,30 +147,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "...\u4E0D\u8981\u6253\u6270\u6211\u5DE5\u4F5C"
+    content: "\u4F60\u770B\u8D77\u6765\u5B9E\u529B\u4E0D\u9519\uFF0C\u4F46\u8FD9\u5EA7\u5854\u5371\u673A\u56DB\u4F0F\uFF0C\u4F60\u4E00\u5B9A\u53D7\u4E86\u4E0D\u5C11\u4F24\u5427"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u55EF\uFF1F\u4F60\u8EAB\u4E0A\u90A3\u4E2A\u9B54\u5BFC\u5668\u80FD\u7ED9\u6211\u770B\u770B\u5417\uFF1F"
+    content: "\u6211\u8FD9\u6709\u6CBB\u7597\u836F\u6C34\u4F60\u9700\u8981\u5417"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u7B2C\u4E00\u6B21\u89C1\u8FD9\u4E48\u7CBE\u81F4\u7684\u9B54\u5BFC\u5668......\u4E0A\u5347\u4E4B\u7FFC\uFF0C\u597D\u540D\u5B57\uFF0C\u5509\u53EF\u60DC\u5DF2\u7ECF\u574F\u4E86"
+    content: "200\u91D1\u5E01\u4E00\u74F6\uFF0C\u4E00\u74F6200HP"
     showChoices: 0
     nextLineIndex: -1
   - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u7ED9\u62113000\u91D1\u5E01\u6211\u80FD\u52A0\u6025\u5E2E\u4F60\u4FEE\u597D\u5B83"
+    content: "\u8D81\u706B\u6253\u52AB\uFF1F\u4F60\u7231\u8981\u4E0D\u8981"
     showChoices: 1
-    nextLineIndex: -2
-  - speakerName: "\u795E\u79D8\u5546\u4EBA"
-    content: "\u8FD9\u6837\u5417\uFF0C\u6211\u4F1A\u4E00\u76F4\u5728\u8FD9\u91CC\u7B49\u4F60\u7684"
-    showChoices: 0
-    nextLineIndex: -2
+    nextLineIndex: -1
   entryBranches:
-  - specialEnemyId: 
-    requireDefeated: 0
-    startLineIndex: 0
-  choice1Text: "\u63A5\u53D7"
+  - specialEnemyId: Slime
+    requireDefeated: 1
+    endFlagCondition: 0
+    startLineIndex: 1
+  choice1Text: "\u8D2D\u4E70"
   choice2Text: "\u62D2\u7EDD"
   onChoice1:
     m_PersistentCalls:
@@ -191,7 +188,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   choice1NextLineIndex: -1
-  choice2NextLineIndex: 4
+  choice2NextLineIndex: -1
+  onDialogueEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  endActionAfterChoice: 0
+  endFlagId: 
   gridPosition: {x: 0, y: 0}
   floorNumber: 0
 --- !u!114 &3086429035218338403
@@ -206,9 +208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4920cff696ebb6458b67d7e35ac0eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldCost: 3000
+  goldCost: 200
   items:
-  - prefab: {fileID: 8882317935772043783, guid: c7f4a011272f29c4d8efb1b6ec1f33dd, type: 3}
+  - prefab: {fileID: 3815139221710793359, guid: 80c7f1b45e25c3340b6a910155bb9c20, type: 3}
     quantity: 1
 --- !u!95 &-778101899729320852
 Animator:
