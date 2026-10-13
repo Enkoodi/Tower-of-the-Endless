@@ -49,6 +49,28 @@ public class SimBattleUnit : IBattleUnit
         p.LifeSteal + lifeStealBonus, p.ReflectDamage + reflectDamageBonus,
         p.DamageReduction, p.ManaCharge, p.ManaMax, p.Speed);
 
+    /// <summary>
+    /// 「理论无限血量」的哨兵值，见 <see cref="FromPlayerUnlimitedHP"/>。
+    /// 取 10^9：200 回合上限 × 单回合数百万伤害也撑得住，离 <c>int.MaxValue</c> 还留足余量，
+    /// 回血累加不会溢出。
+    /// </summary>
+    public const int UnlimitedHP = 1000000000;
+
+    /// <summary>
+    /// 图鉴专用：把玩家当成<b>理论无限血量</b> —— 战斗中不会阵亡，一路打到敌人被击败。
+    ///
+    /// 这样 <c>InitialHP - HP</c> 拿到的就是「打完这一场真实要扣掉多少血」（战损），
+    /// 而<b>不会</b>被玩家当前的血量截断。之前用玩家真实血量，一旦打不赢就会扣到 0 为止，
+    /// 于是显示的数字恒等于「玩家自己的血量」、与敌人无关 —— 那是个没用的数。
+    ///
+    /// ⚠️ 只给图鉴用。实战走 <c>PlayerData</c> 真身，那里必须正常死亡。
+    /// </summary>
+    public static SimBattleUnit FromPlayerUnlimitedHP(PlayerData p, int lifeStealBonus, int reflectDamageBonus)
+        => new SimBattleUnit(
+            UnlimitedHP, p.Attack, p.Defense, p.AttackCount,
+            p.LifeSteal + lifeStealBonus, p.ReflectDamage + reflectDamageBonus,
+            p.DamageReduction, p.ManaCharge, p.ManaMax, p.Speed);
+
     public static SimBattleUnit FromEnemyStats(EnemyStats e) => new SimBattleUnit(
         e.hp, e.attack, e.defense, e.attackCount, e.lifeSteal, e.reflectDamage,
         e.damageReduction, e.manaCharge, e.manaMax, e.speed);

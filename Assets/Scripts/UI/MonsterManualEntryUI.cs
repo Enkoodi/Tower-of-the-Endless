@@ -43,7 +43,7 @@ public class MonsterManualEntryUI : MonoBehaviour
         // 战斗所需生命值
         if (requiredHPText != null)
         {
-            if (!sim.CanWin)
+            if (sim.Unbeatable)
             {
                 requiredHPText.text = "<color=#FF4444>无法战胜</color>";
             }
@@ -76,26 +76,39 @@ public class MonsterManualEntryUI : MonoBehaviour
     public struct BattleSimResult
     {
         /// <summary>
-        /// 能否打赢。完全伤不到敌人（自己打不出伤害、反伤也造不成伤害）、玩家先阵亡、
-        /// 或到回合上限仍未击败敌人 → false。
-        /// 注意「自己打 0 伤害」本身不判负 —— 反伤打得动就会照常打下去。
+        /// 是否「无法战胜」。**只有两种情况**：
+        ///   ① 完全伤不到敌人（自己打不出伤害，反伤 / 撕裂也造不成伤害）→ 内核提前收场；
+        ///   ② 打到回合上限仍未击败敌人（连无限血量都打不完）。
+        /// 玩家血量不足**不算** —— 那说明敌人本身打得动，照常显示战损。
         /// </summary>
-        public bool CanWin;
+        public bool Unbeatable;
 
-        /// <summary>净 HP 变化。正数 = 损失，<b>负数 = 反而回血</b>（不做 0 下限钳制）。</summary>
+        /// <summary>
+        /// 净 HP 变化 = **打完这一场真实要扣掉多少血**。正数 = 损失，<b>负数 = 反而回血</b>。
+        ///
+        /// ⚠️ 这是「玩家血量无限」跑出来的值，<b>不</b>受玩家当前血量限制 ——
+        /// 所以它可能大于玩家的血量上限（那正是「你现在打不过」的信号），
+        /// 而不是被扣到 0 截断成「玩家自己的血量」。
+        /// </summary>
         public int HpDelta;
     }
 
     /// <summary>
-    /// 模拟与敌人的战斗，返回能否战胜 + 净 HP 变化。
-    /// 玩家阵亡时 HpDelta 是「扣到 0 为止」的实际值（与实战一致，HP 不会变成负数）。
+    /// 模拟与敌人的战斗，返回「无法战胜」标志 + **真实战损**。
+    ///
+    /// **玩家按「理论无限血量」跑** ⇒ <c>HpDelta</c> = 打完这一场真实要扣掉多少血，
+    /// 与玩家当前血量无关（可能大于血量上限 —— 那正是「你现在打不过」）。
+    /// 连无限血量都打不完（伤不到敌人 / 到回合上限）才算「无法战胜」。
     /// </summary>
     public static BattleSimResult SimulateBattle(PlayerData player, EnemyStats enemy)
     {
-        BattleSimResult result = default;   // CanWin = false, HpDelta = 0
+        BattleSimResult result = default;   // Unbeatable = false, HpDelta = 0
         if (player == null || enemy == null) return result;
 
         // 纯数据副本 —— 图鉴绝不能碰到玩家或敌人的真身
+        // **玩家血量无限**：图鉴要报的是「打完这一场真实要扣多少血」，不能被当前血量截断
+        //   （旧做法打不赢就扣到 0 为止 → 显示的数字恒等于玩家自己的血量，与敌人无关）
+        //   所以用 UnlimitedHP 的副本，一路打到敌人被击败；实战不走这里，不受影响
         // 衔尾之十字：它只在**战斗开始时**生效，图鉴在战斗外打开 → 这里先算出加成再建副本
         int ouroborosLifeSteal = 0, ouroborosReflect = 0;
         OuroborosCrucifixEffect ouroboros = player.GetComponent<OuroborosCrucifixEffect>();
@@ -103,7 +116,7 @@ public class MonsterManualEntryUI : MonoBehaviour
             ouroboros.ComputeBonus(player.LifeSteal, player.ReflectDamage,
                                    out ouroborosLifeSteal, out ouroborosReflect);
 
-        SimBattleUnit simPlayer = SimBattleUnit.FromPlayer(player, ouroborosLifeSteal, ouroborosReflect);
+        SimBattleUnit simPlayer = SimBattleUnit.FromPlayerUnlimitedHP(player, ouroborosLifeSteal, ouroborosReflect);
         SimBattleUnit simEnemy  = SimBattleUnit.FromEnemyStats(enemy);
 
         // 神圣剑：图鉴在战斗外打开，直接读玩家身上的组件
@@ -124,8 +137,13 @@ public class MonsterManualEntryUI : MonoBehaviour
 
         resolver.RunToEnd();
 
-        result.CanWin = resolver.EndReason == BattleEndReason.EnemyDefeated;
-        result.HpDelta = simPlayer.InitialHP - simPlayer.HP;   // 正数 = 损失，负数 = 回血
+        // 只有「伤不到敌人」和「到回合上限仍打不完」才算无法战胜。
+        // 玩家血量不足不属于此列 —— 无限血量下照样打得完，照常报战损。
+        result.Unbeatable = resolver.EndReason == BattleEndReason.EnemyUnkillable
+                         || resolver.EndReason == BattleEndReason.Stalemate;
+        // 无限血量副本：InitialHP 是哨兵大数，差值就是「这一场真实要扣的血」。
+        // 正数 = 损失，负数 = 反过来回血。
+        result.HpDelta = simPlayer.InitialHP - simPlayer.HP;
         return result;
     }
 

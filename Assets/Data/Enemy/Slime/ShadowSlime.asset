@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: "\u6697\u5F71\u53F2\u83B1\u59C6"
   enemySprite: {fileID: 21300000, guid: 09e627482aae0894582eeb7dc950f7b6, type: 3}
-  hp: 200
-  attack: 50
+  hp: 50
+  attack: 60
   defense: 20
   attackCount: 5
   lifeSteal: 0
@@ -25,3 +25,4 @@ MonoBehaviour:
   manaMax: 50
   speed: 55
   goldReward: 8
+  specialEnemyId: 

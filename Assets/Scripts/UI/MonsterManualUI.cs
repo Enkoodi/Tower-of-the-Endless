@@ -104,7 +104,8 @@ public class MonsterManualUI : MonoBehaviour
         }
 
         // 收集敌人并按预计损失HP排序（低→高）。
-        // 净回血是负数，会自然排在最前面；无法战胜的（CanWin=false）排在最后。
+        // 净回血是负数，会自然排在最前面；无法战胜的（Unbeatable）排在最后。
+        // ⚠️ 打不过会阵亡的（血量撑不住）不算无法战胜，按满血损失排在可达顺序里。
         List<(EnemyStats stats, MonsterManualEntryUI.BattleSimResult sim)> enemies
             = new List<(EnemyStats, MonsterManualEntryUI.BattleSimResult)>();
 
@@ -116,7 +117,7 @@ public class MonsterManualUI : MonoBehaviour
         enemies.Sort((a, b) =>
         {
             // 无法战胜的排在最后
-            if (a.sim.CanWin != b.sim.CanWin) return a.sim.CanWin ? -1 : 1;
+            if (a.sim.Unbeatable != b.sim.Unbeatable) return a.sim.Unbeatable ? 1 : -1;
             // 其余按净损失升序（负数 = 回血，排最前）
             return a.sim.HpDelta.CompareTo(b.sim.HpDelta);
         });
