@@ -9,6 +9,11 @@ public enum BlessingRarity
     Rare,
     Epic,
     Legendary,
+
+    /// <summary>
+    /// 第五档：不属于四级抽取池，永远不会被抽到（如『安特罗波斯』的祝福，只按规则定点生成）。
+    /// </summary>
+    Special,
 }
 
 /// <summary>
@@ -20,6 +25,8 @@ public enum BlessingType
     DirectBonus,
     /// <summary>需要特殊设计（条件触发等，预留）</summary>
     Conditional,
+    /// <summary>『安特罗波斯』专用：按本局阵亡记录现算，不吃资产里配置的固定数值</summary>
+    Anthropos,
 }
 
 /// <summary>

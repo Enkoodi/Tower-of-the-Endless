@@ -14,25 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   blessingName: "\u300E\u5B89\u7279\u7F57\u6CE2\u65AF\u300F\u7684\u795D\u798F"
-  description: "\u751F\u547D\u503C+50\uFF0C\u653B\u51FB\u529B+2\uFF0C\u9632\u5FA1\u529B+5\uFF0C\u9B54\u529B\u5145\u80FD+5\uFF0C\u9B54\u529B\u8F93\u51FA+5\uFF0C\u751F\u547D\u5077\u53D6+1\uFF0C\u53CD\u4F24+1\uFF0C\u901F\u5EA6+1\uFF0C\u9EC4\u4E4B\u94A5+1"
-  rarity: 0
+  description: "\u83B7\u5F97\u4E0A\u4E00\u6B21\u6311\u6218\u6A21\u5F0F\u4E2D\u9635\u4EA1\u65F6\u7684\u90E8\u5206\u80FD\u529B\uFF081/3\uFF09\uFF0C\u5E76\u989D\u5916\u83B7\u5F97\u5F53\u524D\u751F\u547D\u503C\u768425%\u3001\u9EC4\u4E4B\u94A51\u3001\u84DD\u4E4B\u94A51"
+  rarity: 4
   backgroundSprite: {fileID: 21300000, guid: 468f9296c6645b84788c81ab9f3ee439, type: 3}
-  type: 0
-  attackBonus: 2
-  defenseBonus: 5
-  manaMaxBonus: 5
-  manaChargeBonus: 5
-  speedBonus: 1
-  hpBonus: 50
+  type: 2
+  attackBonus: 0
+  defenseBonus: 0
+  manaMaxBonus: 0
+  manaChargeBonus: 0
+  speedBonus: 0
+  hpBonus: 0
   attackCountBonus: 0
-  lifeStealBonus: 1
-  reflectDamageBonus: 1
-  damageReductionBonus: 1
+  lifeStealBonus: 0
+  reflectDamageBonus: 0
+  damageReductionBonus: 0
   attackMultiplierBonus: 0
   defenseMultiplierBonus: 0
   hpMultiplierBonus: 0
   goldMultiplierBonus: 0
-  yellowKeyBonus: 1
+  yellowKeyBonus: 0
   blueKeyBonus: 0
   redKeyBonus: 0
   psycheKeyBonus: 0

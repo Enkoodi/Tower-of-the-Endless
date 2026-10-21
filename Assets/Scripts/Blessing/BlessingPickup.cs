@@ -11,6 +11,9 @@ public class BlessingPickup : MonoBehaviour, IFloorPickup, IPurchasable
     [SerializeField] private Sprite blessingSprite;
     [SerializeField] private BlessingPool overridePool;
 
+    [Tooltip("指定祝福：非空时不抽池子，只弹这一张（定点生成的祝福用，如『安特罗波斯』）")]
+    [SerializeField] private BlessingData specificBlessing;
+
     private SpriteRenderer sr;
 
     /// <summary>在地图网格中的坐标（由 MapGenerator 在生成时设置）</summary>
@@ -37,6 +40,12 @@ public class BlessingPickup : MonoBehaviour, IFloorPickup, IPurchasable
     }
 
 
+    /// <summary>定点生成时由生成方调用：本拾取物只给这一张祝福。</summary>
+    public void SetSpecificBlessing(BlessingData data)
+    {
+        specificBlessing = data;
+    }
+
     /// <summary>IPurchasable：弹出祝福选择面板（数量不适用）。</summary>
     public void ApplyPurchase(PlayerData player, int amount)
     {
@@ -45,7 +54,11 @@ public class BlessingPickup : MonoBehaviour, IFloorPickup, IPurchasable
             Debug.LogError("[BlessingPickup] BlessingManager 不存在！");
             return;
         }
-        BlessingManager.Instance.ShowWithPool(player, overridePool);
+
+        if (specificBlessing != null)
+            BlessingManager.Instance.ShowSingle(player, specificBlessing);
+        else
+            BlessingManager.Instance.ShowWithPool(player, overridePool);
     }
 
     public BlessingPool OverridePool => overridePool;
@@ -88,7 +101,10 @@ public class BlessingPickup : MonoBehaviour, IFloorPickup, IPurchasable
         // 通知 DropManager 移除此位置的活跃掉落记录
         DropManager.Instance?.MarkDropPickedUp(floorNumber, gridPosition);
 
-        BlessingManager.Instance.ShowWithPool(playerData, overridePool, this);
+        if (specificBlessing != null)
+            BlessingManager.Instance.ShowSingle(playerData, specificBlessing, this);
+        else
+            BlessingManager.Instance.ShowWithPool(playerData, overridePool, this);
         return true;
     }
 

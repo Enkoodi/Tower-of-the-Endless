@@ -29,6 +29,11 @@ public class EnemyController : MonoBehaviour, IFloorEntity, IBattleUnit
 
     private bool isDefeated = false;
 
+    // 战斗前后快照（只覆盖 hp / 魔力，见 BeginBattleSnapshot）
+    private int snapshotHp;
+    private int snapshotMana;
+    private bool hasSnapshot;
+
     /// <summary>是否为脚本敌人（对话战斗等），为 true 时击败不记录楼层记忆、不生成掉落</summary>
     [HideInInspector] public bool isScriptedEnemy;
 
@@ -98,19 +103,24 @@ public class EnemyController : MonoBehaviour, IFloorEntity, IBattleUnit
     {
         if (stats == null) return;
 
+        // 挑战模式的全局倍率在这里生效 —— 这是「资产 → 运行时数值」的唯一点，
+        // 地图生成、对话战斗（InitWithStats）都走这里，不需要逐个预制体单独处理。
+        // 可战斗 NPC（isScriptedEnemy）先豁免：它们以后走单独的一套倍率。
+        EnemyScaling.Values v = EnemyScaling.Apply(stats, isScriptedEnemy);
+
         enemyName     = stats.enemyName;
         enemySprite   = stats.enemySprite;
-        hp            = stats.hp;
-        attack        = stats.attack;
-        defense       = stats.defense;
-        attackCount   = stats.attackCount;
-        lifeSteal     = stats.lifeSteal;
-        reflectDamage = stats.reflectDamage;
-        damageReduction = stats.damageReduction;
-        manaCharge    = stats.manaCharge;
-        manaMax       = stats.manaMax;
-        speed         = stats.speed;
-        goldReward    = stats.goldReward;
+        hp            = v.hp;
+        attack        = v.attack;
+        defense       = v.defense;
+        attackCount   = v.attackCount;
+        lifeSteal     = v.lifeSteal;
+        reflectDamage = v.reflectDamage;
+        damageReduction = v.damageReduction;
+        manaCharge    = v.manaCharge;
+        manaMax       = v.manaMax;
+        speed         = v.speed;
+        goldReward    = v.goldReward;
     }
 
     // ============================================================
@@ -155,6 +165,31 @@ public class EnemyController : MonoBehaviour, IFloorEntity, IBattleUnit
         int actual = Mathf.Min(amount, hp);
         hp -= actual;
         return actual;
+    }
+
+    /// <summary>
+    /// 开战前拍快照。**只存 hp 与魔力** —— 它们是敌人身上唯一会被战斗改动的活资源
+    /// （攻/防等属性只由数据资产写入，没有战斗内修正层），所以以后新增任何伤害来源
+    /// （夹击、祝福、装备…）都自动被覆盖，不需要逐个登记。
+    /// ⚠️ 拍的是**此刻**的值，不是数据资产的初始值 —— 进战前已被夹击磨过的敌人要保留那份损失。
+    /// </summary>
+    public void BeginBattleSnapshot()
+    {
+        snapshotHp = hp;
+        snapshotMana = manaCharge;
+        hasSnapshot = true;
+    }
+
+    /// <summary>
+    /// 没打赢、敌人留在原地时回滚到开战快照 —— 把这一整场当作没发生过。
+    /// 只回滚 hp / 魔力；<see cref="isDefeated"/>、楼层记忆、掉落都不在这里管（那是 <see cref="Defeat"/> 的事）。
+    /// </summary>
+    public void RollbackBattleSnapshot()
+    {
+        if (!hasSnapshot) return;
+        hp = snapshotHp;
+        manaCharge = snapshotMana;
+        hasSnapshot = false;
     }
 
     public void Defeat()

@@ -73,9 +73,13 @@ public class SaveManager : MonoBehaviour
         // divineSpark 无玩家时保留文件旧值，不清零
         if (player != null) globalData.divineSpark = player.DivineSpark;
 
+        // 最近一局的模式：给「新游戏」推断用（自动/手动存档被清掉后还能知道该重开哪种模式）
+        globalData.gameMode = (int)GameSession.Mode;
+
         WriteJson(globalSavePath, globalData);
         Debug.Log($"[SaveManager] 全局存档已保存 → {globalSavePath}" +
-                  $"（aeonKeys = {globalData.aeonKeys}，divineSpark = {globalData.divineSpark}）");
+                  $"（aeonKeys = {globalData.aeonKeys}，divineSpark = {globalData.divineSpark}，" +
+                  $"mode = {GameSession.Mode}）");
     }
 
     /// <summary>保存主动存档（P 键 / 未来 UI 按钮），写入 game_save.json。</summary>
@@ -137,6 +141,17 @@ public class SaveManager : MonoBehaviour
             playerY = player.transform.position.y,
             playerZ = player.transform.position.z
         };
+
+        // 本局模式 + 『安特罗波斯』的阵亡记录。
+        // 记录进存档是硬要求：本局读档后要能继续按同一条记录生成祝福。
+        data.gameMode = (int)GameSession.Mode;
+        data.anthroposRecord = AnthroposBlessing.RunRecord;
+
+        // 挑战模式的敌人数值倍率按「开局时的钥匙数」定格 —— 存下来，读档才能复现同一个倍率
+        data.startAeonKeys = EnemyScaling.KeyCount;
+
+        // 挑战模式额外祝福的发放进度（发到哪一层、每个节点还剩几次）
+        data.challengeBonus = ChallengeBonus.Snapshot();
 
         // 装备效果（运行时 AddComponent 的组件，不在 PlayerData 字段里，不单独存就会在读档后消失）
         HolySwordEffect holySword = player.GetComponent<HolySwordEffect>();
@@ -277,6 +292,37 @@ public class SaveManager : MonoBehaviour
     /// <summary>获取神圣火花数量。</summary>
     public int GetDivineSparkCount() => LoadGlobal().divineSpark;
 
+    // ============================================================
+    //  『安特罗波斯』的阵亡记录（全局存档 = 上一次阵亡，跨局继承）
+    // ============================================================
+
+    /// <summary>
+    /// 把这次阵亡的位置与数值写进全局存档（覆盖上一次）。
+    /// 只写这一个字段，其余全局数据（Aeon 钥匙、神圣火花、战斗速度）原样保留。
+    /// </summary>
+    public void SaveGlobalAnthroposRecord(AnthroposRecord record)
+    {
+        if (record == null) return;
+
+        GlobalSaveData globalData = LoadGlobal();
+        globalData.anthroposRecord = record;
+        // 阵亡本身就说明这一局是什么模式：一起记进全局，供「新游戏」沿用
+        globalData.gameMode = (int)GameSession.Mode;
+        WriteJson(globalSavePath, globalData);
+        Debug.Log($"[SaveManager] 阵亡记录已写入全局存档（{record.floor}F）");
+    }
+
+    /// <summary>清掉全局存档里的阵亡记录（祝福被拾取后调用；本局存档里那份保留）。</summary>
+    public void ClearGlobalAnthroposRecord()
+    {
+        GlobalSaveData globalData = LoadGlobal();
+        if (globalData.anthroposRecord == null) return;
+
+        globalData.anthroposRecord = null;
+        WriteJson(globalSavePath, globalData);
+        Debug.Log("[SaveManager] 全局存档的阵亡记录已清除");
+    }
+
     /// <summary>读取主动存档（O 键），从 game_save.json。</summary>
     public void LoadGame()
     {
@@ -287,6 +333,42 @@ public class SaveManager : MonoBehaviour
     public bool LoadAutoGame()
     {
         return LoadGameFrom(autoSavePath, PlayerLogSlot.Auto);
+    }
+
+    /// <summary>
+    /// 只读地看一眼「本局模式」记在哪：自动存档 → 主动存档 → 全局存档，都没有返回 null。
+    /// 供「新游戏」沿用上一局的模式用 —— 不改任何文件。
+    /// 全局那份是兜底：新游戏会清掉自动存档，重启后也能记住上一次玩的是哪种模式。
+    /// </summary>
+    public static GameMode? PeekSavedMode()
+    {
+        return PeekSavedMode("auto_save.json")
+            ?? PeekSavedMode("game_save.json")
+            ?? ParseMode(LoadGlobalData().gameMode);
+    }
+
+    private static GameMode? PeekSavedMode(string fileName)
+    {
+        string saveDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "save");
+        string path = Path.Combine(saveDir, fileName);
+        if (!File.Exists(path)) return null;
+
+        try
+        {
+            GameSaveData data = JsonConvert.DeserializeObject<GameSaveData>(File.ReadAllText(path));
+            return data != null ? ParseMode(data.gameMode) : null;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[SaveManager] 读取存档模式失败：{path}\n{e.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>存档里的 int → 模式；越界/老档缺失返回 null。</summary>
+    private static GameMode? ParseMode(int raw)
+    {
+        return raw >= 0 && raw <= (int)GameMode.Endless ? (GameMode)raw : (GameMode?)null;
     }
 
     /// <summary>从指定存档文件读取游戏状态。返回是否成功读取。</summary>
@@ -304,6 +386,18 @@ public class SaveManager : MonoBehaviour
         // 世界即将退回这份存档的状态 → 玩家日志也整份退回（用该槽位的日志文件回填缓冲区），
         // 之后新产生的操作才接在后面。必须放在下面 LoadFloor 之前 —— 它要写「进入 N 层」段标题。
         PlayerLog.Adopt(slot);
+
+        // 0. 恢复本局模式与『安特罗波斯』的阵亡记录。
+        //    必须在下面加载楼层之前 —— 生成祝福时要按模式判断。
+        GameSession.Choose(ParseMode(data.gameMode) ?? GameMode.Story);
+        AnthroposBlessing.RestoreRun(data.anthroposRecord);
+
+        // 0.5. 挑战模式的敌人倍率按存档里记的开局钥匙数复现（必须在加载楼层之前）。
+        //      旧存档没有这个字段（-1）→ 保持 BeginRun 按全局钥匙算出来的结果。
+        EnemyScaling.RestoreRun(data.startAeonKeys);
+
+        // 0.6. 挑战模式额外祝福的进度 —— 必须在加载楼层之前，楼层加载时会按它决定还要不要弹。
+        ChallengeBonus.RestoreRun(data.challengeBonus);
 
         // 1. 恢复玩家属性
         PlayerData player = FindAnyObjectByType<PlayerData>();
@@ -405,6 +499,9 @@ public class SaveManager : MonoBehaviour
         if (player != null)
         {
             player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+
+            // 传送后轨迹要跟着重置：读档没有「走过来的路」，从当前位置重新记
+            player.GetComponent<PlayerMove>()?.ResetTrail(player.transform.position);
         }
 
         return true;
@@ -488,6 +585,13 @@ public class SaveManager : MonoBehaviour
                   $"衔尾之十字={data.hasOuroborosCrucifix}({data.ouroborosPercentOfHigher}%)");
     }
 
+    /// <summary>自动存档（auto_save.json）是否存在。静态方法，无需实例。</summary>
+    public static bool HasAutoSave()
+    {
+        string saveDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "save");
+        return File.Exists(Path.Combine(saveDir, "auto_save.json"));
+    }
+
     /// <summary>清除自动存档（auto_save.json），不影响主动存档。静态方法，无需实例。</summary>
     public static void ClearAutoSave()
     {
@@ -533,6 +637,25 @@ public class SaveManager : MonoBehaviour
         {
             Debug.LogError($"[SaveManager] 读取全局存档失败：{path}\n{e}");
             return new GlobalSaveData();
+        }
+    }
+
+    /// <summary>把一份全局存档整体写回（调用方自行读-改-写，只改自己要改的字段）。</summary>
+    public static bool SaveGlobalData(GlobalSaveData data)
+    {
+        if (data == null) return false;
+
+        string path = GetGlobalSavePath();
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            File.WriteAllText(path, JsonConvert.SerializeObject(data, Formatting.Indented));
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SaveManager] 写入全局存档失败：{path}\n{e}");
+            return false;
         }
     }
 

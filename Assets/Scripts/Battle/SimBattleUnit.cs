@@ -71,9 +71,18 @@ public class SimBattleUnit : IBattleUnit
             p.LifeSteal + lifeStealBonus, p.ReflectDamage + reflectDamageBonus,
             p.DamageReduction, p.ManaCharge, p.ManaMax, p.Speed);
 
-    public static SimBattleUnit FromEnemyStats(EnemyStats e) => new SimBattleUnit(
-        e.hp, e.attack, e.defense, e.attackCount, e.lifeSteal, e.reflectDamage,
-        e.damageReduction, e.manaCharge, e.manaMax, e.speed);
+    /// <summary>
+    /// 图鉴副本。数值走 <see cref="EnemyScaling"/>：挑战模式下必须与实战一样被放大，
+    /// 否则手册的战损与排序全是按原值算的，和真正打起来对不上。
+    /// </summary>
+    /// <param name="exempt">可战斗 NPC 传 true —— 与实战一样豁免挑战倍率。</param>
+    public static SimBattleUnit FromEnemyStats(EnemyStats e, bool exempt = false)
+    {
+        EnemyScaling.Values v = EnemyScaling.Apply(e, exempt);
+        return new SimBattleUnit(
+            v.hp, v.attack, v.defense, v.attackCount, v.lifeSteal, v.reflectDamage,
+            v.damageReduction, v.manaCharge, v.manaMax, v.speed);
+    }
 
     /// <summary>
     /// 按减伤结算伤害，返回实际扣掉的 HP。

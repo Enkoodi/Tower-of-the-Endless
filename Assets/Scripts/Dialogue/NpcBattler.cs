@@ -58,8 +58,11 @@ public class NpcBattler : MonoBehaviour, IFloorEntity
         EnemyController enemy = GetComponent<EnemyController>();
         if (enemy == null)
             enemy = gameObject.AddComponent<EnemyController>();
-        enemy.InitWithStats(enemyStats);
+
+        // ⚠️ 必须在 InitWithStats 之前标记：LoadFromStats 会按这个标记决定吃不吃挑战模式倍率
+        //    （可战斗 NPC 先豁免，见 EnemyScaling.Apply）
         enemy.isScriptedEnemy = true; // 击败时不记录普通敌人记忆（由本脚本处理NPC记忆），掉落物仍正常生成
+        enemy.InitWithStats(enemyStats);
         enemy.floorNumber = floorNumber;
         enemy.gridPosition = gridPosition;
 

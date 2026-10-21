@@ -31,6 +31,7 @@ public class PlayerMove : MonoBehaviour
     private bool isInDialogue = false;
     private bool isGambling = false;
     private bool isViewingManual = false;
+    private bool isDead = false;
     private Vector3 targetPosition;
     private Vector2 battleDirection;
     private float lastMoveTime = 0f;
@@ -94,14 +95,22 @@ public class PlayerMove : MonoBehaviour
             keyStack.Clear();
         };
         MonsterManualUI.OnPanelClose += () => isViewingManual = false;
+
+        // 阵亡画面（DeathPanel）打开时锁输入，直到玩家点「读档 / 新游戏」跳转（跳转会整场景重载）
+        DeathPanel.OnPanelOpen += () =>
+        {
+            isDead = true;
+            keyStack.Clear();
+        };
+        DeathPanel.OnPanelClose += () => isDead = false;
     }
 
     void Update()
     {
-        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isGambling || isViewingManual || isSliding;
+        bool inputLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isGambling || isViewingManual || isSliding || isDead;
 
-        // 怪物手册快捷键 — 战斗/祝福/NPC/对话/赌博/滑行时禁用；手册打开时仍允许再次按 Tab 关闭
-        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isGambling || isSliding;
+        // 怪物手册快捷键 — 战斗/祝福/NPC/对话/赌博/滑行/阵亡时禁用；手册打开时仍允许再次按 Tab 关闭
+        bool manualShortcutLocked = isInBattle || isChoosingBlessing || isInteractingWithNPC || isInDialogue || isGambling || isSliding || isDead;
         if (!manualShortcutLocked && Input.GetKeyDown(KeyCode.Tab))
         {
             MonsterManualUI manual = FindAnyObjectByType<MonsterManualUI>();
@@ -194,6 +203,9 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     private bool ResolveMove(Vector2 direction, bool sliding)
     {
+        // 阵亡后锁死：冰面滑行协程会直接调到这里（绕过 Update 的输入锁），也要拦住
+        if (isDead) return false;
+
         Vector3 target = transform.position + (Vector3)direction * moveDistance;
 
         // 统一检测：门 + 墙 + 敌人 + 道具 + 楼梯 + NPC，按组件类型分流
@@ -358,6 +370,7 @@ public class PlayerMove : MonoBehaviour
 
         transform.position = targetPosition;
         isMoving = false;
+        PushTrail(targetPosition);
 
         // 落点补检：战斗胜利后是「先开打再走进该格」，没走过 TryMove 的分流，
         // 所以在这里把落点上的触发器再激活一次（幂等）。
@@ -369,6 +382,46 @@ public class PlayerMove : MonoBehaviour
         // 踩到冰面 → 沿本次移动方向开始滑行
         if (allowSlide && !isSliding && IsOnIce())
             StartSlide(direction);
+    }
+
+    // ========================================================================
+    //  移动轨迹 —— 阵亡时按它往回退到空地（见 AnthroposBlessing）
+    // ========================================================================
+
+    /// <summary>轨迹最多记多少格，超过丢最早的。</summary>
+    private const int TrailCapacity = 64;
+
+    private static readonly Vector2Int InvalidCell = new Vector2Int(int.MinValue, int.MinValue);
+
+    private readonly List<Vector2Int> trail = new List<Vector2Int>();
+
+    /// <summary>本层走过的格子（时间顺序，末尾是当前格）。换层 / 读档时由 MapGenerator / SaveManager 重置。</summary>
+    public IReadOnlyList<Vector2Int> Trail => trail;
+
+    /// <summary>清空轨迹并以给定位置为起点（换层出生、读档传送后调用）。</summary>
+    public void ResetTrail(Vector3 worldPos)
+    {
+        trail.Clear();
+
+        Vector2Int cell = GridOf(worldPos);
+        if (cell != InvalidCell) trail.Add(cell);
+    }
+
+    private void PushTrail(Vector3 worldPos)
+    {
+        Vector2Int cell = GridOf(worldPos);
+        if (cell == InvalidCell) return;
+
+        if (trail.Count > 0 && trail[trail.Count - 1] == cell) return;   // 同格不重复记
+
+        trail.Add(cell);
+        if (trail.Count > TrailCapacity) trail.RemoveAt(0);
+    }
+
+    private Vector2Int GridOf(Vector3 worldPos)
+    {
+        MapGenerator mapGen = FindMapGenerator();
+        return mapGen != null ? mapGen.WorldToGrid(worldPos) : InvalidCell;
     }
 
     /// <summary>激活指定格上的战斗门触发器（没有则什么都不做）。</summary>
@@ -469,6 +522,7 @@ public class PlayerMove : MonoBehaviour
 
         transform.position = targetPosition;
         isMoving = false;
+        PushTrail(targetPosition);
 
         // 移动完成后切换楼层
         MapGenerator mapGen = FindAnyObjectByType<MapGenerator>();

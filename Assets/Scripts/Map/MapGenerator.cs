@@ -75,6 +75,9 @@ public class MapGenerator : MonoBehaviour
     /// <summary>当前楼层所有冰面格（地形预制体上挂 IceTile 标记的格子）</summary>
     private readonly HashSet<Vector2Int> iceCells = new HashSet<Vector2Int>();
 
+    /// <summary>挡路的地形 id（由 terrainPrefabs 的碰撞体启用状态推出，见 BuildBlockedTerrainIds）</summary>
+    private readonly HashSet<int> blockedTerrainIds = new HashSet<int>();
+
     /// <summary>当前楼层的地图原点偏移 —— 世界坐标与网格坐标互转用，必须存字段</summary>
     private float offsetX;
     private float offsetY;
@@ -90,6 +93,18 @@ public class MapGenerator : MonoBehaviour
 
     private void Start()
     {
+        // 本局模式：走过开场菜单就已经定了；直接在 Game 场景 Play 时从存档推断
+        GameSession.EnsureMode();
+
+        // 挑战模式：开局继承全局存档里「上一次阵亡」的记录（必须在读档之前，读档会用存档里的覆盖）
+        AnthroposBlessing.BeginRun();
+
+        // 挑战模式：按移涌之钥数量定格本局的敌人倍率（必须在生成楼层之前）
+        EnemyScaling.BeginRun();
+
+        // 挑战模式：清空额外祝福的发放进度（读档时会被存档那份覆盖）
+        ChallengeBonus.BeginRun();
+
         // 优先读取自动存档（继续游戏）；无自动存档时加载测试/初始楼层
         bool loadAuto = SaveManager.LoadAutoSaveOnStart;
         SaveManager.LoadAutoSaveOnStart = true; // 消费标记并复位
@@ -141,6 +156,114 @@ public class MapGenerator : MonoBehaviour
         {
             Debug.LogError($"[MapGenerator] 找不到地图文件：{path}.json（请确认文件放在 Assets/Resources/ 下）");
         }
+    }
+
+    /// <summary>取 itemPrefabs 里的 prefab（定点生成的地图道具用）。</summary>
+    public GameObject GetItemPrefab(int id)
+    {
+        return itemMap != null && itemMap.TryGetValue(id, out PrefabEntry entry) ? entry.prefab : null;
+    }
+
+    /// <summary>
+    /// 在指定格生成一个拾取物 —— 与地图道具走同一条初始化路径，
+    /// 楼层与网格坐标统一由 DropManager.SetPickupInfo 写。
+    /// </summary>
+    public GameObject SpawnPickupAt(GameObject prefab, Vector2Int gridPos, int floor)
+    {
+        if (prefab == null || mapContainer == null)
+        {
+            Debug.LogWarning("[MapGenerator] SpawnPickupAt：prefab 或 mapContainer 为空");
+            return null;
+        }
+
+        GameObject obj = Instantiate(prefab, GridToWorld(gridPos), Quaternion.identity, mapContainer);
+        DropManager.SetPickupInfo(obj, gridPos, floor);
+        return obj;
+    }
+
+    /// <summary>世界坐标 → 网格坐标（与生成时的换算互逆，y 轴翻转）。</summary>
+    public Vector2Int WorldToGrid(Vector3 worldPos)
+    {
+        return new Vector2Int(
+            Mathf.RoundToInt(worldPos.x - offsetX),
+            Mathf.RoundToInt(offsetY - worldPos.y));
+    }
+
+    /// <summary>网格坐标 → 世界坐标（与 ApplyMapData 里的 cellPos 同一公式）。</summary>
+    public Vector3 GridToWorld(Vector2Int gridPos)
+    {
+        return new Vector3(gridPos.x + offsetX, -gridPos.y + offsetY, 0f);
+    }
+
+    // ========================================================================
+    //  静态地图查询（只读 map 数据，不看运行时的门/敌人状态）
+    //  口径 = 「新一局」这一格的样子：新局 FloorMemory 清空，门全关、怪与道具全在。
+    // ========================================================================
+
+    /// <summary>这一格的地形能不能站人。</summary>
+    public bool IsCellWalkable(Vector2Int pos)
+    {
+        if (!InBounds(pos)) return false;
+
+        int terrain = GetCell(CurrentMap.terrain, pos.x, pos.y);
+        return terrain == 0 || !blockedTerrainIds.Contains(terrain);
+    }
+
+    /// <summary>完全空：能站人，且物体/敌人/道具/NPC 四层都没有东西。</summary>
+    public bool IsCellEmptyForSpawn(Vector2Int pos)
+    {
+        if (!IsCellWalkable(pos)) return false;
+
+        return GetCell(CurrentMap.objects, pos.x, pos.y) == 0
+            && GetCell(CurrentMap.enemies, pos.x, pos.y) == 0
+            && GetCell(CurrentMap.items, pos.x, pos.y) == 0
+            && GetCell(CurrentMap.npcs, pos.x, pos.y) == 0;
+    }
+
+    /// <summary>
+    /// 可站：能站人，且没有门/楼梯/敌人/NPC（道具与战斗触发器允许同格）。
+    /// 用在「完全空」找不到时的退让档。
+    /// </summary>
+    public bool IsCellFreeForSpawn(Vector2Int pos)
+    {
+        if (!IsCellWalkable(pos)) return false;
+
+        return !IsBlockingObjectId(GetCell(CurrentMap.objects, pos.x, pos.y))
+            && GetCell(CurrentMap.enemies, pos.x, pos.y) == 0
+            && GetCell(CurrentMap.npcs, pos.x, pos.y) == 0;
+    }
+
+    /// <summary>本层所有楼梯格（上楼梯 8 / 下楼梯 9）。</summary>
+    public List<Vector2Int> GetStairCells()
+    {
+        List<Vector2Int> result = new List<Vector2Int>();
+        if (CurrentMap?.objects == null) return result;
+
+        for (int y = 0; y < CurrentMap.objects.Count; y++)
+        {
+            List<int> row = CurrentMap.objects[y];
+            if (row == null) continue;
+
+            for (int x = 0; x < row.Count; x++)
+            {
+                int id = row[x];
+                if (id == 8 || id == 9) result.Add(new Vector2Int(x, y));
+            }
+        }
+        return result;
+    }
+
+    private bool InBounds(Vector2Int pos)
+    {
+        return CurrentMap != null
+            && pos.x >= 0 && pos.y >= 0
+            && pos.x < CurrentMap.width && pos.y < CurrentMap.height;
+    }
+
+    /// <summary>物体层里会占位的 id：1-3 彩色门 / 4-6 魂门 / 7 与 21-27 移涌门 / 8-9 楼梯。</summary>
+    private static bool IsBlockingObjectId(int id)
+    {
+        return (id >= 1 && id <= 9) || (id >= 21 && id <= 27);
     }
 
     /// <summary>内部统一加载入口</summary>
@@ -251,6 +374,10 @@ public class MapGenerator : MonoBehaviour
         // 设置玩家出生点
         SetPlayerPosition(data.player_spawn, offsetX, offsetY);
 
+        // 换层：移动轨迹从本层出生点重新开始（阵亡时沿轨迹回退要用）
+        if (player != null)
+            player.GetComponent<PlayerMove>()?.ResetTrail(player.position);
+
         // 自动适配相机
         if (autoFitCamera)
         {
@@ -262,6 +389,10 @@ public class MapGenerator : MonoBehaviour
         // 玩家日志：楼层段标题。必须排在下面的夹击扫描之前 ——
         // 进楼层时被夹击扣掉的血要记在这一段里面。
         PlayerLog.Section($"进入 {data.floor}F");
+
+        // 挑战模式：在上一次阵亡的位置生成『安特罗波斯』的祝福（其它模式/没有记录时不做事）。
+        // ⚠️ 必须排在 Section 之后 —— 否则「出现」那行会落到上一层的小节里。
+        AnthroposBlessing.TrySpawnOnFloor(this, data);
 
         onFloorLoaded?.Invoke(data);
 
@@ -277,6 +408,24 @@ public class MapGenerator : MonoBehaviour
 
         // 夹击阵型扫描：进入楼层时检测预置的 ABA/AAA 站位
         PincerAttack.CheckFloorEntry(FindAnyObjectByType<PlayerData>());
+
+        // 挑战模式：按掉落楼层 + 开局钥匙数发放额外祝福。
+        // 必须排在最后 —— 前面可能改 HP / 开会话面板，弹祝福要等这些都结束。
+        // 延后一帧：BlessingManager.OnPanelOpen 是 PlayerMove.Start 里订阅的，
+        // 与这里的 Start 顺序不保证，同步弹会出现「面板开着但玩家还能走」。
+        StartCoroutine(TriggerChallengeBonusNextFrame(data.floor));
+    }
+
+    /// <summary>
+    /// 延迟一帧再发挑战奖励 —— 等 PlayerMove / BlessingManager 的 Start 订阅都就位。
+    /// 期间如果又换了层，直接放弃这次。
+    /// </summary>
+    private System.Collections.IEnumerator TriggerChallengeBonusNextFrame(int floor)
+    {
+        yield return null;
+
+        if (CurrentMap == null || CurrentMap.floor != floor) yield break;
+        ChallengeBonus.TryTriggerOnFloor(floor);
     }
 
     // ========================================================================
@@ -581,6 +730,29 @@ public class MapGenerator : MonoBehaviour
         enemyMap   = BuildTable(enemyPrefabs);
         itemMap    = BuildTable(itemPrefabs);
         npcMap     = BuildTable(npcPrefabs);
+        BuildBlockedTerrainIds();
+    }
+
+    /// <summary>
+    /// 哪些地形 id 挡路：看预制体上有没有**启用**的碰撞体，不写死 id。
+    /// 地板砖（草地/浅草地/冰面）的碰撞体是关的；墙、冰块、大理石、秘术砖是开的。
+    /// </summary>
+    private void BuildBlockedTerrainIds()
+    {
+        blockedTerrainIds.Clear();
+        if (terrainPrefabs == null) return;
+
+        foreach (PrefabEntry entry in terrainPrefabs)
+        {
+            if (entry == null || entry.prefab == null) continue;
+
+            foreach (Collider2D col in entry.prefab.GetComponentsInChildren<Collider2D>(true))
+            {
+                if (!col.enabled) continue;
+                blockedTerrainIds.Add(entry.id);
+                break;
+            }
+        }
     }
 
     private static Dictionary<int, PrefabEntry> BuildTable(PrefabEntry[] entries)

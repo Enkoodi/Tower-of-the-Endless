@@ -24,6 +24,14 @@ public class BlessingManager : MonoBehaviour
     private PlayerData currentPlayerData;
     private BlessingPickup currentPickup;
 
+    // 连续发放（挑战模式的额外祝福）—— 面板只有一份，不能靠连调 Show 来排
+    private int sequenceRemaining;
+    private bool sequenceOpen;
+    private BlessingPool sequencePool;
+    private PlayerData sequencePlayer;
+    private System.Action sequenceEachDone;
+    private System.Action sequenceAllDone;
+
     // ============================================================
     //  特殊祝福效果管理
     // ============================================================
@@ -32,6 +40,9 @@ public class BlessingManager : MonoBehaviour
     /// 所有已获得的特殊祝福效果。Key = BlessingID 的字符串名（如 "FuryHeart"）。
     /// </summary>
     private Dictionary<string, BlessingEffect> activeEffects = new Dictionary<string, BlessingEffect>();
+
+    // 开战快照（僵持收场回滚，见 BeginBattleSnapshot）
+    private Dictionary<string, int> battleStateSnapshot;
 
     /// <summary>
     /// 本局已获得祝福的记录：BlessingID 名称 → 获得次数（存档用）。
@@ -145,6 +156,30 @@ public class BlessingManager : MonoBehaviour
             if (kv.Value.HasPersistentState)
                 result[kv.Key] = kv.Value.GetPersistentState();
         return result;
+    }
+
+    /// <summary>
+    /// 开战前拍快照：所有特殊祝福的持久状态（如工匠的剩余复活次数）。
+    /// 这类计数会被一场战斗消耗掉，僵持收场时靠这份快照退回 —— 与玩家 HP / 道具同一套口径。
+    /// </summary>
+    public void BeginBattleSnapshot()
+    {
+        battleStateSnapshot = GetActiveEffectStates();
+    }
+
+    /// <summary>
+    /// 「这一场当作没发生过」（僵持）：把特殊祝福的持久状态退回开战前。
+    /// 快照里已不存在的 ID 直接忽略（战斗中不会有祝福被移除）。
+    /// </summary>
+    public void RollbackBattleSnapshot()
+    {
+        if (battleStateSnapshot == null) return;
+
+        foreach (var kv in battleStateSnapshot)
+            if (activeEffects.TryGetValue(kv.Key, out BlessingEffect effect))
+                effect.RestorePersistentState(kv.Value);
+
+        battleStateSnapshot = null;
     }
 
     /// <summary>
@@ -370,6 +405,48 @@ public class BlessingManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 只显示一张指定祝福 —— 定点生成的祝福（如『安特罗波斯』）用，不走抽取池。
+    /// 面板点击后同样走 OnBlessingChosen → PlayerData.ApplyBlessing。
+    /// </summary>
+    public void ShowSingle(PlayerData playerData, BlessingData data, BlessingPickup pickup = null)
+    {
+        if (data == null)
+        {
+            Debug.LogError("[BlessingManager] ShowSingle：祝福数据为空");
+            return;
+        }
+
+        if (blessingPanel == null)
+            blessingPanel = FindFirstObjectByType<BlessingPanel>(FindObjectsInactive.Include);
+
+        if (blessingPanel == null)
+        {
+            Debug.LogError("[BlessingManager] BlessingPanel 未设置！");
+            return;
+        }
+
+        currentPlayerData = playerData;
+        currentPickup = pickup;
+
+        blessingPanel.Show(new List<BlessingData> { data }, OnBlessingChosen);
+        OnPanelOpen?.Invoke();
+    }
+
+    /// <summary>
+    /// 按 ID 在默认池里查祝福数据。定点生成的祝福不参与抽取，但资源仍登记在池里
+    /// （BlessingPoolSync 会自动收录全工程的祝福），所以这里查得到。
+    /// </summary>
+    public BlessingData FindBlessing(BlessingID id)
+    {
+        if (blessingPool == null || blessingPool.blessings == null) return null;
+
+        foreach (BlessingData b in blessingPool.blessings)
+            if (b != null && b.id == id) return b;
+
+        return null;
+    }
+
+    /// <summary>
     /// 使用自定义祝福池弹出祝福选择面板。
     /// 供商店等外部系统使用。pool 为 null 时回退到默认池。
     /// </summary>
@@ -398,6 +475,125 @@ public class BlessingManager : MonoBehaviour
         }
 
         Cleanup();
+    }
+
+    // ============================================================
+    //  连续发放（挑战模式额外祝福）
+    // ============================================================
+
+    /// <summary>
+    /// 连续弹 count 次三选一。pool 传 null 用默认池（就是 BlessingPool1）。
+    /// onEachDone 每选完一张回调一次，onAllDone 全部结束时回调一次。
+    ///
+    /// 面板带「剩余 x」—— 传的是还没选的数量（含当前这张）。
+    /// OnPanelOpen / OnPanelClose 只在整段开始和结束时各发一次：
+    /// 每次都发的话 PlayerMove.isChoosingBlessing 会在两张卡之间抖出一帧可移动。
+    /// </summary>
+    public void ShowSequence(PlayerData playerData, BlessingPool pool, int count,
+                             System.Action onEachDone = null, System.Action onAllDone = null)
+    {
+        if (blessingPanel == null)
+            blessingPanel = FindFirstObjectByType<BlessingPanel>(FindObjectsInactive.Include);
+
+        if (blessingPanel == null)
+        {
+            Debug.LogError("[BlessingManager] BlessingPanel 未设置！");
+            onAllDone?.Invoke();
+            return;
+        }
+
+        if (count <= 0 || (pool == null && blessingPool == null))
+        {
+            if (pool == null && blessingPool == null)
+                Debug.LogError("[BlessingManager] BlessingPool 未设置！");
+            onAllDone?.Invoke();
+            return;
+        }
+
+        sequencePlayer = playerData;
+        sequencePool = pool != null ? pool : blessingPool;
+        sequenceRemaining = count;
+        sequenceEachDone = onEachDone;
+        sequenceAllDone = onAllDone;
+        sequenceOpen = false;
+
+        ShowSequenceNext();
+    }
+
+    /// <summary>
+    /// 取消还没弹完的连弹（读档 / 新局用）：清状态、关面板。
+    /// 已经选掉的祝福不会退 —— 那是读档本身的语义。
+    /// 普通拾取/商店的面板不受影响（它们不走连弹状态）。
+    /// </summary>
+    public void CancelSequence()
+    {
+        if (sequenceRemaining <= 0 && !sequenceOpen) return;
+
+        sequenceRemaining = 0;
+        sequenceEachDone = null;
+        sequenceAllDone = null;
+        sequencePlayer = null;
+        sequencePool = null;
+
+        if (blessingPanel != null) blessingPanel.Hide();
+
+        if (sequenceOpen)
+        {
+            sequenceOpen = false;
+            OnPanelClose?.Invoke();
+        }
+    }
+
+    private void ShowSequenceNext()
+    {
+        if (sequenceRemaining <= 0)
+        {
+            System.Action done = sequenceAllDone;
+            sequenceAllDone = null;
+            sequenceEachDone = null;
+            sequencePlayer = null;
+            sequencePool = null;
+
+            if (sequenceOpen)
+            {
+                sequenceOpen = false;
+                OnPanelClose?.Invoke();
+            }
+
+            done?.Invoke();
+            return;
+        }
+
+        List<BlessingData> drawn = sequencePool.Draw(drawCount);
+        if (drawn == null || drawn.Count == 0)
+        {
+            Debug.LogWarning($"[BlessingManager] 连续发放抽取为空，跳过剩余 {sequenceRemaining} 次");
+            sequenceRemaining = 0;
+            ShowSequenceNext();
+            return;
+        }
+
+        if (!sequenceOpen)
+        {
+            sequenceOpen = true;
+            OnPanelOpen?.Invoke();
+        }
+
+        blessingPanel.Show(drawn, OnSequenceChosen, sequenceRemaining);
+    }
+
+    private void OnSequenceChosen(BlessingData chosen)
+    {
+        if (sequencePlayer != null && chosen != null)
+        {
+            sequencePlayer.ApplyBlessing(chosen);
+            Debug.Log($"[BlessingManager] 选择了祝福：{chosen.blessingName}");
+            PlayerLog.Note($"选择祝福 {chosen.blessingName}");
+        }
+
+        sequenceRemaining--;
+        sequenceEachDone?.Invoke();
+        ShowSequenceNext();
     }
 
     private void Cleanup()

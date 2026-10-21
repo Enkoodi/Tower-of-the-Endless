@@ -31,6 +31,10 @@ public class BlessingPool : ScriptableObject
         if (dangling > 0)
             Debug.LogWarning($"[BlessingPool] {name} 有 {dangling} 条空引用（祝福资源可能已被删除），已跳过");
 
+        // 第五档（Special）不进抽取池：这类祝福只按规则定点生成，权重与它们无关。
+        // 必须在抽取之前剔掉 —— RollRarity 只会返回四级之一，但它们会从下面的「降级兜底」里漏出去。
+        poolCopy.RemoveAll(b => b.rarity == BlessingRarity.Special);
+
         if (poolCopy.Count == 0)
         {
             Debug.LogWarning("[BlessingPool] 池为空！");
@@ -68,12 +72,14 @@ public class BlessingPool : ScriptableObject
 
     /// <summary>
     /// 从池中筛掉权重为0的稀有度，作为最终降级兜底。
+    /// 第五档（Special）无论如何都不在这里出现。
     /// </summary>
     private List<BlessingData> GetFilteredPool(List<BlessingData> source)
     {
         List<BlessingData> filtered = new List<BlessingData>();
         foreach (var b in source)
         {
+            if (b.rarity == BlessingRarity.Special) continue;
             if (b.rarity == BlessingRarity.Common    && commonWeight    <= 0) continue;
             if (b.rarity == BlessingRarity.Rare      && rareWeight      <= 0) continue;
             if (b.rarity == BlessingRarity.Epic      && epicWeight      <= 0) continue;

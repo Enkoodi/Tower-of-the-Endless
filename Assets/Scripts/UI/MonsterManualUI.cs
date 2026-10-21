@@ -83,18 +83,20 @@ public class MonsterManualUI : MonoBehaviour
             floorTitleText.text = $"{floorName} — 怪物手册";
         }
 
-        // 收集当前楼层所有敌人（普通敌人 + 带NpcBattler的NPC敌人），按 EnemyStats 去重
-        HashSet<EnemyStats> uniqueStats = new HashSet<EnemyStats>();
+        // 收集当前楼层所有敌人（普通敌人 + 带NpcBattler的NPC敌人），按 EnemyStats 去重。
+        // 值 = 是否豁免挑战倍率：可战斗 NPC 豁免（与 EnemyController.isScriptedEnemy 同一口径）。
+        // 同一种敌人若以两种身份出现，豁免优先。
+        Dictionary<EnemyStats, bool> uniqueStats = new Dictionary<EnemyStats, bool>();
 
         foreach (int id in mapGen.GetCurrentFloorUniqueEnemyIDs())
         {
             EnemyStats stats = mapGen.GetEnemyStatsByID(id);
-            if (stats != null) uniqueStats.Add(stats);
+            if (stats != null && !uniqueStats.ContainsKey(stats)) uniqueStats[stats] = false;
         }
 
         foreach (EnemyStats stats in mapGen.GetCurrentFloorNpcBattleStats())
         {
-            if (stats != null) uniqueStats.Add(stats);
+            if (stats != null) uniqueStats[stats] = true;
         }
 
         if (uniqueStats.Count == 0)
@@ -106,12 +108,14 @@ public class MonsterManualUI : MonoBehaviour
         // 收集敌人并按预计损失HP排序（低→高）。
         // 净回血是负数，会自然排在最前面；无法战胜的（Unbeatable）排在最后。
         // ⚠️ 打不过会阵亡的（血量撑不住）不算无法战胜，按满血损失排在可达顺序里。
-        List<(EnemyStats stats, MonsterManualEntryUI.BattleSimResult sim)> enemies
-            = new List<(EnemyStats, MonsterManualEntryUI.BattleSimResult)>();
+        List<(EnemyStats stats, MonsterManualEntryUI.BattleSimResult sim, bool exempt)> enemies
+            = new List<(EnemyStats, MonsterManualEntryUI.BattleSimResult, bool)>();
 
-        foreach (EnemyStats stats in uniqueStats)
+        foreach (var pair in uniqueStats)
         {
-            enemies.Add((stats, MonsterManualEntryUI.SimulateBattle(player, stats)));
+            enemies.Add((pair.Key,
+                         MonsterManualEntryUI.SimulateBattle(player, pair.Key, pair.Value),
+                         pair.Value));
         }
 
         enemies.Sort((a, b) =>
@@ -129,7 +133,7 @@ public class MonsterManualUI : MonoBehaviour
             MonsterManualEntryUI entryUI = entryGO.GetComponent<MonsterManualEntryUI>();
             if (entryUI != null)
             {
-                entryUI.Setup(entry.stats, entry.sim);
+                entryUI.Setup(entry.stats, entry.sim, entry.exempt);
             }
         }
 

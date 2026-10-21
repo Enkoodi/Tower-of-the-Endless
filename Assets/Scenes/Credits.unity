@@ -532,8 +532,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7B56\u5212\uFF1A\u6211\n\u7F16\u5267\uFF1A\u6211\n\u7A0B\u5E8F\uFF1ADeepSeek  
-    \u6211\n\u7F8E\u672F\uFF1AChat GPT   Gork   Meowa\n\u9B54\u5854\u539F\u7D20\u6750\uFF1A\u6E21\u90E8\u76F4"
+  m_text: "\u7B56\u5212\uFF1AEnkoodi\n\u7F16\u5267\uFF1AEnkoodi\n\u7A0B\u5E8F\uFF1ADeepSeek  
+    Enkoodi\n\u7F8E\u672F\uFF1AChat GPT   Gork   Meowa\n\u9B54\u5854\u539F\u7D20\u6750\uFF1A\u6E21\u90E8\u76F4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b99276c05bd6b354dab16d12b9cf6e03, type: 2}
   m_sharedMaterial: {fileID: -7471263506246653517, guid: b99276c05bd6b354dab16d12b9cf6e03, type: 2}

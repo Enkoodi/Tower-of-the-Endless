@@ -29,6 +29,9 @@ public class SceneTrigger : MonoBehaviour
     [Tooltip("判定容差：玩家与目标格子中心的距离小于该值才判定到达（防止移动途中误触发）")]
     [SerializeField] private float triggerTolerance = 0.1f;
 
+    /// <summary>通关口：触发时清掉自动存档（不清的话回标题点同一模式会读回通关前那份档）。</summary>
+    [SerializeField] private bool clearAutoSave;
+
     private bool hasTriggered;
     private bool wasOnTarget;
     private PlayerMove playerMove;
@@ -78,6 +81,10 @@ public class SceneTrigger : MonoBehaviour
 
         Debug.Log($"[SceneTrigger] 玩家到达第 {targetFloor} 层 ({targetGridPos.x}, {targetGridPos.y})，跳转场景 '{sceneName}'");
         PlayerLog.Note($"触发场景跳转 → {sceneName}");
+
+        // 通关口必须先清档再跳场景：30F 的自动存档就是「进 30F」时写下的那份，
+        // 不清的话回标题点同一模式会原样读回来，等于多了一个「继续游戏」。
+        if (clearAutoSave) SaveManager.ClearAutoSave();
 
         // 通过 ScreenFader 完成淡出 → 加载 → 淡入的过场
         ScreenFader.FadeToScene(sceneName);

@@ -16,7 +16,7 @@ public enum BattleEndReason
     None,              // 还没结束
     EnemyDefeated,     // 击败了敌人
     PlayerDefeated,    // 玩家阵亡
-    EnemyUnkillable,   // 伤不到敌人（自己打不出伤害，连反伤也造不成伤害）→ 提前收场
+    EnemyUnkillable,   // 伤不到敌人 —— 内核已不再产出（打不动会跑到 Stalemate），图鉴判据仍认它
     Stalemate,         // 到回合上限仍未分出胜负
 }
 
@@ -167,7 +167,7 @@ public class BattleResolver
     //  玩家每次**主动攻击**（不论是否破防）给敌人叠 StacksPerAttack 层，上限 MaxStacks；
     //  每回合开始时，敌人受到「玩家实时攻击力 × 层数 × PercentPerStack / 100」的**真实伤害**
     //  （无视防御 / 无视减伤 / 不触发反伤 / 可以致死）。
-    //  参数在构造时定格（与 magicPercent 同一套路），所以「伤不到敌人」的判定也能算上撕裂。
+    //  参数在构造时定格（与 magicPercent 同一套路）。
     // ------------------------------------------------------------
 
     /// <summary>撕裂是否启用（每次攻击叠层 &gt; 0 且层数上限 &gt; 0）</summary>
@@ -175,30 +175,6 @@ public class BattleResolver
 
     /// <summary>敌人当前身上的撕裂层数（供表现层显示 / 日志）</summary>
     public int EnemyRendStacks { get; private set; }
-
-    /// <summary>
-    /// 玩家有没有办法伤到敌人（否则提前收场判负，对应实战的 damageToEnemy &lt;= 0 分支）。
-    ///
-    /// **两条路，任意一条成立就算有**：
-    ///   ① 玩家自己打得出伤害（物理 + 魔力）；
-    ///   ② 自己打不动，但**反伤**打得动 —— 玩家挨打时会把敌人的**物理**伤害按反伤系数弹回去，
-    ///      而敌人每回合必然会反击，所以「这一击打 0」完全不代表「赢不了」。
-    ///      反伤这条路要求：敌人打得出物理伤害 + 玩家反伤系数 &gt; 0 + 反伤过了敌人减伤之后仍为正。
-    ///
-    /// ⚠️ **构造时定格**，绝不能在回合重算后跟着变 ——
-    /// 魔力用光之后 damageToEnemy 会归零，但那只是「这一击没魔力了」，不是「打不出伤害」。
-    /// 实战也是只在开打前判这一次。
-    /// </summary>
-    public bool CanDamageEnemy { get; }
-
-    /// <summary>
-    /// 玩家靠反伤每回合能对敌人造成的实际伤害（已过敌人减伤，构造时定格）。
-    ///
-    /// 反伤吃的是**敌人这一击的物理伤害**：敌人打不出物理伤害、玩家反伤系数为 0、
-    /// 或者反伤过了敌人减伤后归零/变负（减伤 ≥ 100% 时反伤反而给敌人回血），
-    /// 这条路就不成立，值为 0。
-    /// </summary>
-    public int ReflectToEnemy { get; }
 
     public BattleStep LastStep { get; private set; }
     public BattleEndReason EndReason { get; private set; } = BattleEndReason.None;
@@ -220,32 +196,7 @@ public class BattleResolver
         // 和实战一样，先算一轮（偷袭用的是这一份）
         ComputeRound();
 
-        // 定格「还有没有办法伤到敌人」—— 之后每回合重算 damageToEnemy 都不再影响这个判断。
-        // 自己打不出伤害时，反伤是一条独立的路（敌人每回合必反击 → 玩家的反伤必然被触发）。
-        ReflectToEnemy = ComputeReflectToEnemy();
-        // 撕裂也算一条「伤得到敌人」的路：无视防御/减伤的真伤迟早会磨死它。
-        bool rendCanDamage = RendEnabled && rendSpec.PercentPerStack > 0 && player.Attack > 0;
-        CanDamageEnemy = damageToEnemy > 0 || ReflectToEnemy > 0 || rendCanDamage;
-
-        // ⚠️ 这里**不能**因为「伤不到敌人」就直接判结束 ——
-        // 旧实现的顺序是「先挨偷袭，再收场」，提前判会凭空少掉偷袭那一次伤害。
-        // 所以判定放在偷袭之后（见 Step 与调用方）。
         phase = WillSneak ? Phase.Sneak : Phase.TurnStart;
-    }
-
-    /// <summary>
-    /// 反伤的实际到手伤害 = 敌人这一击的物理伤害 × 玩家反伤系数，再过一次敌人减伤。
-    /// 与 `DoEnemyCounter` 里的算法保持同式 —— 两处一旦漂了，「能不能赢」的预判就会和实战不符。
-    /// </summary>
-    private int ComputeReflectToEnemy()
-    {
-        if (player.ReflectDamage <= 0) return 0;   // 玩家没反伤
-        if (enemyPhysical <= 0) return 0;          // 敌人打不出物理伤害，反伤无从触发
-
-        int reflect = enemyPhysical * player.ReflectDamage / 100;
-        if (reflect <= 0) return 0;                // 整数截断后为 0
-
-        return reflect * (100 - enemy.DamageReduction) / 100;   // ≤ 0 表示反伤伤不到敌人
     }
 
     /// <summary>
@@ -255,14 +206,6 @@ public class BattleResolver
     public bool Step()
     {
         if (IsFinished) return false;
-
-        // 偷袭之后才判「伤不到敌人」，与旧实现一致。调用方在主循环前也会主动查一次
-        // （那次要打日志），这里是给 RunToEnd 兜底。
-        if (phase != Phase.Sneak && !CanDamageEnemy)
-        {
-            EndReason = BattleEndReason.EnemyUnkillable;
-            return false;
-        }
 
         switch (phase)
         {

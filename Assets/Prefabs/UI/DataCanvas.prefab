@@ -2012,6 +2012,7 @@ GameObject:
   - component: {fileID: 8156978492509088977}
   - component: {fileID: 1208728699760469324}
   - component: {fileID: 4690004497497601322}
+  - component: {fileID: 5478193024619384756}
   m_Layer: 5
   m_Name: DataCanvas
   m_TagString: Untagged
@@ -2394,7 +2395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.090459235, g: 0.15893716, b: 0.20754719, a: 1}
+  m_Color: {r: 0.11764706, g: 0.15686275, b: 0.19607843, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3670,7 +3671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.090459235, g: 0.15893716, b: 0.20754719, a: 1}
+  m_Color: {r: 0.11764706, g: 0.15686275, b: 0.19607843, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4089,3 +4090,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5478193024619384756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4090038953558448644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcaa1f8cd12341c88cd3ec2cae0abfe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftPanel: {fileID: 1353111307204530571}
+  rightPanel: {fileID: 5835376735631404576}
+  storyColor: {r: 0.11764706, g: 0.15686275, b: 0.19607843, a: 1}
+  challengeColor: {r: 0.39215687, g: 0.11764706, b: 0.11764706, a: 1}

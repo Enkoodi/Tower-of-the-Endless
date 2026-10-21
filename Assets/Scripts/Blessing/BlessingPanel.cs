@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -6,6 +8,7 @@ using System.Text.RegularExpressions;
 /// <summary>
 /// 祝福选择面板 — 挂载在 BlessingPanel 根对象上。
 /// Show() 时显示 N 张卡片，从 cardContainer 的子对象上获取 BlessingCardUI 组件。
+/// 只有一张卡时横向居中显示（多张仍按原顺序排布）。
 /// </summary>
 public class BlessingPanel : MonoBehaviour
 {
@@ -15,18 +18,36 @@ public class BlessingPanel : MonoBehaviour
     [Header("卡片父节点（子对象挂有 BlessingCardUI）")]
     [SerializeField] private Transform cardContainer;
 
+    [Header("连续发放的剩余次数（挑战模式，可留空）")]
+    [SerializeField] private TMP_Text remainingText;
+
     private BlessingCardUI[] cards;
     private System.Action<BlessingData> onChosenCallback;
+
+    // 卡片容器的横向排布（单卡居中要临时改 childAlignment，多卡时还原）
+    private HorizontalLayoutGroup cardLayout;
+    private TextAnchor defaultAlignment = TextAnchor.UpperLeft;
 
     void Awake()
     {
         if (panelRoot != null)
             panelRoot.SetActive(false);
 
+        // 可能挂在 panelRoot 之外，开局也要关掉，否则会一直显示上一局的「剩余 x」
+        if (remainingText != null)
+            remainingText.gameObject.SetActive(false);
+
         cards = cardContainer.GetComponentsInChildren<BlessingCardUI>();
+
+        cardLayout = cardContainer.GetComponent<HorizontalLayoutGroup>();
+        if (cardLayout != null) defaultAlignment = cardLayout.childAlignment;
     }
 
-    public void Show(List<BlessingData> drawn, System.Action<BlessingData> onChosen)
+    /// <summary>
+    /// 显示祝福卡。remaining &gt; 0 时在标题下显示「剩余 x」（连续发放用）；
+    /// 普通拾取 / 商店传默认的 -1，那个文本保持隐藏。
+    /// </summary>
+    public void Show(List<BlessingData> drawn, System.Action<BlessingData> onChosen, int remaining = -1)
     {
         if (drawn == null || drawn.Count == 0)
         {
@@ -49,14 +70,42 @@ public class BlessingPanel : MonoBehaviour
             }
         }
 
+        ApplyAlignment(drawn.Count);
+        ApplyRemaining(remaining);
+
         if (panelRoot != null)
             panelRoot.SetActive(true);
+    }
+
+    /// <summary>「剩余 x」文本：没绑定、或不是连续发放时隐藏。</summary>
+    private void ApplyRemaining(int remaining)
+    {
+        if (remainingText == null) return;
+
+        bool show = remaining > 0;
+        remainingText.gameObject.SetActive(show);
+        if (show) remainingText.text = $"剩余{remaining}";
+    }
+
+    /// <summary>
+    /// 单张卡横排居中（UpperCenter —— 只动水平方向，纵向位置与多卡时一致）；
+    /// 多张卡还原容器原本的对齐方式。
+    /// </summary>
+    private void ApplyAlignment(int shownCount)
+    {
+        if (cardLayout == null) return;
+
+        cardLayout.childAlignment = shownCount == 1 ? TextAnchor.UpperCenter : defaultAlignment;
     }
 
     public void Hide()
     {
         if (panelRoot != null)
             panelRoot.SetActive(false);
+
+        // 「剩余 x」若挂在 panelRoot 之外，不在这里关就会一直留在屏幕上
+        if (remainingText != null)
+            remainingText.gameObject.SetActive(false);
     }
 
     private void FillCard(BlessingCardUI card, BlessingData data)
@@ -86,10 +135,14 @@ public class BlessingPanel : MonoBehaviour
 
     /// <summary>
     /// 描述：已拥有时把会随等级变化的数字标成「旧（旧→新）」，例如「额外获得10（10→20）金币」。
+    /// 『安特罗波斯』的数字来自本局阵亡记录，资产里的文案只是兜底，所以这里现算。
     /// </summary>
     private static string BuildDescription(BlessingData data)
     {
         if (data == null) return string.Empty;
+
+        if (data.type == BlessingType.Anthropos)
+            return AnthroposBlessing.BuildDescription();
 
         BlessingManager manager = BlessingManager.Instance;
         if (manager == null || data.type != BlessingType.Conditional) return data.description;

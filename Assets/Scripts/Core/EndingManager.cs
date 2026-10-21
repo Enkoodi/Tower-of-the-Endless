@@ -12,6 +12,10 @@ public static class EndingManager
         Debug.Log("[EndingManager] 触发真结局片尾 ED");
         PlayerLog.Note("触发真结局");
 
+        // 通关后不再有「继续游戏」：清掉自动存档，回到标题点任一模式都是开新局。
+        // 不清的话标题页会读回通关前那份档，玩家能从 30F 接着走。
+        SaveManager.ClearAutoSave();
+
         // 通过 ScreenFader 完成淡出 → 加载 → 淡入的过场
         ScreenFader.FadeToScene("Ending");
     }

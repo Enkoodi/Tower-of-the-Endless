@@ -168,6 +168,13 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     // 魔力充能不在修正层里（它是直接改真实字段的），所以单独快照一份供复活回退用。
     private int battleBaseManaCharge;
 
+    // 开战快照（僵持收场整场回滚，见 BeginBattleSnapshot）
+    private int snapshotHp;
+    private int snapshotAleStacks;
+    private bool snapshotManaEssence;
+    private bool snapshotEnemyHalve;
+    private bool hasBattleSnapshot;
+
     // 战斗内修正
     private int battleFlatAttack;
     private int battleFlatDefense;
@@ -215,6 +222,40 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         Debug.Log($"[PlayerData] 战斗快照：攻{battleBaseAttack} 防{battleBaseDefense} " +
                   $"段{battleBaseAttackCount} 减伤{battleBaseDamageReduction}% " +
                   $"吸血{battleBaseLifeSteal} 反伤{battleBaseReflectDamage} 魔力{battleBaseManaCharge}");
+    }
+
+    /// <summary>
+    /// 开战前拍玩家侧快照：HP + 本场会消耗掉的「待生效」道具状态（圣水 / 麦酒 / 魔力精华）。
+    /// ⚠️ 必须拍在 `ConsumeEnemyHalve` / `ApplyPendingBattleItems` **之前** ——
+    ///    它们会把待生效状态清掉，拍在后面就退不回来了。
+    /// 道具**数量**不在这里管：圣水/麦酒/魔力精华是「使用」时扣的，
+    /// 退回「待生效」状态就等于下一场还能用。
+    /// </summary>
+    public void BeginBattleSnapshot()
+    {
+        snapshotHp          = hp;
+        snapshotAleStacks   = pendingAleStacks;
+        snapshotManaEssence = pendingManaEssence;
+        snapshotEnemyHalve  = pendingEnemyHalve;
+        hasBattleSnapshot   = true;
+    }
+
+    /// <summary>
+    /// 「这一场当作没发生过」的收场（僵持）：HP 与待生效道具状态一起退回开战前。
+    /// ⚠️ 阵亡**不能**调这个 —— 死了要留着，阵亡画面靠 `IsDead` 判。
+    /// </summary>
+    public void RollbackBattleSnapshot()
+    {
+        if (!hasBattleSnapshot) return;
+        hasBattleSnapshot = false;
+
+        SetHP(snapshotHp);
+        pendingAleStacks   = snapshotAleStacks;
+        pendingManaEssence = snapshotManaEssence;
+        pendingEnemyHalve  = snapshotEnemyHalve;
+
+        Debug.Log($"[PlayerData] 僵持回滚：HP→{snapshotHp}，麦酒 {snapshotAleStacks} 层，"
+                + $"魔力精华={(snapshotManaEssence ? "待生效" : "无")}，圣水={(snapshotEnemyHalve ? "待生效" : "无")}");
     }
 
     /// <summary>清空修正层，属性回到战斗前的数值。</summary>
@@ -732,15 +773,28 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
         hp = Mathf.Max(0, value);
     }
 
+    /// <summary>战斗外玩家生命归零时触发一次（阵亡画面用）。战斗中不触发 —— 战斗内阵亡由 BattleManager 收尾时统一判定。</summary>
+    public static event System.Action OnPlayerDied;
+
+    /// <summary>扣血后：生命跨过 0 就通知一次。战斗中交给 BattleManager，这里不发（避免战斗中弹面板）。</summary>
+    private void NotifyDeathIfCrossedZero(int hpBefore)
+    {
+        if (inBattle) return;
+        if (hpBefore > 0 && hp <= 0)
+            OnPlayerDied?.Invoke();
+    }
+
     /// <summary>
     /// 直接扣血，不计算防御（用于反伤等机制）。返回实际扣除的HP。
     /// </summary>
     public int SubtractHP(int amount)
     {
+        int before = hp;
         // 读属性而非字段：战斗中的减伤加成（如异乡人）要走战斗内修正层
         int reduced = amount * (100 - DamageReduction) / 100;
         hp -= reduced;
         if (hp < 0) hp = 0;
+        NotifyDeathIfCrossedZero(before);
         return reduced;
     }
 
@@ -764,8 +818,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     public int SubtractRawHP(int amount)
     {
         if (amount <= 0) return 0;
+        int before = hp;
         int actual = Mathf.Min(amount, hp);
         hp -= actual;
+        NotifyDeathIfCrossedZero(before);
         return actual;
     }
 
@@ -910,6 +966,26 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
     }
 
     /// <summary>
+    /// 『安特罗波斯』的祝福：一次性发放已经算好的最终数值。
+    /// **不再乘任何系数** —— 记录里的数值就是上一局的面板数值，再乘一次会滚雪球。
+    /// 属【战前接口】，与 AddAttack 等同一族，同样受 RequireOutOfBattle 守卫。
+    /// </summary>
+    public void ApplyAnthroposGrant(AnthroposGrant grant)
+    {
+        if (!RequireOutOfBattle(nameof(ApplyAnthroposGrant))) return;
+
+        attack          += grant.attack;
+        defense         += grant.defense;
+        manaMax         += grant.manaMax;
+        manaCharge      += grant.manaCharge;
+        speed           += grant.speed;
+        lifeSteal       += grant.lifeSteal;
+        reflectDamage   += grant.reflectDamage;
+        damageReduction += grant.damageReduction;
+        hp              += grant.hp;
+    }
+
+    /// <summary>
     /// 应用祝福加成，由 BlessingManager 在选择后调用。
     /// 属【战前接口】：入口处就拦一道，这样 ApplyStatBonus / ApplyPercentBonus
     /// 里那些直写字段的代码不会成为绕过守卫的第三条路径。
@@ -931,6 +1007,10 @@ public class PlayerData : MonoBehaviour, IKeyInventory, IPlayerHealth, IBattleUn
 
             case BlessingType.Conditional:
                 ApplyConditional(blessing);
+                break;
+
+            case BlessingType.Anthropos:
+                AnthroposBlessing.Apply(this);
                 break;
         }
     }

@@ -254,24 +254,12 @@ public class SettingMenu : MonoBehaviour
 
     private void StartNewGame()
     {
-        // 清除自动存档，但不影响主动存档；随后标记本次进入为“新游戏”，跳过自动读档
-        SaveManager.ClearAutoSave();
-        SaveManager.LoadAutoSaveOnStart = false;
+        // 新游戏沿用「这一局」的模式（挑战局阵亡后重开还是挑战局）。
+        // 运行时模式没定过（从标题进设置、或直接在 Setting 场景 Play）→ 从存档里读回来。
+        // ⚠️ 必须在清自动存档之前，推断要看那份存档。
+        GameSession.EnsureMode();
 
-        // 新一局：清空玩家日志缓冲区。主动存档的日志文件保留 —— 它对应的 game_save.json 也保留。
-        PlayerLog.Reset();
-
-        // 新游戏：重置楼层记忆与特殊敌人击败信号（字典记忆）
-        FloorMemoryManager.Instance?.ResetAll();
-        SpecialEnemyManager.Instance?.ResetAll();
-
-        // 新游戏：清空对话标记（静态状态，不清会把上一局的「已结算」带进来）
-        DialogueFlags.Clear();
-
-        // 新游戏：清零商店购买次数、清空祝福状态与获得记录
-        // （都是静态/单例状态，不重置会把上一局的涨价和祝福带进新游戏）
-        NPCController.ResetPurchaseCount();
-        BlessingManager.Instance?.ResetAll();
+        NewGameFlow.Start(GameSession.Mode);
 
         // 离开设置界面不做转场：直接切场景（不淡入淡出、不留黑屏）
         ScreenFader.LoadSceneInstant(gameSceneName);

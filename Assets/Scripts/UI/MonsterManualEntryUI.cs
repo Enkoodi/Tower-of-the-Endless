@@ -21,7 +21,8 @@ public class MonsterManualEntryUI : MonoBehaviour
     /// 战斗模拟结果。由调用方算好传进来 —— 列表排序用的就是它，
     /// 传进来能保证「排序依据」和「显示数字」必然一致，也省掉一次重复模拟。
     /// </param>
-    public void Setup(EnemyStats enemy, BattleSimResult sim)
+    /// <param name="exempt">可战斗 NPC 为 true：不参与挑战模式的倍率（与实战一致）。</param>
+    public void Setup(EnemyStats enemy, BattleSimResult sim, bool exempt = false)
     {
         if (enemy == null) return;
 
@@ -33,11 +34,13 @@ public class MonsterManualEntryUI : MonoBehaviour
         }
 
         // 第一行：名称 / 第二行：基础战斗属性 / 第三行：特殊属性
+        // 数值走 EnemyScaling —— 与模拟、实战用的是同一份缩放结果
         if (statsText != null)
         {
+            EnemyScaling.Values v = EnemyScaling.Apply(enemy, exempt);
             statsText.text = $"<b>{enemy.enemyName}</b>\n"
-                           + $"生命值: {enemy.hp}  攻击力: {enemy.attack}  防御力: {enemy.defense}  段数: {enemy.attackCount}  减伤: {enemy.damageReduction}%  速度: {enemy.speed}\n"
-                           + $"魔力值: {enemy.manaCharge}  魔力输出: {enemy.manaMax}  吸血: {enemy.lifeSteal}%  反伤: {enemy.reflectDamage}%  金币: {enemy.goldReward}";
+                           + $"生命值: {v.hp}  攻击力: {v.attack}  防御力: {v.defense}  段数: {v.attackCount}  减伤: {v.damageReduction}%  速度: {v.speed}\n"
+                           + $"魔力值: {v.manaCharge}  魔力输出: {v.manaMax}  吸血: {v.lifeSteal}%  反伤: {v.reflectDamage}%  金币: {v.goldReward}";
         }
 
         // 战斗所需生命值
@@ -100,7 +103,8 @@ public class MonsterManualEntryUI : MonoBehaviour
     /// 与玩家当前血量无关（可能大于血量上限 —— 那正是「你现在打不过」）。
     /// 连无限血量都打不完（伤不到敌人 / 到回合上限）才算「无法战胜」。
     /// </summary>
-    public static BattleSimResult SimulateBattle(PlayerData player, EnemyStats enemy)
+    /// <param name="exempt">可战斗 NPC 传 true —— 与实战一样豁免挑战倍率。</param>
+    public static BattleSimResult SimulateBattle(PlayerData player, EnemyStats enemy, bool exempt = false)
     {
         BattleSimResult result = default;   // Unbeatable = false, HpDelta = 0
         if (player == null || enemy == null) return result;
@@ -117,7 +121,7 @@ public class MonsterManualEntryUI : MonoBehaviour
                                    out ouroborosLifeSteal, out ouroborosReflect);
 
         SimBattleUnit simPlayer = SimBattleUnit.FromPlayerUnlimitedHP(player, ouroborosLifeSteal, ouroborosReflect);
-        SimBattleUnit simEnemy  = SimBattleUnit.FromEnemyStats(enemy);
+        SimBattleUnit simEnemy  = SimBattleUnit.FromEnemyStats(enemy, exempt);
 
         // 神圣剑：图鉴在战斗外打开，直接读玩家身上的组件
         HolySwordEffect amplifier = player.GetComponent<HolySwordEffect>();

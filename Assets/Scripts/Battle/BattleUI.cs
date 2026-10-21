@@ -82,6 +82,9 @@ public class BattleUI : MonoBehaviour
     private List<string> logLines = new List<string>();
     private bool isAnimating = false;
 
+    /// <summary>静音：跳过档 / 手动跳过时日志与面板刷新全部短路（只结算，不碰 UI）。</summary>
+    public bool Muted { get; set; }
+
     /// <summary>
     /// 当前场景中的战斗界面实例（挂在 BattleWindow 上）。
     /// 玩家在战斗中受伤/攻击时，PlayerData 通过它驱动左侧头像的动画。
@@ -151,7 +154,7 @@ public class BattleUI : MonoBehaviour
     /// </summary>
     public void UpdatePlayerPanel(PlayerData playerData)
     {
-        if (playerStatsText == null || playerData == null) return;
+        if (Muted || playerStatsText == null || playerData == null) return;
 
         playerStatsText.text =
             $"生命值：{playerData.HP}\n" +
@@ -175,7 +178,7 @@ public class BattleUI : MonoBehaviour
     /// </summary>
     public void UpdateEnemyPanel(EnemyController enemy)
     {
-        if (enemyStatsText == null || enemy == null) return;
+        if (Muted || enemyStatsText == null || enemy == null) return;
 
         enemyStatsText.text =
             $"生命值：{enemy.HP}\n" +
@@ -195,7 +198,7 @@ public class BattleUI : MonoBehaviour
     /// </summary>
     public void UpdateTurn(int turn)
     {
-        if (turnText != null)
+        if (!Muted && turnText != null)
             turnText.text = $"回合：{turn}";
     }
 
@@ -204,7 +207,7 @@ public class BattleUI : MonoBehaviour
     /// </summary>
     public void AddLog(string message)
     {
-        if (battleLogText == null) return;
+        if (Muted || battleLogText == null) return;
 
         logLines.Add(message);
         if (logLines.Count > 6)
@@ -254,7 +257,7 @@ public class BattleUI : MonoBehaviour
     public void PlayPlayerAttack()
     {
         // 窗口关着说明不在战斗中，此时设置 Trigger 会积压到下一场战斗才播，直接丢弃
-        if (!IsOpen) return;
+        if (Muted || !IsOpen) return;
 
         Animator anim = PlayerAvatarAnimator;
         if (anim != null) anim.SetTrigger(IsAttackHash);
@@ -263,7 +266,7 @@ public class BattleUI : MonoBehaviour
     /// <summary>播放玩家头像的受伤动画（PlayerUI.controller 的 isHurt，Trigger 型）。</summary>
     public void PlayPlayerHurt()
     {
-        if (!IsOpen) return;
+        if (Muted || !IsOpen) return;
 
         Animator anim = PlayerAvatarAnimator;
         if (anim != null) anim.SetTrigger(IsHurtHash);
@@ -296,7 +299,7 @@ public class BattleUI : MonoBehaviour
     /// <param name="hitCount">本次攻击的段数（通常传 playerData.AttackCount）</param>
     public void PlayEnemyHit(int hitCount)
     {
-        if (!IsOpen || enemyImage == null) return;
+        if (Muted || !IsOpen || enemyImage == null) return;
 
         StartCoroutine(EnemyHitSequence(hitCount));
     }
@@ -384,7 +387,7 @@ public class BattleUI : MonoBehaviour
     /// </summary>
     public void PlayEnemyDeath()
     {
-        if (!IsOpen || enemyImage == null) return;
+        if (Muted || !IsOpen || enemyImage == null) return;
 
         StartCoroutine(EnemyDeathRoutine());
     }

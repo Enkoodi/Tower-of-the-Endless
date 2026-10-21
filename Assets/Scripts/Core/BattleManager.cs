@@ -71,6 +71,8 @@ public class BattleManager : MonoBehaviour
     private bool isFighting = false;
     /// <summary>本场战斗是否走「跳过」通道。每次 StartBattle 都会重新赋值，不需要在别处复位。</summary>
     private bool silentBattle = false;
+    /// <summary>玩家点了跳过（按钮未做）。本场剩下的部分一帧跑完，界面里只留结算行。</summary>
+    private bool skipRequested = false;
 
     /// <summary>战斗是否正在进行（战斗窗口打开时为 true），供按键输入锁定使用。</summary>
     public bool IsFighting => isFighting;
@@ -84,6 +86,9 @@ public class BattleManager : MonoBehaviour
     // 玩家日志：战斗前的 HP / 金币快照，战斗结束时算差值用
     private int logHpBefore;
     private int logGoldBefore;
+
+    /// <summary>Zeno 战进战前拍的玩家面板；胜利后写进全局存档（见 <see cref="ZenoMirror"/>）。</summary>
+    private ZenoRecord pendingZenoRecord;
 
     void Awake()
     {
@@ -134,6 +139,16 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        // 开战快照（敌人 / 玩家 / 祝福三份）。⚠️ 必须都拍在「敌人减半」道具与
+        //    ApplyPendingBattleItems 之前 —— 前者会把敌人 HP 减半，后者会清掉待生效道具，
+        //    拍在后面就退不回来了。
+        enemy.BeginBattleSnapshot();
+        playerData.BeginBattleSnapshot();
+        BlessingManager.Instance?.BeginBattleSnapshot();
+
+        // Zeno 镜像：把「进战前」的玩家面板拍下来，赢了才写进全局存档
+        pendingZenoRecord = ZenoMirror.IsZeno(enemy.Stats) ? ZenoMirror.Capture(playerData) : null;
+
         // 使用敌人减半道具后，本场敌人血量减半（普通敌人与NPC敌人都经此入口生效）
         bool enemyHalved = playerData.ConsumeEnemyHalve();
         if (enemyHalved)
@@ -143,6 +158,8 @@ public class BattleManager : MonoBehaviour
 
         isFighting = true;
         silentBattle = IsSkipMode;   // 跳过档：只结算，不打开界面、不播动画
+        skipRequested = false;
+        if (battleUI != null) battleUI.Muted = silentBattle;
         turnCount = 1;
         onBattleEnd = callback;
 
@@ -155,7 +172,6 @@ public class BattleManager : MonoBehaviour
         //    真理的祝福会在 OnBattleStart 里把魔力 ×1.25，如果快照放在那之后，
         //    取到的就是加成后的值，战斗结束"恢复"会把加成固化成新的基准 → 每打一场滚一次雪球。
         int playerManaSnapshot = playerData.ManaCharge;
-        int enemyManaSnapshot = enemy.ManaCharge;
 
         // 冻结战斗前数值：此后战斗中一切属性改动只写修正层，伤害和面板读的都是实时值。
         // 必须在 BlessingManager.OnBattleStart 之前 —— 战斗开始触发的祝福（如异乡人）也要写进修正层。
@@ -188,7 +204,7 @@ public class BattleManager : MonoBehaviour
         playerData.ApplyPendingBattleItems(battleUI);
 
         OnBattleOpen?.Invoke();
-        StartCoroutine(BattleCoroutine(playerData, enemy, playerManaSnapshot, enemyManaSnapshot));
+        StartCoroutine(BattleCoroutine(playerData, enemy, playerManaSnapshot));
     }
 
     /// <summary>
@@ -219,7 +235,7 @@ public class BattleManager : MonoBehaviour
     }
 
     private IEnumerator BattleCoroutine(PlayerData playerData, EnemyController enemy,
-                                        int playerManaSnapshot, int enemyManaSnapshot)
+                                        int playerManaSnapshot)
     {
         // 神圣剑倍率（拾取神圣剑后生效；只放大魔力伤害，不影响魔力消耗）
         HolySwordEffect amp = playerData.GetComponent<HolySwordEffect>();
@@ -278,26 +294,16 @@ public class BattleManager : MonoBehaviour
         // 被偷袭打死 → 判负
         if (resolver.IsFinished)
         {
-            EndBattle(false, playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
-            yield break;
-        }
-
-        // 完全伤不到敌人（自己打不出伤害，且反伤也造不成伤害）→ 立刻收场判负。
-        // 用伤害构成而不是一个光秃秃的数字，让玩家看出为什么打不动。
-        // ⚠️ 判据是 CanDamageEnemy 而不是「这一击打了 0」——
-        //    玩家可能打 0 但靠反伤磨死敌人，那种情况必须照常进主循环。
-        if (!resolver.CanDamageEnemy)
-        {
-            battleUI.AddLog($"<color=#7799CC>玩家</color>攻击，造成 {FormatDamage(playerData.AttackCount, resolver.PlayerPhysical, resolver.PlayerManaCost, resolver.PlayerPhysical + resolver.PlayerMagicDamage)} 点伤害");
-            playerData.PlayAttackAnimation();
-            if (!silentBattle) yield return new WaitForSeconds(logDelay);
-            EndBattle(false, playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
+            EndBattle(false, playerData, enemy, playerManaSnapshot);
             yield break;
         }
 
         // —— 主循环：内核推进一步，这里演一步 ——
+        // 打不动不再提前收场：内核只认「打赢 / 阵亡 / 跑满 MaxTurnCount」三种结局。
         while (resolver.Step())
         {
+            if (skipRequested) EnterFastForward();
+
             BattleStep step = resolver.LastStep;
 
             switch (step.Kind)
@@ -354,8 +360,15 @@ public class BattleManager : MonoBehaviour
             if (resolver.IsFinished) break;
         }
 
+        // 手动跳过：清掉过程日志、解除静音，界面上只留下面的结算行
+        if (skipRequested && battleUI != null)
+        {
+            battleUI.ClearLog();
+            battleUI.Muted = false;
+        }
+
         EndBattle(resolver.EndReason == BattleEndReason.EnemyDefeated,
-                  playerData, enemy, playerManaSnapshot, enemyManaSnapshot);
+                  playerData, enemy, playerManaSnapshot);
     }
 
     // ============================================================
@@ -428,7 +441,7 @@ public class BattleManager : MonoBehaviour
     }
 
 
-    private void EndBattle(bool won, PlayerData playerData, EnemyController enemy, int playerManaSnapshot, int enemyManaSnapshot)
+    private void EndBattle(bool won, PlayerData playerData, EnemyController enemy, int playerManaSnapshot)
     {
         // ⚠️ 这里只做结算，不解锁输入：战斗界面还要再留一会儿（见 CloseAfterDelay）才真正消失。
         //    isFighting / OnBattleClose / onBattleEnd 全部挪到那之后 —— 否则玩家会在窗口还开着的
@@ -437,10 +450,26 @@ public class BattleManager : MonoBehaviour
         // 特殊祝福生命周期：战斗结束（恢复加攻等）
         BlessingManager.Instance?.OnBattleEnd(playerData, enemy, battleUI, won);
 
+        // Zeno 镜像：只有赢了才覆盖记录，输了/僵持就当作没打过
+        ZenoRecord zenoRecord = won ? pendingZenoRecord : null;
+        pendingZenoRecord = null;
+
         // 恢复魔力到战斗前
         playerData.ManaCharge = playerManaSnapshot;
-        if (enemy != null)
-            enemy.ManaCharge = enemyManaSnapshot;
+
+        // 没打赢 → 敌人留在原地，把这一整场当作没发生过：hp / 魔力回滚到开战快照。
+        // 打赢了不回滚（敌人紧接着 Defeat() 退场）。
+        if (enemy != null && !won)
+            enemy.RollbackBattleSnapshot();
+
+        // 玩家侧对称：**僵持**（输了但还活着）整场回滚 —— HP、待生效道具（圣水/麦酒/魔力精华）、
+        // 祝福的持久计数（如工匠复活次数）全部退回开战前。
+        // 阵亡不回滚 —— 死了要留着，阵亡画面靠 IsDead 判；那种情况玩家会读档/重开，世界本来就会重置。
+        if (!won && !playerData.IsDead)
+        {
+            playerData.RollbackBattleSnapshot();
+            BlessingManager.Instance?.RollbackBattleSnapshot();
+        }
 
         // 清空战斗内属性修正层：攻/防/段数/减伤回到战斗前的数值。
         // 放在 OnBattleEnd 之后 —— 祝福的战终回调里还能读到带加成的实时值用于播日志。
@@ -451,6 +480,8 @@ public class BattleManager : MonoBehaviour
             battleUI.AddLog($"战斗胜利！获得 {enemy.GoldReward} 金币");
             playerData.AddGold(enemy.GoldReward);
             enemy.Defeat();
+            // 这场赢了 → 进战前的面板成为下一局的 Zeno
+            ZenoMirror.Save(zenoRecord);
             // 敌人阵亡表现：轻轻抖一下、往下沉一点，同时淡出消失
             battleUI.PlayEnemyDeath();
         }
@@ -479,8 +510,8 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private IEnumerator CloseAfterDelay(bool won)
     {
-        // 跳过档没有演出来看，不用留结算时间；其余档保留这 1 秒给玩家看清金币收益
-        if (!silentBattle)
+        // 跳过档没有演出来看，不用留结算时间；手动跳过的仍留这 1 秒看清结果
+        if (!silentBattle || skipRequested)
             yield return new WaitForSeconds(1f);
         battleUI?.CloseBattle();
 
@@ -490,6 +521,22 @@ public class BattleManager : MonoBehaviour
         OnBattleClose?.Invoke();
         onBattleEnd?.Invoke(won);
         onBattleEnd = null;
+    }
+
+    /// <summary>
+    /// 跳过按钮的入口（UI 未做，接口先留着）。跳过档本身已全程静音，不需要调这里。
+    /// </summary>
+    public void RequestSkip()
+    {
+        if (!isFighting) return;
+        skipRequested = true;
+    }
+
+    /// <summary>玩家跳过：不再等演出，也不再写日志/刷面板（结算逻辑一行不动）。</summary>
+    private void EnterFastForward()
+    {
+        silentBattle = true;
+        if (battleUI != null) battleUI.Muted = true;
     }
 
     private static string FormatDamage(int attackCount, int physicalDamage, int manaCost, int totalDamage)
