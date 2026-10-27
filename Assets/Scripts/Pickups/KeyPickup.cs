@@ -73,6 +73,10 @@ public class KeyPickup : MonoBehaviour, IFloorPickup, IPurchasable
 
         playerData.AddKey(type, 1);
 
+        // 移涌之钥是全局资产（global.json 的 aeonKeys）：打完 Zeno 直接开门进 Credits
+        // 这条路上没有其它存档点，不在这里写盘就会整把丢掉。
+        if (type == KeyType.Aeon) SaveManager.Instance?.SaveGlobal();
+
         // 记录到楼层记忆中
         FloorMemoryManager.Instance?.GetOrCreateState(floorNumber).MarkItemPickedUp(gridPosition);
 

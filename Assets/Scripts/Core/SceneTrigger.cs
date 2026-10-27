@@ -82,9 +82,16 @@ public class SceneTrigger : MonoBehaviour
         Debug.Log($"[SceneTrigger] 玩家到达第 {targetFloor} 层 ({targetGridPos.x}, {targetGridPos.y})，跳转场景 '{sceneName}'");
         PlayerLog.Note($"触发场景跳转 → {sceneName}");
 
-        // 通关口必须先清档再跳场景：30F 的自动存档就是「进 30F」时写下的那份，
+        // 通关口：先收口全局资产（aeonKeys / divineSpark）再清档 ——
+        // aeon key 不只 KeyPickup 一条来源（商店 ApplyPurchase 也会加），只靠拾取点落盘会漏。
+        //
+        // 清档是必须的：30F 的自动存档就是「进 30F」时写下的那份，
         // 不清的话回标题点同一模式会原样读回来，等于多了一个「继续游戏」。
-        if (clearAutoSave) SaveManager.ClearAutoSave();
+        if (clearAutoSave)
+        {
+            SaveManager.Instance?.SaveGlobal();
+            SaveManager.ClearAutoSave();
+        }
 
         // 通过 ScreenFader 完成淡出 → 加载 → 淡入的过场
         ScreenFader.FadeToScene(sceneName);

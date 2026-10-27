@@ -1153,10 +1153,10 @@ MonoBehaviour:
   gapAfterLess: 2
   shakeDuration: 0.3
   shakeMagnitude: 4
-  revealDuration: 10
+  revealDuration: 5
   holeSoftness: 0.6
-  holeSoftnessGrow: 0.6
-  holeFadeStart: 1
+  holeSoftnessGrow: 0.1
+  holeFadeStart: 0.6
 --- !u!1 &1524105330
 GameObject:
   m_ObjectHideFlags: 0

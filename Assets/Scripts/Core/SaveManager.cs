@@ -68,10 +68,14 @@ public class SaveManager : MonoBehaviour
         // 先读取现有全局存档，避免覆盖神圣火花等其它全局字段
         GlobalSaveData globalData = LoadGlobal();
         PlayerData player = FindAnyObjectByType<PlayerData>();
-        globalData.aeonKeys = player != null ? player.GetKeyCount(KeyType.Aeon) : 0;
 
-        // divineSpark 无玩家时保留文件旧值，不清零
-        if (player != null) globalData.divineSpark = player.DivineSpark;
+        // 无玩家时两个全局道具都保留文件旧值，不清零 ——
+        // 在 Opening / Credits / Ending 这类没有玩家的场景里误调一次就是玩家资产清零。
+        if (player != null)
+        {
+            globalData.aeonKeys = player.GetKeyCount(KeyType.Aeon);
+            globalData.divineSpark = player.DivineSpark;
+        }
 
         // 最近一局的模式：给「新游戏」推断用（自动/手动存档被清掉后还能知道该重开哪种模式）
         globalData.gameMode = (int)GameSession.Mode;

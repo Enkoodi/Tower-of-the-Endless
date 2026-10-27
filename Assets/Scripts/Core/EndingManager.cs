@@ -12,6 +12,9 @@ public static class EndingManager
         Debug.Log("[EndingManager] 触发真结局片尾 ED");
         PlayerLog.Note("触发真结局");
 
+        // 通关口要和 30F 的 SceneTrigger 保持一致：先收口全局资产再清档。
+        SaveManager.Instance?.SaveGlobal();
+
         // 通关后不再有「继续游戏」：清掉自动存档，回到标题点任一模式都是开新局。
         // 不清的话标题页会读回通关前那份档，玩家能从 30F 接着走。
         SaveManager.ClearAutoSave();
