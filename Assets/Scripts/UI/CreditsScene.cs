@@ -32,8 +32,8 @@ public class CreditsScene : MonoBehaviour
 
     private void LoadNextScene()
     {
-        // 从其他场景返回 Opening 时，标记播放开场过场动画
-        TransitionController.ShouldPlayOnLoad = true;
+        // 标记来源，Opening 侧据此判断要不要播第一次开场过场
+        TransitionController.PendingSource = TransitionController.IntroSource.Credits;
 
         // 通过 ScreenFader 完成淡出 → 加载 → 淡入的过场
         ScreenFader.FadeToScene(nextSceneName);

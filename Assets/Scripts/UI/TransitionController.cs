@@ -1,37 +1,29 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
-/// 开场过场动画控制器（挂载在 TransitionCanvas 上）
+/// 开场过场（挂在 TransitionCanvas 上）。
+/// 黑屏里依次横向揭开 TOWER → OF THE → END，停顿后震屏瞬间补上 LESS，
+/// 随后分割线从中间长出去、黑底自标题中心开一个圆洞并整体淡掉，两者同时收尾。
 ///
-/// 完整动画流程：
-/// 1. 黑屏（CanvasGroup.alpha = 1，画面完全不透明），标题初始宽度为 0，先停顿 initialHoldDuration 秒
-/// 2. 揭开标题（englishReveal 的 width 从 0 展开到 endWidth = 570）
-/// 3. 到达 570 后停顿片刻
-/// 4. 瞬间显示全部标题（width = fullWidth = 700）
-/// 5. 标题产生一次强烈的冲击 + 回弹 + 二次震动
-/// 6. 黑屏整体淡出（alpha 1 → 0），露出背后的菜单/游戏画面
-///
-/// 注意：标题显示期间始终保持 alpha = 1，不改变 TransitionCanvas 的透明度，
-/// 避免黑屏中途穿帮。
+/// 标题：拿到过埃翁钥匙 或 神圣火花 才显示（都是 0 时整块隐藏）。
+/// 过场：一辈子只播两次 —— 首次通关故事（从 Credits 回来、钥匙 1、还没火花）一次，
+///       首次拿到神圣火花（从 Ending 回来）一次；正常启动进游戏不播，直接完整菜单。
 /// </summary>
 public class TransitionController : MonoBehaviour
 {
-    /// <summary>
-    /// 是否在下一次加载 Opening 场景时播放开场过场动画。
-    /// 默认 false：直接启动游戏进入 Opening 时不播放；
-    /// 从其他场景（如 Credits / Ending）返回 Opening 时，在跳转前设为 true。
-    /// 静态字段跨场景常驻，但应用重启后会自动复位为 false。
-    /// </summary>
-    public static bool ShouldPlayOnLoad { get; set; }
+    /// <summary>这次进 Opening 是从哪个场景回来的。静态常驻，重启后自然是 None。</summary>
+    public static IntroSource PendingSource { get; set; }
 
-    /// <summary>
-    /// 应用启动时统一锁定帧率：
-    /// 关闭垂直同步（避免无边框全屏下驱动 vsync 间歇生效），
-    /// 用 targetFrameRate 硬性固定 60 帧，保证帧间隔均匀稳定，
-    /// 避免无锁帧时画面节奏不稳（表现为转场动画明显掉帧 / 卡顿）。
-    /// 如需跟随显示器刷新率，可自行调整该数值。
-    /// </summary>
+    public enum IntroSource
+    {
+        None,
+        Credits,
+        Ending
+    }
+
+    /// <summary>锁定 60 帧，避免无锁帧时揭字节奏抖动。</summary>
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void LockFrameRate()
     {
@@ -41,538 +33,358 @@ public class TransitionController : MonoBehaviour
 
     [Header("References")]
 
-    /// <summary>
-    /// 控制整个过渡画面透明度的 CanvasGroup。
-    /// 标题显示期间保持 alpha = 1。
-    /// </summary>
     [SerializeField] private CanvasGroup canvasGroup;
 
-    /// <summary>
-    /// 标题条（带 RectMask2D 的 RectTransform）。
-    /// 通过修改 sizeDelta.x 实现从左向右揭开标题。
-    /// </summary>
-    [SerializeField] private RectTransform englishReveal;
+    /// <summary>标题根节点：七块分块都挂在它下面，震屏抖的也是它。</summary>
+    [SerializeField] private RectTransform titleRoot;
 
+    [SerializeField] private RectTransform towerMask;
+    [SerializeField] private RectTransform ofTheMask;
+    [SerializeField] private RectTransform lineLeftMask;
+    [SerializeField] private RectTransform lineRightMask;
+    [SerializeField] private RectTransform endMask;
+    [SerializeField] private RectTransform lessMask;
 
-    [Header("Title Settings")]
+    /// <summary>底部整条分割线：中心固定，向两边长。</summary>
+    [SerializeField] private RectTransform lineBottomMask;
 
-    /// <summary>
-    /// 标题展开后的完整宽度。
-    /// </summary>
-    [SerializeField] private float fullWidth = 700f;
+    /// <summary>全屏黑底。材质按 revealShader 在运行时生成，圆心/半径/软边/整体透明度都靠它算。</summary>
+    [SerializeField] private Image holeCover;
+    [SerializeField] private Shader revealShader;
 
-    /// <summary>
-    /// 标题先展开到的中间宽度。
-    /// </summary>
-    [SerializeField] private float endWidth = 570f;
+    [Header("Title Reveal")]
 
+    /// <summary>开场黑屏静置。要盖过 ScreenFader 进场景时的 1s 停留 + 1s 淡入。</summary>
+    [SerializeField] private float initialHold = 2f;
+    [SerializeField] private float towerDuration = 0.9f;
+    [SerializeField] private float gapAfterTower = 0.25f;
+    [SerializeField] private float ofTheDuration = 0.55f;
+    [SerializeField] private float gapAfterOfThe = 0.25f;
+    [SerializeField] private float endDuration = 0.7f;
+    [SerializeField] private float gapBeforeLess = 0.45f;
+    [SerializeField] private float gapAfterLess = 0.6f;
 
-    [Header("Animation Settings")]
+    [Header("Shake")]
 
-    /// <summary>
-    /// 标题开始显示前，黑屏的初始等待时长。
-    /// </summary>
-    [SerializeField] private float initialHoldDuration = 1f;
+    [SerializeField] private float shakeDuration = 0.12f;
+    [SerializeField] private float shakeMagnitude = 3f;
 
-    /// <summary>
-    /// 标题从左往右展开到 endWidth 的时长。
-    /// </summary>
-    [SerializeField] private float titleRevealDuration = 2f;
+    [Header("Background Reveal")]
 
-    /// <summary>
-    /// 标题停在 endWidth 时的停顿时长。
-    /// </summary>
-    [SerializeField] private float endPauseDuration = 1f;
+    /// <summary>分割线与圆洞共用的时长 —— 两者必须同时收尾。</summary>
+    [SerializeField] private float revealDuration = 1.2f;
 
+    /// <summary>渐变带宽度（单侧），占屏幕短边的比例。整条 1→0 的跨度是它的两倍。</summary>
+    [SerializeField, Range(0.005f, 0.6f)] private float holeSoftness = 0.06f;
 
-    [Header("Impact / Screen Shake")]
+    /// <summary>半径变大时渐变带跟着变宽的比例。不能为负。</summary>
+    [SerializeField, Range(0f, 0.6f)] private float holeSoftnessGrow = 0.08f;
 
-    /// <summary>
-    /// 整个冲击动画的总时长。
-    /// </summary>
-    [SerializeField] private float shakeDuration = 0.1f;
+    /// <summary>整体退黑的起点，占 revealDuration 的时间比例（0.55 = 走到 55% 时长才开始淡）。</summary>
+    [SerializeField, Range(0f, 1f)] private float holeFadeStart = 0.55f;
 
-    /// <summary>
-    /// 第一次冲击向下移动的最大距离。
-    /// 建议 15 ~ 25。
-    /// </summary>
-    [SerializeField] private float shakeMagnitude = 6f;
+    private const int Tower = 0;
+    private const int OfThe = 1;
+    private const int LineLeft = 2;
+    private const int LineRight = 3;
+    private const int End = 4;
+    private const int Less = 5;
+    private const int LineBottom = 6;
 
-    /// <summary>
-    /// 第二次小幅震动的距离。
-    /// 建议 3 ~ 6。
-    /// </summary>
-    [SerializeField] private float secondaryShakeMagnitude = 3f;
+    private RectTransform[] masks;
+    private float[] maskFullWidths;
 
-    /// <summary>
-    /// 标题冲击时的最大缩放倍率。
-    /// 1.03 表示放大 3%。
-    /// </summary>
-    [SerializeField] private float impactScale = 1f;
+    private Material holeMaterial;
+    private Vector4 holeCenterUv;
+    private Vector2 holeSizePx;
+    private float holeMaxRadius;
+    private float holeBaseSoftness;
 
-    /// <summary>
-    /// 第二次震动开始的时间比例。
-    /// 0.55 表示第一段冲击完成约 55% 后开始。
-    /// </summary>
-    [SerializeField, Range(0f, 1f)]
-    private float secondaryShakeStart = 0f;
+    private Vector3 titleHomePosition;
+    private bool titleVisible;
 
-
-    [Header("Fade Out Settings")]
-
-    /// <summary>
-    /// 动画结束后黑屏淡出时长。
-    /// </summary>
-    [SerializeField] private float fadeDuration = 4f;
-
-    /// <summary>
-    /// 淡出完成后是否自动停用本物体。
-    /// </summary>
-    [SerializeField] private bool deactivateOnComplete = false;
-
-
-    /// <summary>
-    /// 对象激活时初始化并自动播放过渡动画。
-    /// 仅当 ShouldPlayOnLoad 为 true（从其他场景返回 Opening）时才自动播放；
-    /// 直接启动游戏进入 Opening 时跳过动画，直接隐藏本物体。
-    /// </summary>
     private void Awake()
     {
-        // 直接启动游戏（首次进入 Opening）：不播放过场，隐藏黑屏遮罩
-        if (!ShouldPlayOnLoad)
+        masks = new[]
         {
-            canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
-            gameObject.SetActive(false);
+            towerMask, ofTheMask, lineLeftMask, lineRightMask,
+            endMask, lessMask, lineBottomMask
+        };
+        maskFullWidths = new float[masks.Length];
+        for (int i = 0; i < masks.Length; i++)
+        {
+            maskFullWidths[i] = masks[i].sizeDelta.x;
+        }
+
+        // 材质必须在运行时实例化：直接改共享材质会把数值写进工程资产
+        if (holeCover != null && revealShader != null)
+        {
+            holeMaterial = new Material(revealShader);
+            holeCover.material = holeMaterial;
+        }
+
+        titleHomePosition = titleRoot.localPosition;
+
+        GlobalSaveData global = SaveManager.LoadGlobalData();
+        int aeonKeys = global != null ? global.aeonKeys : 0;
+        int divineSpark = global != null ? global.divineSpark : 0;
+        int stage = global != null ? global.openingIntroStage : 0;
+
+        IntroSource source = PendingSource;
+        PendingSource = IntroSource.None;
+
+        // 标题算进度奖励：两样都没有就整块不显示
+        titleVisible = aeonKeys > 0 || divineSpark > 0;
+        titleRoot.gameObject.SetActive(titleVisible);
+
+        // 一辈子只播两次：故事首次通关一次、首次拿到神圣火花一次
+        bool playIntro =
+            (source == IntroSource.Credits && stage == 0 && aeonKeys == 1 && divineSpark == 0) ||
+            (source == IntroSource.Ending && stage < 2 && divineSpark >= 1);
+
+        if (!playIntro)
+        {
+            SetFinalState();
             return;
         }
 
-        // 本次播放已消费标记，恢复默认
-        ShouldPlayOnLoad = false;
+        if (global != null)
+        {
+            global.openingIntroStage = source == IntroSource.Credits ? 1 : 2;
+            SaveManager.SaveGlobalData(global);
+        }
 
-        // 初始化：黑屏
-        canvasGroup.alpha = 1f;
-
-        // 标题隐藏
-        englishReveal.sizeDelta =
-            new Vector2(0f, englishReveal.sizeDelta.y);
-
-        // 自动播放
-        StartCoroutine(TransitionRoutine());
+        SetInitialState();
+        StartCoroutine(PlayRoutine());
     }
 
-
-    /// <summary>
-    /// 外部调用入口：重新播放过渡动画。
-    /// </summary>
+    /// <summary>外部入口：从头重播一遍。运行中在 Inspector 上右键可用来调参。</summary>
+    [ContextMenu("重播过场")]
     public void PlayTransition()
     {
-        // 停止之前的动画
         StopAllCoroutines();
+        titleRoot.localPosition = titleHomePosition;
+        SetInitialState();
+        StartCoroutine(PlayRoutine());
+    }
 
-        // 恢复黑屏
+    /// <summary>完整状态：分块全宽、黑底关掉、不拦点击。</summary>
+    private void SetFinalState()
+    {
+        for (int i = 0; i < masks.Length; i++)
+        {
+            SetMaskWidth(i, maskFullWidths[i]);
+        }
+
+        SetHoleActive(false);
+
         canvasGroup.alpha = 1f;
-
-        // 恢复标题宽度
-        englishReveal.sizeDelta =
-            new Vector2(0f, englishReveal.sizeDelta.y);
-
-        // 恢复射线
-        canvasGroup.blocksRaycasts = true;
-
-        // 播放
-        StartCoroutine(TransitionRoutine());
-    }
-
-
-    /// <summary>
-    /// 过渡动画主流程：
-    ///
-    /// 黑屏
-    /// ↓
-    /// 标题展开到 570
-    /// ↓
-    /// 停顿
-    /// ↓
-    /// 瞬间展开到 700
-    /// ↓
-    /// 强烈冲击 + 回弹 + 二次震动 + 缩放
-    /// ↓
-    /// 黑屏淡出
-    /// </summary>
-    private IEnumerator TransitionRoutine()
-    {
-        // 保持黑屏
-        canvasGroup.alpha = 1f;
-
-        // 标题隐藏
-        englishReveal.sizeDelta =
-            new Vector2(0f, englishReveal.sizeDelta.y);
-
-
-        // =========================
-        // 0. 初始黑屏等待
-        // =========================
-
-        yield return new WaitForSeconds(initialHoldDuration);
-
-
-        // =========================
-        // 1. 标题展开
-        // =========================
-
-        yield return StartCoroutine(RevealTitle());
-
-
-        // =========================
-        // 2. 停顿
-        // =========================
-
-        yield return new WaitForSeconds(endPauseDuration);
-
-
-        // =========================
-        // 3. 瞬间显示完整标题
-        // =========================
-
-        englishReveal.sizeDelta =
-            new Vector2(fullWidth, englishReveal.sizeDelta.y);
-
-
-        // =========================
-        // 4. 震撼冲击
-        // =========================
-
-        yield return StartCoroutine(ShakeOnce());
-
-
-        // =========================
-        // 5. 黑屏淡出
-        // =========================
-
-        yield return StartCoroutine(FadeOutCanvas());
-
-
-        // =========================
-        // 6. 完成
-        // =========================
-
-        if (deactivateOnComplete)
-        {
-            gameObject.SetActive(false);
-        }
-    }
-
-
-    /// <summary>
-    /// 标题展开动画：
-    /// 宽度从 0 线性展开到 endWidth。
-    /// </summary>
-    private IEnumerator RevealTitle()
-    {
-        float time = 0f;
-
-        while (time < titleRevealDuration)
-        {
-            time += Time.deltaTime;
-
-            float t =
-                Mathf.Clamp01(time / titleRevealDuration);
-
-            float width =
-                Mathf.Lerp(0f, endWidth, t);
-
-            englishReveal.sizeDelta =
-                new Vector2(width, englishReveal.sizeDelta.y);
-
-            yield return null;
-        }
-
-
-        // 确保最终精确到 endWidth
-        englishReveal.sizeDelta =
-            new Vector2(endWidth, englishReveal.sizeDelta.y);
-    }
-
-
-    /// <summary>
-    /// 标题震撼出现效果。
-    ///
-    /// 效果流程：
-    ///
-    /// ① 标题已经瞬间展开到 fullWidth
-    ///
-    /// ② 标题瞬间向下冲
-    ///
-    /// ③ 快速回弹并超过原始位置
-    ///
-    /// ④ 回到原位
-    ///
-    /// ⑤ 中间加入一次小幅二次震动
-    ///
-    /// ⑥ 同时产生轻微 Scale 冲击
-    ///
-    /// 最终完全恢复到原来的位置和缩放。
-    /// </summary>
-    private IEnumerator ShakeOnce()
-    {
-        // =========================
-        // 保存初始状态
-        // =========================
-
-        Vector3 originalPosition =
-            englishReveal.localPosition;
-
-        Vector3 originalScale =
-            englishReveal.localScale;
-
-
-        // =========================
-        // 第一阶段：强烈下砸
-        // =========================
-
-        Vector3 impactPosition =
-            originalPosition +
-            new Vector3(0f, -shakeMagnitude, 0f);
-
-
-        // =========================
-        // 第二阶段：超过原位的回弹
-        // =========================
-
-        Vector3 reboundPosition =
-            originalPosition +
-            new Vector3(
-                0f,
-                shakeMagnitude * 0.35f,
-                0f
-            );
-
-
-        // =========================
-        // 直接瞬间移动到冲击位置
-        // =========================
-
-        englishReveal.localPosition =
-            impactPosition;
-
-
-        // 同时放大一点
-        englishReveal.localScale =
-            originalScale * impactScale;
-
-
-        // =========================
-        // 第一段：冲击 → 回弹
-        // =========================
-
-        float elapsed = 0f;
-
-        float impactDuration =
-            shakeDuration * 0.55f;
-
-
-        while (elapsed < impactDuration)
-        {
-            elapsed += Time.deltaTime;
-
-            float t =
-                Mathf.Clamp01(elapsed / impactDuration);
-
-
-            // EaseOut
-            // 开始非常快，之后逐渐减速
-            float easedT =
-                1f - Mathf.Pow(1f - t, 3f);
-
-
-            // 位置：冲击点 → 回弹点
-            englishReveal.localPosition =
-                Vector3.Lerp(
-                    impactPosition,
-                    reboundPosition,
-                    easedT
-                );
-
-
-            // Scale：
-            // 1.03 → 1.0
-            float scaleT =
-                Mathf.SmoothStep(0f, 1f, t);
-
-            englishReveal.localScale =
-                Vector3.Lerp(
-                    originalScale * impactScale,
-                    originalScale,
-                    scaleT
-                );
-
-
-            yield return null;
-        }
-
-
-        // =========================
-        // 第二段：回弹 → 原位
-        // =========================
-
-        elapsed = 0f;
-
-        float reboundDuration =
-            shakeDuration * 0.25f;
-
-
-        while (elapsed < reboundDuration)
-        {
-            elapsed += Time.deltaTime;
-
-            float t =
-                Mathf.Clamp01(elapsed / reboundDuration);
-
-
-            float easedT =
-                1f - Mathf.Pow(1f - t, 3f);
-
-
-            englishReveal.localPosition =
-                Vector3.Lerp(
-                    reboundPosition,
-                    originalPosition,
-                    easedT
-                );
-
-
-            yield return null;
-        }
-
-
-        // =========================
-        // 第三段：轻微二次震动
-        // =========================
-
-        elapsed = 0f;
-
-        float secondaryDuration =
-            shakeDuration * 0.20f;
-
-
-        Vector3 secondaryDown =
-            originalPosition +
-            new Vector3(
-                0f,
-                -secondaryShakeMagnitude,
-                0f
-            );
-
-
-        Vector3 secondaryUp =
-            originalPosition +
-            new Vector3(
-                0f,
-                secondaryShakeMagnitude * 0.35f,
-                0f
-            );
-
-
-        while (elapsed < secondaryDuration)
-        {
-            elapsed += Time.deltaTime;
-
-            float t =
-                Mathf.Clamp01(
-                    elapsed / secondaryDuration
-                );
-
-
-            // 使用正弦曲线制造小幅震动
-            float shakeT =
-                Mathf.Sin(t * Mathf.PI * 2f);
-
-
-            float amount =
-                Mathf.Abs(shakeT);
-
-
-            if (shakeT > 0f)
-            {
-                englishReveal.localPosition =
-                    Vector3.Lerp(
-                        originalPosition,
-                        secondaryUp,
-                        amount
-                    );
-            }
-            else
-            {
-                englishReveal.localPosition =
-                    Vector3.Lerp(
-                        originalPosition,
-                        secondaryDown,
-                        amount
-                    );
-            }
-
-
-            yield return null;
-        }
-
-
-        // =========================
-        // 最终完全恢复
-        // =========================
-
-        englishReveal.localPosition =
-            originalPosition;
-
-        englishReveal.localScale =
-            originalScale;
-    }
-
-
-    /// <summary>
-    /// 黑屏淡出：
-    /// CanvasGroup alpha 从 1 → 0。
-    ///
-    /// 使用三次函数：
-    /// t³
-    ///
-    /// 效果：
-    /// 开始非常慢
-    /// ↓
-    /// 中间逐渐加速
-    /// ↓
-    /// 最后快速淡出
-    /// </summary>
-    private IEnumerator FadeOutCanvas()
-    {
-        float time = 0f;
-
-        while (time < fadeDuration)
-        {
-            time += Time.deltaTime;
-
-            // 归一化进度：0 → 1
-            float t =
-                Mathf.Clamp01(time / fadeDuration);
-
-            // 三次函数
-            // 0 → 0.001 → 0.125 → 1
-            //
-            // 前期变化很慢
-            // 后期变化越来越快
-            float easedT = t * t * t;
-
-            // Alpha：1 → 0
-            canvasGroup.alpha =
-                Mathf.Lerp(1f, 0f, easedT);
-
-            yield return null;
-        }
-
-        // 确保最终完全透明
-        canvasGroup.alpha = 0f;
-
-        // 不再拦截点击
         canvasGroup.blocksRaycasts = false;
+        canvasGroup.interactable = false;
+    }
+
+    /// <summary>过场初始：分块全收，黑底盖满整屏。</summary>
+    private void SetInitialState()
+    {
+        for (int i = 0; i < masks.Length; i++)
+        {
+            SetMaskWidth(i, 0f);
+        }
+
+        SetHoleActive(true);
+        CoverAll();
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = false;
+    }
+
+    private IEnumerator PlayRoutine()
+    {
+        yield return new WaitForSeconds(initialHold);
+
+        // 没标题时这几拍全是空转，直接跳到揭背景
+        if (titleVisible)
+        {
+            yield return RevealMask(Tower, towerDuration);
+            yield return new WaitForSeconds(gapAfterTower);
+
+            yield return RevealMask(OfThe, ofTheDuration);
+            yield return new WaitForSeconds(gapAfterOfThe);
+
+            yield return RevealMask(End, endDuration);
+            yield return new WaitForSeconds(gapBeforeLess);
+
+            // 震屏与 LESS 同一帧：字先到，屏幕才开始抖
+            SetMaskWidth(Less, maskFullWidths[Less]);
+            yield return ShakeTitle();
+            yield return new WaitForSeconds(gapAfterLess);
+        }
+
+        yield return RevealLinesAndBackground();
+
+        SetHoleActive(false);
+        canvasGroup.blocksRaycasts = false;
+        canvasGroup.interactable = true;
+    }
+
+    private IEnumerator RevealMask(int index, float duration)
+    {
+        float width = maskFullWidths[index];
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            SetMaskWidth(index, width * Mathf.Clamp01(time / duration));
+            yield return null;
+        }
+
+        SetMaskWidth(index, width);
+    }
+
+    /// <summary>分割线从中间往两边长，黑底同时从标题中心开圆洞，共用一个进度条。</summary>
+    private IEnumerator RevealLinesAndBackground()
+    {
+        MeasureHole();
+
+        float time = 0f;
+        while (time < revealDuration)
+        {
+            time += Time.deltaTime;
+
+            float t = Mathf.Clamp01(time / revealDuration);
+            float eased = 1f - Mathf.Pow(1f - t, 3f);
+
+            SetMaskWidth(LineLeft, maskFullWidths[LineLeft] * eased);
+            SetMaskWidth(LineRight, maskFullWidths[LineRight] * eased);
+            SetMaskWidth(LineBottom, maskFullWidths[LineBottom] * eased);
+
+            // 圆洞吃线性进度：缓动在 ApplyHole 里单独做，否则两层缓动叠起来会提前开完
+            ApplyHole(t);
+
+            yield return null;
+        }
+
+        SetMaskWidth(LineLeft, maskFullWidths[LineLeft]);
+        SetMaskWidth(LineRight, maskFullWidths[LineRight]);
+        SetMaskWidth(LineBottom, maskFullWidths[LineBottom]);
+        ApplyHole(1f);
+    }
+
+    /// <summary>衰减的正弦抖动，只抖标题根节点；此时画面里只有标题，等同震屏。</summary>
+    private IEnumerator ShakeTitle()
+    {
+        float elapsed = 0f;
+        while (elapsed < shakeDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float remain = 1f - Mathf.Clamp01(elapsed / shakeDuration);
+            float y = Mathf.Sin(elapsed * 88f) * shakeMagnitude * remain;
+            float x = Mathf.Cos(elapsed * 71f) * shakeMagnitude * 0.45f * remain;
+
+            titleRoot.localPosition = titleHomePosition + new Vector3(x, y, 0f);
+            yield return null;
+        }
+
+        titleRoot.localPosition = titleHomePosition;
+    }
+
+    private void SetMaskWidth(int index, float width)
+    {
+        RectTransform mask = masks[index];
+        Vector2 size = mask.sizeDelta;
+        size.x = Mathf.Max(0f, width);
+        mask.sizeDelta = size;
+    }
+
+    /// <summary>量出标题中心在黑底上的 UV，以及圆洞要长到多大才盖住四角。</summary>
+    private void MeasureHole()
+    {
+        if (holeMaterial == null)
+        {
+            return;
+        }
+
+        RectTransform cover = (RectTransform)holeCover.transform;
+        Rect rect = cover.rect;
+        holeSizePx = new Vector2(rect.width, rect.height);
+
+        Vector3 local = cover.InverseTransformPoint(titleRoot.TransformPoint(titleRoot.rect.center));
+        holeCenterUv = new Vector4(
+            (local.x - rect.xMin) / rect.width,
+            (local.y - rect.yMin) / rect.height,
+            0f, 0f);
+
+        float far = 0f;
+        far = Mathf.Max(far, Vector2.Distance(local, new Vector2(rect.xMin, rect.yMin)));
+        far = Mathf.Max(far, Vector2.Distance(local, new Vector2(rect.xMax, rect.yMin)));
+        far = Mathf.Max(far, Vector2.Distance(local, new Vector2(rect.xMin, rect.yMax)));
+        far = Mathf.Max(far, Vector2.Distance(local, new Vector2(rect.xMax, rect.yMax)));
+
+        holeMaxRadius = far * 1.05f;
+        holeBaseSoftness = Mathf.Min(rect.width, rect.height) * Mathf.Max(0.0001f, holeSoftness);
+
+        // 收尾时渐变带的内沿也要越出最远的角，否则四角会留一层灰
+        float denom = Mathf.Max(0.25f, 1f - Mathf.Max(0f, holeSoftnessGrow));
+        holeMaxRadius = Mathf.Max(holeMaxRadius, (far + holeBaseSoftness) / denom);
+    }
+
+    /// <summary>
+    /// t = 0 全黑，t = 1 黑底完全消失，t 就是时间进度（0~1），不再叠第二层缓动。
+    /// </summary>
+    private void ApplyHole(float t)
+    {
+        if (holeMaterial == null)
+        {
+            return;
+        }
+
+        // 半径走 S 曲线：起步慢、中段匀、收尾再缓一点，但整段铺满 revealDuration
+        float grow = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t));
+        float radius = Mathf.Lerp(-holeBaseSoftness, holeMaxRadius, grow);
+        float softness = holeBaseSoftness + Mathf.Max(0f, radius) * holeSoftnessGrow;
+
+        // 后段整体淡掉，角落不至于被圆形硬切
+        float fadeStart = Mathf.Clamp01(holeFadeStart);
+        float fade = 1f - Mathf.Clamp01((t - fadeStart) / Mathf.Max(0.01f, 1f - fadeStart));
+
+        holeMaterial.SetVector("_Center", holeCenterUv);
+        holeMaterial.SetVector("_Size", new Vector4(holeSizePx.x, holeSizePx.y, 0f, 0f));
+        holeMaterial.SetFloat("_Radius", radius);
+        holeMaterial.SetFloat("_Softness", softness);
+        holeMaterial.SetFloat("_Fade", fade);
+    }
+
+    /// <summary>还没量过尺寸时的兜底：无论屏幕多大都是全黑。</summary>
+    private void CoverAll()
+    {
+        if (holeMaterial == null)
+        {
+            return;
+        }
+
+        holeMaterial.SetVector("_Center", new Vector4(0.5f, 0.5f, 0f, 0f));
+        holeMaterial.SetVector("_Size", Vector4.one);
+        holeMaterial.SetFloat("_Radius", -1f);
+        holeMaterial.SetFloat("_Softness", 0.5f);
+        holeMaterial.SetFloat("_Fade", 1f);
+    }
+
+    private void SetHoleActive(bool active)
+    {
+        if (holeCover != null)
+        {
+            holeCover.gameObject.SetActive(active);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (holeMaterial != null)
+        {
+            Destroy(holeMaterial);
+        }
     }
 }

@@ -32,6 +32,12 @@ public class GlobalSaveData
     /// <summary>最近一次在挑战模式战胜 Zeno 时的玩家面板，每胜一次覆盖。</summary>
     public ZenoRecord zenoChallengeRecord;
 
+    /// <summary>
+    /// 开场过场已经播过的阶段：0 = 一次没播，1 = 故事首次通关那次播过了，2 = 两次都播完了。
+    /// 一辈子只播两次（见 TransitionController），钥匙/火花都是数量，光靠它们判不出"第几次"。
+    /// </summary>
+    public int openingIntroStage = 0;
+
     // TODO: 是否通关故事模式
     // TODO: 游戏音量设置
     // TODO: 其他全局道具

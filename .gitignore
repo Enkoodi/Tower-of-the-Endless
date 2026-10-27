@@ -79,6 +79,7 @@ crashlytics-build.properties
 
 # === AI Coding Tools ===
 .codegraph/
+.zcode/
 .reasonix/
 reasonix.toml
 .cursor/
@@ -89,6 +90,9 @@ reasonix.toml
 # === WorkBuddy 工作区数据（记忆 / 备份 / 工具 / 报表，不上传） ===
 /.workbuddy/
 /.workbuddy-ai/
+
+# === 项目文档（不上传） ===
+/Docs/
 
 # === 剧情 / 设定文档（含剧透，不上传 git） ===
 /*剧情*.md
