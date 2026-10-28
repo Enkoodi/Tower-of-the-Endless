@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 /// <summary>
 /// 全局存档数据 — 跨存档的持久化数据。
 /// 包括 Aeon 钥匙、通关状态、音量设置等全局信息。
@@ -13,6 +15,12 @@ public class GlobalSaveData
 
     /// <summary>战斗速度（全局设置，跨存档保留）。对应 BattleManager.logDelay：1=正常，0.5=两倍，0.25=四倍，0.01=跳过。</summary>
     public float battleSpeed = 1f;
+
+    /// <summary>
+    /// 自定义键位：按 <see cref="KeyAction"/> 顺序存 KeyCode 的整数值。
+    /// null / 数量不足 → 缺的那几项用默认键（旧档兼容）。
+    /// </summary>
+    public List<int> keyBindings;
 
     /// <summary>
     /// 上一次挑战模式阵亡的位置与数值（『安特罗波斯』的祝福据此生成）。

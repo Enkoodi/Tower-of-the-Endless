@@ -139,29 +139,29 @@ public class PlayerMove : MonoBehaviour
             TryQuickFloorJump(false);
         }
 
-        // 传送器使用：X上楼，Z下楼（消耗数量，任意位置可用）
-        if (Input.GetKeyDown(KeyCode.X))
+        // 传送器使用：默认 X 上楼 / Z 下楼（任意位置可用，消耗数量）。键位可在设置页改。
+        if (Input.GetKeyDown(KeyBindings.Get(KeyAction.UpTeleporter)))
         {
             TryUseUpTeleporter();
         }
-        else if (Input.GetKeyDown(KeyCode.Z))
+        else if (Input.GetKeyDown(KeyBindings.Get(KeyAction.DownTeleporter)))
         {
             TryUseDownTeleporter();
         }
 
-        // 战斗前消耗品：主键盘数字排 与 小键盘 都绑定，效果都只作用于下一场战斗
-        //   1 = 麦酒（每层攻 +1% / 防 -1%，最多 3 层）
-        //   2 = 魔力精华（战斗开始时魔力充能 +50，不叠加）
-        //   3 = 圣水（下一场战斗敌人血量减半）
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+        // 战斗前消耗品（键位可在设置页改，默认 1/2/3），效果都只作用于下一场战斗
+        //   麦酒：每层攻 +1% / 防 -1%，最多 3 层
+        //   魔力精华：战斗开始时魔力充能 +50，不叠加
+        //   圣水：下一场战斗敌人血量减半
+        if (IsItemKeyDown(KeyAction.Ale, KeyCode.Alpha1, KeyCode.Keypad1))
         {
             TryUseAle();
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        else if (IsItemKeyDown(KeyAction.ManaEssence, KeyCode.Alpha2, KeyCode.Keypad2))
         {
             TryUseManaEssence();
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
+        else if (IsItemKeyDown(KeyAction.HolyWater, KeyCode.Alpha3, KeyCode.Keypad3))
         {
             TryUseEnemyHalveItem();
         }
@@ -189,6 +189,17 @@ public class PlayerMove : MonoBehaviour
         {
             keyStack.Remove(direction);
         }
+    }
+
+    /// <summary>
+    /// 消耗品键：主键按下即触发；主键仍是默认数字键时，小键盘同数字也认（沿用旧手感）。
+    /// 主键被改成别的键后小键盘备键自动失效 —— 否则玩家把某个道具绑到 Keypad1 会一键触发两个动作。
+    /// </summary>
+    private bool IsItemKeyDown(KeyAction action, KeyCode defaultKey, KeyCode keypadKey)
+    {
+        KeyCode bound = KeyBindings.Get(action);
+        if (Input.GetKeyDown(bound)) return true;
+        return bound == defaultKey && Input.GetKeyDown(keypadKey);
     }
 
     private void TryMove(Vector2 direction)

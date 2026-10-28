@@ -77,6 +77,18 @@ public class SettingsToggle : MonoBehaviour
         ExitSettings();
     }
 
+    /// <summary>供 Opening 场景的设置图标调用，效果等同按 ESC 进入设置。</summary>
+    public void OpenSettingsFromButton()
+    {
+        if (isSwitching) return;
+
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene == "Opening" || currentScene == "Game")
+        {
+            EnterSettings(currentScene);
+        }
+    }
+
     private void ExitSettings()
     {
         isSwitching = true;
